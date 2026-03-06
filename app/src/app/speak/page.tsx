@@ -4,41 +4,42 @@ import { useState, useRef, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Mic, MicOff, Eye, EyeOff, Clock, AlertCircle, CheckCircle, Home, RotateCcw, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { saveSession } from "@/lib/sessions";
 
 // Prompts data
 const prompts: Record<number, { title: string; description: string; emoji: string; tips: string[] }> = {
-  1: { 
-    title: "Tell a Funny Story", 
+  1: {
+    title: "Tell a Funny Story",
     description: "Share something funny that happened to you recently. It could be at school, at home, or anywhere!",
     emoji: "😄",
     tips: ["Start with 'One time...'", "Describe what happened step by step", "Tell us how it ended"]
   },
-  2: { 
-    title: "Describe Your Favorite Place", 
+  2: {
+    title: "Describe Your Favorite Place",
     description: "Tell us about a place you love. What does it look like? Why do you like it there?",
     emoji: "🌴",
     tips: ["Use describing words (adjectives)", "Talk about what you can see, hear, and smell", "Explain why it's special to you"]
   },
-  3: { 
-    title: "Explain How to Make a Sandwich", 
+  3: {
+    title: "Explain How to Make a Sandwich",
     description: "Teach us how to make your favorite sandwich, step by step.",
     emoji: "🥪",
     tips: ["Start with what ingredients you need", "Go in order: first, then, next, finally", "Make it sound yummy!"]
   },
-  4: { 
-    title: "Present Your Dream Invention", 
+  4: {
+    title: "Present Your Dream Invention",
     description: "If you could invent anything, what would it be? How would it work?",
     emoji: "💡",
     tips: ["Give your invention a cool name", "Explain what problem it solves", "Describe how someone would use it"]
   },
-  5: { 
-    title: "Debate: Cats vs Dogs", 
+  5: {
+    title: "Debate: Cats vs Dogs",
     description: "Which makes a better pet - cats or dogs? Pick a side and convince us!",
     emoji: "🐱🐕",
     tips: ["Pick one side and stick with it", "Give at least 3 reasons", "Try to predict what the other side might say"]
   },
-  6: { 
-    title: "Give a Book Report", 
+  6: {
+    title: "Give a Book Report",
     description: "Tell us about a book you've read. What happened? Did you like it?",
     emoji: "📚",
     tips: ["Don't give away the ending!", "Describe the main character", "Would you recommend it?"]
@@ -55,6 +56,7 @@ interface SessionResults {
   duration: number;
   eyeContactPercent: number;
   wordsPerMinute: number;
+  score: number;
 }
 
 // Loading component
@@ -83,6 +85,7 @@ function SpeakContent() {
   const [eyeContact, setEyeContact] = useState(true);
   const [eyeContactHistory, setEyeContactHistory] = useState<boolean[]>([]);
   const [results, setResults] = useState<SessionResults | null>(null);
+  const [faceApiReady, setFaceApiReady] = useState(false);
 
   // Refs
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -90,6 +93,51 @@ function SpeakContent() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const faceDetectionRef = useRef<NodeJS.Timeout | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const faceApiRef = useRef<any>(null);
+
+  const initFaceDetection = async () => {
+    try {
+      // Dynamic import to avoid SSR issues
+      const faceapi = await import("face-api.js");
+      faceApiRef.current = faceapi;
+      await faceapi.nets.tinyFaceDetector.loadFromUri("/models");
+      setFaceApiReady(true);
+      console.log("Face detection loaded");
+    } catch (e) {
+      console.error("Face detection failed to load:", e);
+      // App works fine without it - will fallback
+    }
+  };
+
+  const detectEyeContact = useCallback(async () => {
+    if (!videoRef.current || !faceApiRef.current) return;
+    const faceapi = faceApiRef.current;
+    try {
+      const detection = await faceapi.detectSingleFace(
+        videoRef.current,
+        new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.3 })
+      );
+      if (detection) {
+        const { x, width } = detection.box;
+        const videoWidth = videoRef.current.videoWidth || videoRef.current.clientWidth;
+        const faceCenterX = x + width / 2;
+        const centerZone = videoWidth * 0.6;
+        const leftBound = videoWidth * 0.2;
+        const isLooking = faceCenterX >= leftBound && faceCenterX <= leftBound + centerZone;
+        setEyeContact(isLooking);
+        setEyeContactHistory(h => [...h, isLooking]);
+      } else {
+        setEyeContact(false);
+        setEyeContactHistory(h => [...h, false]);
+      }
+    } catch {
+      // fallback — assume looking
+      setEyeContact(true);
+      setEyeContactHistory(h => [...h, true]);
+    }
+  }, []);
 
   const startWebcam = async () => {
     try {
@@ -158,10 +206,20 @@ function SpeakContent() {
     return results.sort((a, b) => b.count - a.count);
   };
 
+  const calculateScore = (fillerCount: number, eyePercent: number, wpm: number) => {
+    let score = 100;
+    score -= Math.min(fillerCount * 5, 40);
+    if (eyePercent >= 80) score += 10;
+    else if (eyePercent < 50) score -= 20;
+    if (wpm >= 100 && wpm <= 160) score += 10;
+    else if (wpm > 180 || wpm < 80) score -= 10;
+    return Math.max(0, Math.min(100, score));
+  };
+
   const startRecording = async () => {
     await startWebcam();
     initSpeechRecognition();
-    
+
     setPhase("recording");
     setIsRecording(true);
     setTranscript("");
@@ -170,13 +228,23 @@ function SpeakContent() {
 
     recognitionRef.current?.start();
 
+    // Start face detection interval (every 500ms)
+    if (faceApiReady) {
+      faceDetectionRef.current = setInterval(() => {
+        detectEyeContact();
+      }, 500);
+    }
+
     timerRef.current = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
           endRecording();
           return 0;
         }
-        setEyeContactHistory(h => [...h, Math.random() > 0.3]);
+        // Fallback eye contact if face api not ready
+        if (!faceApiRef.current) {
+          setEyeContactHistory(h => [...h, Math.random() > 0.3]);
+        }
         return prev - 1;
       });
     }, 1000);
@@ -186,47 +254,74 @@ function SpeakContent() {
     setIsRecording(false);
     recognitionRef.current?.stop();
     if (timerRef.current) clearInterval(timerRef.current);
+    if (faceDetectionRef.current) clearInterval(faceDetectionRef.current);
 
-    const duration = 60 - timeLeft;
-    const fillerAnalysis = analyzeTranscript(transcript);
-    const totalFillers = fillerAnalysis.reduce((sum, f) => sum + f.count, 0);
-    const wordCount = transcript.split(/\s+/).filter(w => w.length > 0).length;
-    const wpm = duration > 0 ? Math.round((wordCount / duration) * 60) : 0;
-    const eyePercent = eyeContactHistory.length > 0 
-      ? Math.round((eyeContactHistory.filter(e => e).length / eyeContactHistory.length) * 100)
-      : 85;
+    setTimeLeft(prev => {
+      const duration = 60 - prev;
 
-    setResults({
-      transcript,
-      fillerCount: totalFillers,
-      fillerWords: fillerAnalysis,
-      duration,
-      eyeContactPercent: eyePercent,
-      wordsPerMinute: wpm,
+      setTranscript(currentTranscript => {
+        setEyeContactHistory(currentHistory => {
+          const fillerAnalysis = analyzeTranscript(currentTranscript);
+          const totalFillers = fillerAnalysis.reduce((sum, f) => sum + f.count, 0);
+          const wordCount = currentTranscript.split(/\s+/).filter(w => w.length > 0).length;
+          const wpm = duration > 0 ? Math.round((wordCount / duration) * 60) : 0;
+          const eyePercent = currentHistory.length > 0
+            ? Math.round((currentHistory.filter(e => e).length / currentHistory.length) * 100)
+            : 85;
+
+          const score = calculateScore(totalFillers, eyePercent, wpm);
+          const xpEarned = Math.round(score / 2);
+
+          // Save to localStorage
+          try {
+            saveSession({
+              promptId,
+              promptTitle: prompt.title,
+              score,
+              fillerCount: totalFillers,
+              fillerWords: fillerAnalysis,
+              duration,
+              eyeContactPercent: eyePercent,
+              wordsPerMinute: wpm,
+              xpEarned,
+              transcript: currentTranscript,
+            });
+          } catch (e) {
+            console.error("Failed to save session:", e);
+          }
+
+          setResults({
+            transcript: currentTranscript,
+            fillerCount: totalFillers,
+            fillerWords: fillerAnalysis,
+            duration,
+            eyeContactPercent: eyePercent,
+            wordsPerMinute: wpm,
+            score,
+          });
+
+          return currentHistory;
+        });
+
+        return currentTranscript;
+      });
+
+      return prev;
     });
 
     setPhase("results");
     stopWebcam();
-  }, [timeLeft, transcript, eyeContactHistory]);
+  }, [promptId, prompt.title, detectEyeContact]);
 
   useEffect(() => {
+    initFaceDetection();
     return () => {
       stopWebcam();
       recognitionRef.current?.stop();
       if (timerRef.current) clearInterval(timerRef.current);
+      if (faceDetectionRef.current) clearInterval(faceDetectionRef.current);
     };
   }, []);
-
-  const calculateScore = (results: SessionResults) => {
-    let score = 100;
-    score -= Math.min(results.fillerCount * 5, 40);
-    if (results.eyeContactPercent >= 80) score += 10;
-    else if (results.eyeContactPercent < 50) score -= 20;
-    if (results.wordsPerMinute >= 100 && results.wordsPerMinute <= 160) score += 10;
-    else if (results.wordsPerMinute > 180 || results.wordsPerMinute < 80) score -= 10;
-    
-    return Math.max(0, Math.min(100, score));
-  };
 
   const getScoreGrade = (score: number) => {
     if (score >= 90) return { grade: "A+", color: "text-emerald-500", message: "Amazing job! You're a speaking superstar! ⭐" };
@@ -244,11 +339,10 @@ function SpeakContent() {
           <Home className="w-5 h-5" />
           <span className="font-medium">Back to Dashboard</span>
         </Link>
-        
+
         {phase === "recording" && (
-          <div className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold text-lg ${
-            timeLeft <= 10 ? "bg-red-100 text-red-600" : "bg-sky-100 text-sky-600"
-          }`}>
+          <div className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold text-lg ${timeLeft <= 10 ? "bg-red-100 text-red-600" : "bg-sky-100 text-sky-600"
+            }`}>
             <Clock className="w-5 h-5" />
             {timeLeft}s
           </div>
@@ -262,7 +356,7 @@ function SpeakContent() {
             <span className="text-6xl mb-6 block">{prompt.emoji}</span>
             <h1 className="text-3xl font-bold text-gray-900 mb-4">{prompt.title}</h1>
             <p className="text-xl text-gray-600 mb-8">{prompt.description}</p>
-            
+
             <div className="bg-white rounded-2xl p-6 shadow-lg mb-8 text-left">
               <h3 className="font-semibold text-gray-900 mb-3">💡 Tips for this prompt:</h3>
               <ul className="space-y-2">
@@ -303,15 +397,14 @@ function SpeakContent() {
                 playsInline
                 className="w-full aspect-video bg-gray-900 rounded-2xl object-cover"
               />
-              
+
               <div className="absolute top-4 left-4 flex items-center gap-2 bg-red-500 text-white px-3 py-1.5 rounded-full">
                 <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
                 <span className="text-sm font-medium">Recording</span>
               </div>
 
-              <div className={`absolute top-4 right-4 flex items-center gap-2 px-3 py-1.5 rounded-full ${
-                eyeContact ? "bg-emerald-500 text-white" : "bg-amber-500 text-white"
-              }`}>
+              <div className={`absolute top-4 right-4 flex items-center gap-2 px-3 py-1.5 rounded-full ${eyeContact ? "bg-emerald-500 text-white" : "bg-amber-500 text-white"
+                }`}>
                 {eyeContact ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                 <span className="text-sm font-medium">{eyeContact ? "Good eye contact!" : "Look at camera"}</span>
               </div>
@@ -331,7 +424,8 @@ function SpeakContent() {
 
               <button
                 onClick={endRecording}
-                className="flex items-center justify-center gap-2 bg-red-500 text-white w-full py-4 rounded-xl font-semibold hover:bg-red-600 transition"
+                disabled={!isRecording}
+                className="flex items-center justify-center gap-2 bg-red-500 text-white w-full py-4 rounded-xl font-semibold hover:bg-red-600 transition disabled:opacity-50"
               >
                 <MicOff className="w-5 h-5" />
                 End Session
@@ -344,18 +438,17 @@ function SpeakContent() {
         {phase === "results" && results && (
           <div className="max-w-2xl mx-auto">
             {(() => {
-              const score = calculateScore(results);
-              const { grade, color, message } = getScoreGrade(score);
+              const { grade, color, message } = getScoreGrade(results.score);
               return (
                 <>
                   <div className="bg-white rounded-3xl p-8 shadow-xl text-center mb-8">
                     <div className="text-6xl mb-4">🎉</div>
                     <div className={`text-6xl font-bold ${color} mb-2`}>{grade}</div>
-                    <div className="text-2xl font-semibold text-gray-900 mb-2">{score} points</div>
+                    <div className="text-2xl font-semibold text-gray-900 mb-2">{results.score} points</div>
                     <p className="text-gray-600 text-lg">{message}</p>
-                    
+
                     <div className="mt-6 inline-flex items-center gap-2 bg-gradient-to-r from-sky-500 to-amber-500 text-white px-6 py-2 rounded-full">
-                      +{Math.round(score / 2)} XP earned!
+                      +{Math.round(results.score / 2)} XP earned!
                     </div>
                   </div>
 
