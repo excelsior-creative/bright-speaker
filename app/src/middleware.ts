@@ -1,14 +1,6 @@
-import { neonAuthMiddleware } from '@neondatabase/auth/next/server';
-
-export default neonAuthMiddleware({
-  loginUrl: '/auth/sign-in',
-});
+// Auth middleware disabled for MVP testing - no login required
+export { default } from 'next/dist/server/web/exports/next-request';
 
 export const config = {
-  matcher: [
-    // Protected routes requiring authentication
-    '/dashboard/:path*',
-    '/account/:path*',
-    '/practice/:path*',
-  ],
+  matcher: [],
 };
