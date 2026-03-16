@@ -82,6 +82,8 @@ function SpeakContent() {
   const [timeLeft, setTimeLeft] = useState(60);
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState("");
+  const [interimText, setInterimText] = useState("");
+  const [liveFillerCount, setLiveFillerCount] = useState(0);
   const [eyeContact, setEyeContact] = useState(true);
   const [eyeContactHistory, setEyeContactHistory] = useState<boolean[]>([]);
   const [results, setResults] = useState<SessionResults | null>(null);
@@ -145,6 +147,9 @@ function SpeakContent() {
       mediaStreamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current?.play().catch(console.error);
+        };
       }
     } catch (err) {
       console.error("Error accessing webcam:", err);
@@ -171,15 +176,28 @@ function SpeakContent() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       recognition.onresult = (event: any) => {
         let finalTranscript = "";
+        let interim = "";
         for (let i = event.resultIndex; i < event.results.length; i++) {
           const result = event.results[i];
           if (result.isFinal) {
             finalTranscript += result[0].transcript + " ";
+          } else {
+            interim += result[0].transcript;
           }
         }
         if (finalTranscript) {
-          setTranscript(prev => prev + finalTranscript);
+          setTranscript(prev => {
+            const updated = prev + finalTranscript;
+            // Update live filler count from full transcript
+            const fillerMatches = FILLER_WORDS.reduce((count, filler) => {
+              const regex = new RegExp(`\\b${filler}\\b`, "gi");
+              return count + (updated.match(regex)?.length || 0);
+            }, 0);
+            setLiveFillerCount(fillerMatches);
+            return updated;
+          });
         }
+        setInterimText(interim);
       };
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -223,6 +241,8 @@ function SpeakContent() {
     setPhase("recording");
     setIsRecording(true);
     setTranscript("");
+    setInterimText("");
+    setLiveFillerCount(0);
     setEyeContactHistory([]);
     setTimeLeft(60);
 
@@ -389,37 +409,82 @@ function SpeakContent() {
         {/* RECORDING PHASE */}
         {phase === "recording" && (
           <div className="grid lg:grid-cols-2 gap-8">
-            <div className="relative">
-              <video
-                ref={videoRef}
-                autoPlay
-                muted
-                playsInline
-                className="w-full aspect-video bg-gray-900 rounded-2xl object-cover"
-              />
+            {/* VIDEO + OVERLAY */}
+            <div className="flex flex-col gap-4">
+              <div className="relative rounded-2xl overflow-hidden bg-gray-900 aspect-video">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="w-full h-full object-cover"
+                />
 
-              <div className="absolute top-4 left-4 flex items-center gap-2 bg-red-500 text-white px-3 py-1.5 rounded-full">
-                <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                <span className="text-sm font-medium">Recording</span>
+                {/* Recording badge */}
+                <div className="absolute top-3 left-3 flex items-center gap-2 bg-red-500 text-white px-3 py-1.5 rounded-full text-sm font-medium shadow">
+                  <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                  REC
+                </div>
+
+                {/* Timer */}
+                <div className={`absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold shadow ${
+                  timeLeft <= 10 ? "bg-red-500 text-white" : "bg-black/60 text-white"
+                }`}>
+                  <Clock className="w-4 h-4" />
+                  {timeLeft}s
+                </div>
+
+                {/* Eye contact indicator at bottom */}
+                <div className={`absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold shadow-lg transition-colors ${
+                  eyeContact ? "bg-emerald-500 text-white" : "bg-amber-400 text-white"
+                }`}>
+                  {eyeContact ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                  {eyeContact ? "Great eye contact! 👀" : "Look at the camera!"}
+                </div>
               </div>
 
-              <div className={`absolute top-4 right-4 flex items-center gap-2 px-3 py-1.5 rounded-full ${eyeContact ? "bg-emerald-500 text-white" : "bg-amber-500 text-white"
-                }`}>
-                {eyeContact ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                <span className="text-sm font-medium">{eyeContact ? "Good eye contact!" : "Look at camera"}</span>
+              {/* Live stats row */}
+              <div className="grid grid-cols-3 gap-3">
+                <div className="bg-white rounded-xl p-3 text-center shadow">
+                  <div className={`text-2xl font-bold ${liveFillerCount > 5 ? "text-red-500" : liveFillerCount > 2 ? "text-amber-500" : "text-emerald-500"}`}>
+                    {liveFillerCount}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-0.5">Filler words</div>
+                </div>
+                <div className="bg-white rounded-xl p-3 text-center shadow">
+                  <div className="text-2xl font-bold text-sky-500">
+                    {transcript.split(/\s+/).filter(w => w.length > 0).length}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-0.5">Words spoken</div>
+                </div>
+                <div className="bg-white rounded-xl p-3 text-center shadow">
+                  <div className={`text-2xl font-bold ${eyeContact ? "text-emerald-500" : "text-amber-500"}`}>
+                    {eyeContactHistory.length > 0
+                      ? Math.round((eyeContactHistory.filter(Boolean).length / eyeContactHistory.length) * 100)
+                      : 100}%
+                  </div>
+                  <div className="text-xs text-gray-500 mt-0.5">Eye contact</div>
+                </div>
               </div>
             </div>
 
-            <div className="space-y-6">
-              <div className="bg-white rounded-2xl p-6 shadow-lg">
-                <span className="text-4xl mb-4 block">{prompt.emoji}</span>
-                <h2 className="text-xl font-bold text-gray-900 mb-2">{prompt.title}</h2>
-                <p className="text-gray-600">{prompt.description}</p>
+            {/* RIGHT PANEL */}
+            <div className="space-y-4">
+              {/* Prompt reminder */}
+              <div className="bg-white rounded-2xl p-5 shadow-lg">
+                <span className="text-3xl mb-2 block">{prompt.emoji}</span>
+                <h2 className="text-lg font-bold text-gray-900 mb-1">{prompt.title}</h2>
+                <p className="text-gray-600 text-sm">{prompt.description}</p>
               </div>
 
-              <div className="bg-gray-50 rounded-2xl p-6 h-40 overflow-y-auto">
-                <p className="text-sm text-gray-500 mb-2">What I&apos;m hearing:</p>
-                <p className="text-gray-700">{transcript || "Start speaking..."}</p>
+              {/* Live transcript */}
+              <div className="bg-gray-50 rounded-2xl p-4 flex-1 min-h-[140px] max-h-[200px] overflow-y-auto">
+                <p className="text-xs text-gray-400 uppercase tracking-wide mb-2 font-medium">Live transcript</p>
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  {transcript}
+                  {interimText && <span className="text-gray-400 italic">{interimText}</span>}
+                  {!transcript && !interimText && <span className="text-gray-400 italic">Start speaking...</span>}
+                </p>
               </div>
 
               <button
