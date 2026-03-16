@@ -4,9 +4,9 @@ import { useState, useRef, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Mic, MicOff, Eye, EyeOff, Clock, AlertCircle, CheckCircle, Home, RotateCcw, Loader2 } from "lucide-react";
 import Link from "next/link";
+import Logo from "@/components/Logo";
 import { saveSession } from "@/lib/sessions";
 
-// Prompts data
 const prompts: Record<number, { title: string; description: string; emoji: string; tips: string[] }> = {
   1: {
     title: "Tell a Funny Story",
@@ -46,7 +46,6 @@ const prompts: Record<number, { title: string; description: string; emoji: strin
   },
 };
 
-// Filler words to detect
 const FILLER_WORDS = ["um", "uh", "like", "you know", "basically", "actually", "literally", "so", "well", "yeah", "right"];
 
 interface SessionResults {
@@ -59,25 +58,22 @@ interface SessionResults {
   score: number;
 }
 
-// Loading component
 function LoadingState() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-amber-50 flex items-center justify-center">
+    <div className="min-h-screen bg-warm-gradient flex items-center justify-center">
       <div className="text-center">
-        <Loader2 className="w-12 h-12 text-sky-500 animate-spin mx-auto mb-4" />
-        <p className="text-gray-600">Loading your practice session...</p>
+        <Loader2 className="w-12 h-12 text-warm-coral animate-spin mx-auto mb-4" />
+        <p className="text-foreground/60 font-semibold">Loading your practice session...</p>
       </div>
     </div>
   );
 }
 
-// Main speak content component
 function SpeakContent() {
   const searchParams = useSearchParams();
   const promptId = parseInt(searchParams.get("prompt") || "1");
   const prompt = prompts[promptId] || prompts[1];
 
-  // States
   const [phase, setPhase] = useState<"prep" | "recording" | "results">("prep");
   const [timeLeft, setTimeLeft] = useState(60);
   const [isRecording, setIsRecording] = useState(false);
@@ -89,7 +85,6 @@ function SpeakContent() {
   const [results, setResults] = useState<SessionResults | null>(null);
   const [faceApiReady, setFaceApiReady] = useState(false);
 
-  // Refs
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -101,15 +96,12 @@ function SpeakContent() {
 
   const initFaceDetection = async () => {
     try {
-      // Dynamic import to avoid SSR issues
       const faceapi = await import("face-api.js");
       faceApiRef.current = faceapi;
       await faceapi.nets.tinyFaceDetector.loadFromUri("/models");
       setFaceApiReady(true);
-      console.log("Face detection loaded");
     } catch (e) {
       console.error("Face detection failed to load:", e);
-      // App works fine without it - will fallback
     }
   };
 
@@ -135,7 +127,6 @@ function SpeakContent() {
         setEyeContactHistory(h => [...h, false]);
       }
     } catch {
-      // fallback — assume looking
       setEyeContact(true);
       setEyeContactHistory(h => [...h, true]);
     }
@@ -188,7 +179,6 @@ function SpeakContent() {
         if (finalTranscript) {
           setTranscript(prev => {
             const updated = prev + finalTranscript;
-            // Update live filler count from full transcript
             const fillerMatches = FILLER_WORDS.reduce((count, filler) => {
               const regex = new RegExp(`\\b${filler}\\b`, "gi");
               return count + (updated.match(regex)?.length || 0);
@@ -212,7 +202,6 @@ function SpeakContent() {
   const analyzeTranscript = (text: string): { word: string; count: number }[] => {
     const lowerText = text.toLowerCase();
     const results: { word: string; count: number }[] = [];
-
     FILLER_WORDS.forEach(filler => {
       const regex = new RegExp(`\\b${filler}\\b`, "gi");
       const matches = lowerText.match(regex);
@@ -220,7 +209,6 @@ function SpeakContent() {
         results.push({ word: filler, count: matches.length });
       }
     });
-
     return results.sort((a, b) => b.count - a.count);
   };
 
@@ -237,7 +225,6 @@ function SpeakContent() {
   const startRecording = async () => {
     await startWebcam();
     initSpeechRecognition();
-
     setPhase("recording");
     setIsRecording(true);
     setTranscript("");
@@ -245,26 +232,14 @@ function SpeakContent() {
     setLiveFillerCount(0);
     setEyeContactHistory([]);
     setTimeLeft(60);
-
     recognitionRef.current?.start();
-
-    // Start face detection interval (every 500ms)
     if (faceApiReady) {
-      faceDetectionRef.current = setInterval(() => {
-        detectEyeContact();
-      }, 500);
+      faceDetectionRef.current = setInterval(() => { detectEyeContact(); }, 500);
     }
-
     timerRef.current = setInterval(() => {
       setTimeLeft(prev => {
-        if (prev <= 1) {
-          endRecording();
-          return 0;
-        }
-        // Fallback eye contact if face api not ready
-        if (!faceApiRef.current) {
-          setEyeContactHistory(h => [...h, Math.random() > 0.3]);
-        }
+        if (prev <= 1) { endRecording(); return 0; }
+        if (!faceApiRef.current) { setEyeContactHistory(h => [...h, Math.random() > 0.3]); }
         return prev - 1;
       });
     }, 1000);
@@ -275,10 +250,8 @@ function SpeakContent() {
     recognitionRef.current?.stop();
     if (timerRef.current) clearInterval(timerRef.current);
     if (faceDetectionRef.current) clearInterval(faceDetectionRef.current);
-
     setTimeLeft(prev => {
       const duration = 60 - prev;
-
       setTranscript(currentTranscript => {
         setEyeContactHistory(currentHistory => {
           const fillerAnalysis = analyzeTranscript(currentTranscript);
@@ -286,49 +259,19 @@ function SpeakContent() {
           const wordCount = currentTranscript.split(/\s+/).filter(w => w.length > 0).length;
           const wpm = duration > 0 ? Math.round((wordCount / duration) * 60) : 0;
           const eyePercent = currentHistory.length > 0
-            ? Math.round((currentHistory.filter(e => e).length / currentHistory.length) * 100)
-            : 85;
-
+            ? Math.round((currentHistory.filter(e => e).length / currentHistory.length) * 100) : 85;
           const score = calculateScore(totalFillers, eyePercent, wpm);
           const xpEarned = Math.round(score / 2);
-
-          // Save to localStorage
           try {
-            saveSession({
-              promptId,
-              promptTitle: prompt.title,
-              score,
-              fillerCount: totalFillers,
-              fillerWords: fillerAnalysis,
-              duration,
-              eyeContactPercent: eyePercent,
-              wordsPerMinute: wpm,
-              xpEarned,
-              transcript: currentTranscript,
-            });
-          } catch (e) {
-            console.error("Failed to save session:", e);
-          }
-
-          setResults({
-            transcript: currentTranscript,
-            fillerCount: totalFillers,
-            fillerWords: fillerAnalysis,
-            duration,
-            eyeContactPercent: eyePercent,
-            wordsPerMinute: wpm,
-            score,
-          });
-
+            saveSession({ promptId, promptTitle: prompt.title, score, fillerCount: totalFillers, fillerWords: fillerAnalysis, duration, eyeContactPercent: eyePercent, wordsPerMinute: wpm, xpEarned, transcript: currentTranscript });
+          } catch (e) { console.error("Failed to save session:", e); }
+          setResults({ transcript: currentTranscript, fillerCount: totalFillers, fillerWords: fillerAnalysis, duration, eyeContactPercent: eyePercent, wordsPerMinute: wpm, score });
           return currentHistory;
         });
-
         return currentTranscript;
       });
-
       return prev;
     });
-
     setPhase("results");
     stopWebcam();
   }, [promptId, prompt.title, detectEyeContact]);
@@ -344,25 +287,24 @@ function SpeakContent() {
   }, []);
 
   const getScoreGrade = (score: number) => {
-    if (score >= 90) return { grade: "A+", color: "text-emerald-500", message: "Amazing job! You're a speaking superstar! ⭐" };
-    if (score >= 80) return { grade: "A", color: "text-emerald-500", message: "Great work! Keep it up! 🎉" };
-    if (score >= 70) return { grade: "B", color: "text-amber-500", message: "Good effort! You're improving! 💪" };
-    if (score >= 60) return { grade: "C", color: "text-amber-500", message: "Nice try! Let's practice more! 🌟" };
-    return { grade: "Keep Going!", color: "text-sky-500", message: "Practice makes perfect! You've got this! 🚀" };
+    if (score >= 90) return { grade: "A+", color: "text-warm-teal", message: "Amazing job! You're a speaking superstar! ⭐" };
+    if (score >= 80) return { grade: "A", color: "text-warm-teal", message: "Great work! Keep it up! 🎉" };
+    if (score >= 70) return { grade: "B", color: "text-warm-gold", message: "Good effort! You're improving! 💪" };
+    if (score >= 60) return { grade: "C", color: "text-warm-gold", message: "Nice try! Let's practice more! 🌟" };
+    return { grade: "Keep Going!", color: "text-warm-coral", message: "Practice makes perfect! You've got this! 🚀" };
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-amber-50">
+    <div className="min-h-screen bg-warm-gradient">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 max-w-5xl mx-auto">
-        <Link href="/dashboard" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+        <Link href="/dashboard" className="flex items-center gap-2 text-foreground/50 hover:text-warm-coral transition font-semibold">
           <Home className="w-5 h-5" />
-          <span className="font-medium">Back to Dashboard</span>
+          <span>Back to Dashboard</span>
         </Link>
 
         {phase === "recording" && (
-          <div className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold text-lg ${timeLeft <= 10 ? "bg-red-100 text-red-600" : "bg-sky-100 text-sky-600"
-            }`}>
+          <div className={`flex items-center gap-2 px-4 py-2 rounded-full font-extrabold text-lg ${timeLeft <= 10 ? "bg-warm-coral-light text-warm-coral" : "bg-warm-teal-light text-warm-teal-dark"}`}>
             <Clock className="w-5 h-5" />
             {timeLeft}s
           </div>
@@ -373,32 +315,32 @@ function SpeakContent() {
         {/* PREP PHASE */}
         {phase === "prep" && (
           <div className="max-w-2xl mx-auto text-center">
-            <span className="text-6xl mb-6 block">{prompt.emoji}</span>
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">{prompt.title}</h1>
-            <p className="text-xl text-gray-600 mb-8">{prompt.description}</p>
+            <span className="text-6xl mb-6 block animate-bounce-in">{prompt.emoji}</span>
+            <h1 className="text-3xl font-extrabold text-foreground mb-4">{prompt.title}</h1>
+            <p className="text-xl text-foreground/60 mb-8">{prompt.description}</p>
 
-            <div className="bg-white rounded-2xl p-6 shadow-lg mb-8 text-left">
-              <h3 className="font-semibold text-gray-900 mb-3">💡 Tips for this prompt:</h3>
+            <div className="card-warm p-6 mb-8 text-left">
+              <h3 className="font-bold text-foreground mb-3">💡 Tips for this prompt:</h3>
               <ul className="space-y-2">
                 {prompt.tips.map((tip, i) => (
-                  <li key={i} className="flex items-start gap-2 text-gray-600">
-                    <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+                  <li key={i} className="flex items-start gap-2 text-foreground/60">
+                    <CheckCircle className="w-5 h-5 text-warm-teal flex-shrink-0 mt-0.5" />
                     {tip}
                   </li>
                 ))}
               </ul>
             </div>
 
-            <div className="bg-amber-50 rounded-xl p-4 mb-8 flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-amber-800 text-left">
+            <div className="bg-warm-gold-light rounded-xl p-4 mb-8 flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-warm-gold-dark flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-warm-gold-dark text-left">
                 You&apos;ll have <strong>60 seconds</strong> to speak. Try to look at the camera and avoid filler words like &quot;um&quot; and &quot;like&quot;.
               </p>
             </div>
 
             <button
               onClick={startRecording}
-              className="flex items-center justify-center gap-3 bg-gradient-to-r from-sky-500 to-amber-500 text-white px-10 py-5 rounded-2xl font-bold text-xl hover:opacity-90 transition shadow-xl shadow-sky-500/30 mx-auto"
+              className="flex items-center justify-center gap-3 bg-warm-coral text-white px-10 py-5 rounded-2xl font-extrabold text-xl btn-playful shadow-xl shadow-warm-coral/30 mx-auto"
             >
               <Mic className="w-6 h-6" />
               Start Speaking
@@ -409,88 +351,67 @@ function SpeakContent() {
         {/* RECORDING PHASE */}
         {phase === "recording" && (
           <div className="grid lg:grid-cols-2 gap-8">
-            {/* VIDEO + OVERLAY */}
             <div className="flex flex-col gap-4">
-              <div className="relative rounded-2xl overflow-hidden bg-gray-900 aspect-video">
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  className="w-full h-full object-cover"
-                />
-
-                {/* Recording badge */}
-                <div className="absolute top-3 left-3 flex items-center gap-2 bg-red-500 text-white px-3 py-1.5 rounded-full text-sm font-medium shadow">
+              <div className="relative rounded-2xl overflow-hidden bg-gray-900 aspect-video shadow-xl">
+                <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
+                <div className="absolute top-3 left-3 flex items-center gap-2 bg-warm-coral text-white px-3 py-1.5 rounded-full text-sm font-bold shadow">
                   <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
                   REC
                 </div>
-
-                {/* Timer */}
-                <div className={`absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold shadow ${
-                  timeLeft <= 10 ? "bg-red-500 text-white" : "bg-black/60 text-white"
-                }`}>
+                <div className={`absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-extrabold shadow ${timeLeft <= 10 ? "bg-warm-coral text-white" : "bg-black/60 text-white"}`}>
                   <Clock className="w-4 h-4" />
                   {timeLeft}s
                 </div>
-
-                {/* Eye contact indicator at bottom */}
-                <div className={`absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold shadow-lg transition-colors ${
-                  eyeContact ? "bg-emerald-500 text-white" : "bg-amber-400 text-white"
-                }`}>
+                <div className={`absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold shadow-lg transition-colors ${eyeContact ? "bg-warm-teal text-white" : "bg-warm-gold text-white"}`}>
                   {eyeContact ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                   {eyeContact ? "Great eye contact! 👀" : "Look at the camera!"}
                 </div>
               </div>
 
-              {/* Live stats row */}
               <div className="grid grid-cols-3 gap-3">
-                <div className="bg-white rounded-xl p-3 text-center shadow">
-                  <div className={`text-2xl font-bold ${liveFillerCount > 5 ? "text-red-500" : liveFillerCount > 2 ? "text-amber-500" : "text-emerald-500"}`}>
+                <div className="card-warm p-3 text-center">
+                  <div className={`text-2xl font-extrabold ${liveFillerCount > 5 ? "text-warm-coral" : liveFillerCount > 2 ? "text-warm-gold" : "text-warm-teal"}`}>
                     {liveFillerCount}
                   </div>
-                  <div className="text-xs text-gray-500 mt-0.5">Filler words</div>
+                  <div className="text-xs text-foreground/40 font-semibold mt-0.5">Filler words</div>
                 </div>
-                <div className="bg-white rounded-xl p-3 text-center shadow">
-                  <div className="text-2xl font-bold text-sky-500">
+                <div className="card-warm p-3 text-center">
+                  <div className="text-2xl font-extrabold text-warm-coral">
                     {transcript.split(/\s+/).filter(w => w.length > 0).length}
                   </div>
-                  <div className="text-xs text-gray-500 mt-0.5">Words spoken</div>
+                  <div className="text-xs text-foreground/40 font-semibold mt-0.5">Words spoken</div>
                 </div>
-                <div className="bg-white rounded-xl p-3 text-center shadow">
-                  <div className={`text-2xl font-bold ${eyeContact ? "text-emerald-500" : "text-amber-500"}`}>
+                <div className="card-warm p-3 text-center">
+                  <div className={`text-2xl font-extrabold ${eyeContact ? "text-warm-teal" : "text-warm-gold"}`}>
                     {eyeContactHistory.length > 0
                       ? Math.round((eyeContactHistory.filter(Boolean).length / eyeContactHistory.length) * 100)
                       : 100}%
                   </div>
-                  <div className="text-xs text-gray-500 mt-0.5">Eye contact</div>
+                  <div className="text-xs text-foreground/40 font-semibold mt-0.5">Eye contact</div>
                 </div>
               </div>
             </div>
 
-            {/* RIGHT PANEL */}
             <div className="space-y-4">
-              {/* Prompt reminder */}
-              <div className="bg-white rounded-2xl p-5 shadow-lg">
+              <div className="card-warm p-5">
                 <span className="text-3xl mb-2 block">{prompt.emoji}</span>
-                <h2 className="text-lg font-bold text-gray-900 mb-1">{prompt.title}</h2>
-                <p className="text-gray-600 text-sm">{prompt.description}</p>
+                <h2 className="text-lg font-extrabold text-foreground mb-1">{prompt.title}</h2>
+                <p className="text-foreground/60 text-sm">{prompt.description}</p>
               </div>
 
-              {/* Live transcript */}
-              <div className="bg-gray-50 rounded-2xl p-4 flex-1 min-h-[140px] max-h-[200px] overflow-y-auto">
-                <p className="text-xs text-gray-400 uppercase tracking-wide mb-2 font-medium">Live transcript</p>
-                <p className="text-gray-700 text-sm leading-relaxed">
+              <div className="bg-muted rounded-2xl p-4 flex-1 min-h-[140px] max-h-[200px] overflow-y-auto">
+                <p className="text-xs text-foreground/30 uppercase tracking-wide mb-2 font-bold">Live transcript</p>
+                <p className="text-foreground/70 text-sm leading-relaxed">
                   {transcript}
-                  {interimText && <span className="text-gray-400 italic">{interimText}</span>}
-                  {!transcript && !interimText && <span className="text-gray-400 italic">Start speaking...</span>}
+                  {interimText && <span className="text-foreground/30 italic">{interimText}</span>}
+                  {!transcript && !interimText && <span className="text-foreground/30 italic">Start speaking...</span>}
                 </p>
               </div>
 
               <button
                 onClick={endRecording}
                 disabled={!isRecording}
-                className="flex items-center justify-center gap-2 bg-red-500 text-white w-full py-4 rounded-xl font-semibold hover:bg-red-600 transition disabled:opacity-50"
+                className="flex items-center justify-center gap-2 bg-warm-coral text-white w-full py-4 rounded-xl font-bold hover:bg-warm-coral-dark transition disabled:opacity-50"
               >
                 <MicOff className="w-5 h-5" />
                 End Session
@@ -506,38 +427,37 @@ function SpeakContent() {
               const { grade, color, message } = getScoreGrade(results.score);
               return (
                 <>
-                  <div className="bg-white rounded-3xl p-8 shadow-xl text-center mb-8">
+                  <div className="card-warm p-8 text-center mb-8 animate-bounce-in">
                     <div className="text-6xl mb-4">🎉</div>
-                    <div className={`text-6xl font-bold ${color} mb-2`}>{grade}</div>
-                    <div className="text-2xl font-semibold text-gray-900 mb-2">{results.score} points</div>
-                    <p className="text-gray-600 text-lg">{message}</p>
-
-                    <div className="mt-6 inline-flex items-center gap-2 bg-gradient-to-r from-sky-500 to-amber-500 text-white px-6 py-2 rounded-full">
+                    <div className={`text-6xl font-extrabold ${color} mb-2`}>{grade}</div>
+                    <div className="text-2xl font-bold text-foreground mb-2">{results.score} points</div>
+                    <p className="text-foreground/60 text-lg">{message}</p>
+                    <div className="mt-6 inline-flex items-center gap-2 bg-brand-gradient text-white px-6 py-2 rounded-full font-bold">
                       +{Math.round(results.score / 2)} XP earned!
                     </div>
                   </div>
 
                   <div className="grid grid-cols-3 gap-4 mb-8">
-                    <div className="bg-white rounded-xl p-4 text-center shadow-lg">
-                      <div className="text-3xl font-bold text-sky-600">{results.fillerCount}</div>
-                      <div className="text-sm text-gray-600">Filler Words</div>
+                    <div className="card-warm p-4 text-center">
+                      <div className="text-3xl font-extrabold text-warm-coral">{results.fillerCount}</div>
+                      <div className="text-sm text-foreground/50 font-semibold">Filler Words</div>
                     </div>
-                    <div className="bg-white rounded-xl p-4 text-center shadow-lg">
-                      <div className="text-3xl font-bold text-amber-600">{results.eyeContactPercent}%</div>
-                      <div className="text-sm text-gray-600">Eye Contact</div>
+                    <div className="card-warm p-4 text-center">
+                      <div className="text-3xl font-extrabold text-warm-gold">{results.eyeContactPercent}%</div>
+                      <div className="text-sm text-foreground/50 font-semibold">Eye Contact</div>
                     </div>
-                    <div className="bg-white rounded-xl p-4 text-center shadow-lg">
-                      <div className="text-3xl font-bold text-emerald-600">{results.wordsPerMinute}</div>
-                      <div className="text-sm text-gray-600">Words/Min</div>
+                    <div className="card-warm p-4 text-center">
+                      <div className="text-3xl font-extrabold text-warm-teal">{results.wordsPerMinute}</div>
+                      <div className="text-sm text-foreground/50 font-semibold">Words/Min</div>
                     </div>
                   </div>
 
                   {results.fillerWords.length > 0 && (
-                    <div className="bg-white rounded-xl p-6 shadow-lg mb-8">
-                      <h3 className="font-semibold text-gray-900 mb-3">Filler Words Detected:</h3>
+                    <div className="card-warm p-6 mb-8">
+                      <h3 className="font-bold text-foreground mb-3">Filler Words Detected:</h3>
                       <div className="flex flex-wrap gap-2">
                         {results.fillerWords.map((f, i) => (
-                          <span key={i} className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm">
+                          <span key={i} className="bg-warm-coral-light text-warm-coral-dark px-3 py-1 rounded-full text-sm font-semibold">
                             &quot;{f.word}&quot; × {f.count}
                           </span>
                         ))}
@@ -545,9 +465,9 @@ function SpeakContent() {
                     </div>
                   )}
 
-                  <div className="bg-sky-50 rounded-xl p-6 mb-8">
-                    <h3 className="font-semibold text-sky-900 mb-3">💡 Tips for next time:</h3>
-                    <ul className="space-y-2 text-sky-800">
+                  <div className="bg-warm-teal-light rounded-xl p-6 mb-8">
+                    <h3 className="font-bold text-warm-teal-dark mb-3">💡 Tips for next time:</h3>
+                    <ul className="space-y-2 text-warm-teal-dark">
                       {results.fillerCount > 3 && (
                         <li>• Try pausing instead of saying &quot;um&quot; or &quot;like&quot;</li>
                       )}
@@ -555,7 +475,7 @@ function SpeakContent() {
                         <li>• Practice looking right at the camera when you speak</li>
                       )}
                       {results.wordsPerMinute > 160 && (
-                        <li>• Slow down a bit - take your time!</li>
+                        <li>• Slow down a bit — take your time!</li>
                       )}
                       {results.wordsPerMinute < 100 && (
                         <li>• Try to speak a little faster with more energy</li>
@@ -566,19 +486,15 @@ function SpeakContent() {
 
                   <div className="flex gap-4">
                     <button
-                      onClick={() => {
-                        setPhase("prep");
-                        setResults(null);
-                        setTranscript("");
-                      }}
-                      className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-sky-500 to-amber-500 text-white py-4 rounded-xl font-semibold hover:opacity-90 transition"
+                      onClick={() => { setPhase("prep"); setResults(null); setTranscript(""); }}
+                      className="flex-1 flex items-center justify-center gap-2 bg-warm-coral text-white py-4 rounded-xl font-bold btn-playful shadow-lg"
                     >
                       <RotateCcw className="w-5 h-5" />
                       Try Again
                     </button>
                     <Link
                       href="/dashboard"
-                      className="flex-1 flex items-center justify-center gap-2 bg-gray-100 text-gray-700 py-4 rounded-xl font-semibold hover:bg-gray-200 transition"
+                      className="flex-1 flex items-center justify-center gap-2 bg-muted text-foreground py-4 rounded-xl font-bold hover:bg-warm-gold-light transition"
                     >
                       <Home className="w-5 h-5" />
                       Dashboard
@@ -594,7 +510,6 @@ function SpeakContent() {
   );
 }
 
-// Main page component with Suspense wrapper
 export default function SpeakPage() {
   return (
     <Suspense fallback={<LoadingState />}>
