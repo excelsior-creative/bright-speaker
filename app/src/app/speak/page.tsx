@@ -136,17 +136,19 @@ function SpeakContent() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       mediaStreamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.onloadedmetadata = () => {
-          videoRef.current?.play().catch(console.error);
-        };
-      }
     } catch (err) {
       console.error("Error accessing webcam:", err);
       alert("Please allow camera and microphone access to use Bright Speaker!");
     }
   };
+
+  // Attach stream to video element once recording phase is active and video is in DOM
+  useEffect(() => {
+    if (phase === "recording" && mediaStreamRef.current && videoRef.current) {
+      videoRef.current.srcObject = mediaStreamRef.current;
+      videoRef.current.play().catch(console.error);
+    }
+  }, [phase]);
 
   const stopWebcam = () => {
     if (mediaStreamRef.current) {
