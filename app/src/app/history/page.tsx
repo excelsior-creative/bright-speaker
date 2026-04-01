@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Home, Clock, Eye, Mic, Trophy, ChevronLeft, Trash2 } from "lucide-react";
 import Logo from "@/components/Logo";
@@ -31,14 +31,9 @@ const promptEmojis: Record<number, string> = {
 };
 
 export default function HistoryPage() {
-  const [sessions, setSessions] = useState<SessionRecord[]>([]);
-  const [loaded, setLoaded] = useState(false);
+  const [sessions, setSessions] = useState<SessionRecord[]>(() => getSessions());
+  const loaded = true;
   const [expandedId, setExpandedId] = useState<string | null>(null);
-
-  useEffect(() => {
-    setSessions(getSessions());
-    setLoaded(true);
-  }, []);
 
   const clearHistory = () => {
     if (confirm("Clear all session history? This cannot be undone.")) {

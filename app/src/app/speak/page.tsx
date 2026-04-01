@@ -4,7 +4,6 @@ import { useState, useRef, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Mic, MicOff, Eye, EyeOff, Clock, AlertCircle, CheckCircle, Home, RotateCcw, Loader2 } from "lucide-react";
 import Link from "next/link";
-import Logo from "@/components/Logo";
 import { saveSession } from "@/lib/sessions";
 
 const prompts: Record<number, { title: string; description: string; emoji: string; tips: string[] }> = {
@@ -276,7 +275,7 @@ function SpeakContent() {
     });
     setPhase("results");
     stopWebcam();
-  }, [promptId, prompt.title, detectEyeContact]);
+  }, [promptId, prompt.title]);
 
   useEffect(() => {
     initFaceDetection();

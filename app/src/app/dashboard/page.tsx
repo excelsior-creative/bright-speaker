@@ -3,7 +3,7 @@
 import { Trophy, Flame, Star, Play, ChevronRight, User, History, Clock, Eye } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Logo from "@/components/Logo";
 import { getProgress, getSessions, getXpForNextLevel, type UserProgress, type SessionRecord } from "@/lib/sessions";
 
@@ -30,17 +30,10 @@ function getScoreColor(score: number) {
 export default function Dashboard() {
   const [selectedPrompt, setSelectedPrompt] = useState<number | null>(null);
   const [filter, setFilter] = useState<string>("All");
-  const [progress, setProgress] = useState<UserProgress | null>(null);
-  const [recentSessions, setRecentSessions] = useState<SessionRecord[]>([]);
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    const p = getProgress();
-    const sessions = getSessions();
-    setProgress(p);
-    setRecentSessions(sessions.slice(0, 3));
-    setLoaded(true);
-  }, []);
+  const [progress] = useState<UserProgress | null>(() => getProgress());
+  const [recentSessions] = useState<SessionRecord[]>(() => getSessions().slice(0, 3));
+  const loaded = true;
+  const [randomPromptId] = useState(() => Math.floor(Math.random() * 6) + 1);
 
   const filteredPrompts = filter === "All"
     ? prompts
@@ -147,7 +140,7 @@ export default function Dashboard() {
                 Jump into a random prompt and practice for 60 seconds.
               </p>
               <Link
-                href={`/speak?prompt=${Math.floor(Math.random() * 6) + 1}`}
+                href={`/speak?prompt=${randomPromptId}`}
                 className="flex items-center justify-center gap-2 bg-white text-warm-coral w-full py-3 rounded-xl font-extrabold btn-playful shadow-lg"
               >
                 <Play className="w-5 h-5 fill-warm-coral" />
