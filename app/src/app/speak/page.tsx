@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Mic, MicOff, Eye, EyeOff, Clock, AlertCircle, CheckCircle, Home, RotateCcw, Loader2 } from "lucide-react";
+import { Mic, MicOff, Eye, EyeOff, Clock, AlertCircle, CheckCircle, Home, RotateCcw, Loader2, Star } from "lucide-react";
 import Link from "next/link";
 import { saveSession } from "@/lib/sessions";
 
@@ -55,6 +55,9 @@ interface SessionResults {
   eyeContactPercent: number;
   wordsPerMinute: number;
   score: number;
+  xpEarned: number;
+  newBadges: string[];
+  levelUp: { previousLevel: number; newLevel: number } | null;
 }
 
 function LoadingState() {
@@ -263,10 +266,12 @@ function SpeakContent() {
             ? Math.round((currentHistory.filter(e => e).length / currentHistory.length) * 100) : 85;
           const score = calculateScore(totalFillers, eyePercent, wpm);
           const xpEarned = Math.round(score / 2);
+          let rewardSummary = { newBadges: [] as string[], levelUp: null as { previousLevel: number; newLevel: number } | null };
           try {
-            saveSession({ promptId, promptTitle: prompt.title, score, fillerCount: totalFillers, fillerWords: fillerAnalysis, duration, eyeContactPercent: eyePercent, wordsPerMinute: wpm, xpEarned, transcript: currentTranscript });
+            const savedSession = saveSession({ promptId, promptTitle: prompt.title, score, fillerCount: totalFillers, fillerWords: fillerAnalysis, duration, eyeContactPercent: eyePercent, wordsPerMinute: wpm, xpEarned, transcript: currentTranscript });
+            rewardSummary = { newBadges: savedSession.newBadges, levelUp: savedSession.levelUp };
           } catch (e) { console.error("Failed to save session:", e); }
-          setResults({ transcript: currentTranscript, fillerCount: totalFillers, fillerWords: fillerAnalysis, duration, eyeContactPercent: eyePercent, wordsPerMinute: wpm, score });
+          setResults({ transcript: currentTranscript, fillerCount: totalFillers, fillerWords: fillerAnalysis, duration, eyeContactPercent: eyePercent, wordsPerMinute: wpm, score, xpEarned, ...rewardSummary });
           return currentHistory;
         });
         return currentTranscript;
@@ -434,9 +439,34 @@ function SpeakContent() {
                     <div className="text-2xl font-bold text-foreground mb-2">{results.score} points</div>
                     <p className="text-foreground/60 text-lg">{message}</p>
                     <div className="mt-6 inline-flex items-center gap-2 bg-brand-gradient text-white px-6 py-2 rounded-full font-bold">
-                      +{Math.round(results.score / 2)} XP earned!
+                      +{results.xpEarned} XP earned!
                     </div>
                   </div>
+
+                  {results.levelUp && (
+                    <div className="bg-warm-gold-light rounded-2xl p-5 mb-6 text-center shadow-lg animate-bounce-in">
+                      <div className="text-3xl mb-2">🏆</div>
+                      <p className="text-sm font-bold uppercase tracking-wide text-warm-gold-dark/80">Level Up</p>
+                      <p className="text-2xl font-extrabold text-warm-gold-dark">
+                        Level {results.levelUp.previousLevel} → Level {results.levelUp.newLevel}
+                      </p>
+                      <p className="text-sm text-warm-gold-dark mt-1">You unlocked the next practice tier. Keep that streak alive!</p>
+                    </div>
+                  )}
+
+                  {results.newBadges.length > 0 && (
+                    <div className="card-warm p-6 mb-6">
+                      <h3 className="font-bold text-foreground mb-3">New badges unlocked!</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {results.newBadges.map((badge) => (
+                          <span key={badge} className="inline-flex items-center gap-2 bg-warm-gold-light text-warm-gold-dark px-4 py-2 rounded-full text-sm font-bold">
+                            <Star className="w-4 h-4 fill-warm-gold text-warm-gold" />
+                            {badge}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   <div className="grid grid-cols-3 gap-4 mb-8">
                     <div className="card-warm p-4 text-center">

@@ -13,6 +13,16 @@ export interface SessionRecord {
   transcript: string;
 }
 
+export interface LevelUpSummary {
+  previousLevel: number;
+  newLevel: number;
+}
+
+export interface SaveSessionResult extends SessionRecord {
+  newBadges: string[];
+  levelUp: LevelUpSummary | null;
+}
+
 export interface UserProgress {
   level: number;
   xp: number;
@@ -32,7 +42,7 @@ export function getSessions(): SessionRecord[] {
   } catch { return []; }
 }
 
-export function saveSession(session: Omit<SessionRecord, 'id' | 'date'>): SessionRecord {
+export function saveSession(session: Omit<SessionRecord, 'id' | 'date'>): SaveSessionResult {
   const record: SessionRecord = {
     ...session,
     id: crypto.randomUUID(),
@@ -41,12 +51,17 @@ export function saveSession(session: Omit<SessionRecord, 'id' | 'date'>): Sessio
   const sessions = getSessions();
   sessions.unshift(record);
   localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions.slice(0, 100)));
-  updateProgress(record);
-  return record;
+  const rewards = updateProgress(record);
+  return {
+    ...record,
+    ...rewards,
+  };
 }
 
-function updateProgress(session: SessionRecord): void {
+function updateProgress(session: SessionRecord): { newBadges: string[]; levelUp: LevelUpSummary | null } {
   const progress = getProgress();
+  const previousLevel = progress.level;
+  const newBadges: string[] = [];
   progress.totalSessions += 1;
   progress.xp += session.xpEarned;
 
@@ -71,29 +86,28 @@ function updateProgress(session: SessionRecord): void {
   progress.lastSessionDate = today;
 
   // Badges
-  if (!progress.badges.includes('First Speech') && progress.totalSessions >= 1) {
-    progress.badges.push('First Speech');
-  }
-  if (!progress.badges.includes('Streak 3') && progress.streak >= 3) {
-    progress.badges.push('Streak 3');
-  }
-  if (!progress.badges.includes('Streak 7') && progress.streak >= 7) {
-    progress.badges.push('Streak 7');
-  }
-  if (!progress.badges.includes('Level 2') && progress.level >= 2) {
-    progress.badges.push('Level 2');
-  }
-  if (!progress.badges.includes('10 Sessions') && progress.totalSessions >= 10) {
-    progress.badges.push('10 Sessions');
-  }
-  if (!progress.badges.includes('Low Filler') && session.fillerCount <= 2) {
-    progress.badges.push('Low Filler');
-  }
-  if (!progress.badges.includes('Eye Contact Pro') && session.eyeContactPercent >= 80) {
-    progress.badges.push('Eye Contact Pro');
-  }
+  const unlockBadge = (badge: string, condition: boolean) => {
+    if (!condition || progress.badges.includes(badge)) return;
+    progress.badges.push(badge);
+    newBadges.push(badge);
+  };
+
+  unlockBadge('First Speech', progress.totalSessions >= 1);
+  unlockBadge('Streak 3', progress.streak >= 3);
+  unlockBadge('Streak 7', progress.streak >= 7);
+  unlockBadge('Level 2', progress.level >= 2);
+  unlockBadge('10 Sessions', progress.totalSessions >= 10);
+  unlockBadge('Low Filler', session.fillerCount <= 2);
+  unlockBadge('Eye Contact Pro', session.eyeContactPercent >= 80);
 
   localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+
+  return {
+    newBadges,
+    levelUp: progress.level > previousLevel
+      ? { previousLevel, newLevel: progress.level }
+      : null,
+  };
 }
 
 export function getProgress(): UserProgress {
