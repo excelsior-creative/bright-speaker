@@ -15,11 +15,45 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bright Speaker — AI Communication Coach for Kids",
-  description: "Help kids become confident communicators with AI-powered speech coaching. Fun, gamified, and effective.",
+  metadataBase: new URL("https://brightspeaker.com"),
+  title: {
+    default: "Bright Speaker — Speaking practice for K-12 classrooms",
+    template: "%s · Bright Speaker",
+  },
+  description:
+    "Bright Speaker gives K-12 students the reps they need to become confident speakers — in a Chromebook browser, with student video that never leaves the device.",
+  applicationName: "Bright Speaker",
+  keywords: [
+    "K-12 public speaking",
+    "classroom speaking practice",
+    "filler word coaching",
+    "speech and debate practice",
+    "middle school ELA",
+    "oral presentation",
+    "Chromebook speaking tool",
+  ],
   icons: {
     icon: "/favicon.ico",
     apple: "/apple-touch-icon.png",
+  },
+  openGraph: {
+    type: "website",
+    siteName: "Bright Speaker",
+    title: "Bright Speaker — Speaking practice for K-12 classrooms",
+    description:
+      "Speaking reps for every student, without adding another video pile for teachers to grade.",
+    url: "https://brightspeaker.com",
+    images: [{ url: "/brand/mascot-logo.png", width: 512, height: 512, alt: "Bright Speaker" }],
+  },
+  twitter: {
+    card: "summary",
+    title: "Bright Speaker — Speaking practice for K-12 classrooms",
+    description:
+      "Speaking reps for every student, without adding another video pile for teachers to grade.",
+    images: ["/brand/mascot-logo.png"],
+  },
+  alternates: {
+    canonical: "/",
   },
 };
 
