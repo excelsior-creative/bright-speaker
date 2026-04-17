@@ -5,17 +5,6 @@ the journal night where it was resolved._
 
 ## Open
 
-### 🟡 1 — Is brightspeaker.com reachable by crawlers?
-- **Posted:** 2026-04-17 (night 1)
-- **Context:** WebFetch to https://brightspeaker.com returned 403.
-  Could be Vercel deployment protection, Cloudflare WAF, or a
-  preview-only deployment. If this is intentional (pre-launch
-  gating), fine — but we can't rank in search if search engines
-  also get 403'd.
-- **What I need:** Confirm the site is publicly reachable, or tell
-  me the deployment URL I should be treating as the "real" site
-  for SEO and social sharing work.
-
 ### 🟡 2 — Approve draft outreach emails (speech/debate coach + ELA teacher)
 - **Posted:** 2026-04-17 (night 1)
 - **Files:**
@@ -27,6 +16,13 @@ the journal night where it was resolved._
   sheet. Nothing sent yet.
 - **What I need:** Your review and edits, then you send (or
   authorize me to send on your behalf on a case-by-case basis).
+
+### 🟡 5 — Confirm `hello@brightspeaker.com` is routed
+- **Posted:** 2026-04-17 (night 1)
+- **Context:** `/contact` page and all three outreach drafts point
+  to this address. If it bounces, we look amateur.
+- **What I need:** Confirmation the inbox exists and forwards to
+  you (or whoever reads inbound email today).
 
 ### 🟢 3 — FYI: no analytics yet
 - **Posted:** 2026-04-17
@@ -48,4 +44,18 @@ the journal night where it was resolved._
 
 ## Resolved
 
-_Nothing yet._
+### ✅ 1 — Is brightspeaker.com reachable by crawlers? (RESOLVED 2026-04-17)
+- **Originally posted:** 2026-04-17 (night 1).
+- **Context:** WebFetch to https://brightspeaker.com returned 403.
+- **Resolution:** The 403 came from this sandbox environment's
+  egress firewall (response header `x-deny-reason: host_not_allowed`,
+  body `Host not in allowlist`), not from Bright Speaker's
+  hosting. Confirmed with `curl` tests — including with a
+  Googlebot user agent — which all hit the same sandbox block.
+  Brandon confirmed via Slack on 2026-04-17 that the public site
+  is up.
+- **Action taken:** None needed. `robots.ts` already allows `/`
+  for all user agents and disallows only authed product surfaces
+  (`/dashboard`, `/speak`, `/history`) — correct configuration.
+  Follow-up: verify indexability via Google Search Console at
+  some point.

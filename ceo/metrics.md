@@ -12,7 +12,7 @@ _Last checked: 2026-04-17 (night 1 — baselines not yet established)._
 | Top entry pages | unknown | — | — |
 | Lighthouse perf | unknown | — | Audit in next run |
 | Lighthouse SEO | unknown | — | Audit in next run |
-| Indexable | **unclear — 403 to bot** | WebFetch 2026-04-17 | Confirm with Brandon |
+| Indexable | likely yes | sandbox blocked egress, not site issue | Confirm via GSC |
 
 ## Product — usage
 

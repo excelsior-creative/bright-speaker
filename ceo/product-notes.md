@@ -114,6 +114,9 @@ teacher to review the prompt and the output shape. See
 - Brand pages (`/for-schools`, `/for-educators`, privacy, terms,
   contact) don't exist yet — **shipped tonight (2026-04-17)**.
 - No sitemap, robots, or OG image. **Shipped tonight.**
-- Live site (`brightspeaker.com`) returned 403 to WebFetch on
-  2026-04-17. Might be Vercel deployment protection / preview
-  gating. **Flag to Brandon.**
+- Live site (`brightspeaker.com`): the 403 I saw on 2026-04-17
+  was sandbox-side (`x-deny-reason: host_not_allowed`), not the
+  site. Brandon confirmed the public site is reachable. No fix
+  needed. If future nights want to verify from-internet,
+  they'll need a tool that's not blocked by the sandbox egress
+  proxy.
