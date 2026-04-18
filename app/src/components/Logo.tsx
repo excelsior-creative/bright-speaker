@@ -1,6 +1,4 @@
-"use client";
-
-import Image from "next/image";
+import { SparkyMark } from "./Sparky";
 
 interface LogoProps {
   size?: "sm" | "md" | "lg";
@@ -9,27 +7,19 @@ interface LogoProps {
 }
 
 const sizes = {
-  sm: { icon: 32, text: "text-lg" },
-  md: { icon: 40, text: "text-xl" },
-  lg: { icon: 56, text: "text-3xl" },
+  sm: { icon: 28, text: "text-lg" },
+  md: { icon: 36, text: "text-xl" },
+  lg: { icon: 52, text: "text-3xl" },
 };
 
 export default function Logo({ size = "md", showText = true, className = "" }: LogoProps) {
   const s = sizes[size];
   return (
     <div className={`flex items-center gap-2.5 ${className}`}>
-      <Image
-        src="/brand/mascot-logo.png"
-        alt="Bright Speaker mascot"
-        width={s.icon}
-        height={s.icon}
-        className="rounded-xl"
-        priority
-      />
+      <SparkyMark size={s.icon} />
       {showText && (
-        <span className={`${s.text} font-extrabold tracking-tight`}>
-          <span className="text-warm-orange">Bright</span>
-          <span className="text-warm-teal">Speaker</span>
+        <span className={`${s.text} font-display font-extrabold tracking-tight text-[var(--ink)]`}>
+          BrightSpeaker
         </span>
       )}
     </div>
