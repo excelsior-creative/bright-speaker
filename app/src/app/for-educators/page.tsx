@@ -43,10 +43,10 @@ export default function ForEducators() {
               Try a practice session
             </Link>
             <Link
-              href="/contact"
+              href="/pilot"
               className="text-foreground/70 hover:text-warm-teal-dark font-semibold px-4 py-4 transition"
             >
-              Talk to us about a classroom pilot →
+              See the 30-day classroom pilot →
             </Link>
           </div>
         </div>

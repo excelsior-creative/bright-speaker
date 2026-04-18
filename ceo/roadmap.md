@@ -11,7 +11,9 @@ _Tags: [P] product · [G] GTM · [T] trust/compliance._
   installed; needs to actually gate `/dashboard`, `/speak`, `/history`
   and sessions need to persist server-side. Requires PR.
 - **[G] Marketing site v1 for educators.** `/for-schools`,
-  `/for-educators`, public trust page, pricing "pilot-only" page.
+  `/for-educators`, `/privacy` trust page shipped night 1.
+  `/pilot` pricing/program page shipped night 2. Still outstanding:
+  `/for-speech-debate` coach-specific landing.
 - **[G] Outreach cadence v1.** 10 drafted emails / week to speech
   coaches and ELA teachers; Brandon sends.
 - **[T] Data flow documentation** in `compliance.md`.

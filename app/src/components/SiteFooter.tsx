@@ -19,6 +19,7 @@ export default function SiteFooter() {
           <ul className="space-y-2 text-foreground/60">
             <li><Link href="/for-schools" className="hover:text-warm-coral transition">Schools &amp; districts</Link></li>
             <li><Link href="/for-educators" className="hover:text-warm-coral transition">Teachers &amp; coaches</Link></li>
+            <li><Link href="/pilot" className="hover:text-warm-coral transition">Classroom pilots</Link></li>
             <li><Link href="/blog" className="hover:text-warm-coral transition">Classroom resources</Link></li>
           </ul>
         </div>

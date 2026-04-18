@@ -1,6 +1,6 @@
 # Product notes
 
-_What the product actually is today, as of 2026-04-17. Keep accurate._
+_What the product actually is today, as of 2026-04-18. Keep accurate._
 
 ## Stack
 
@@ -41,6 +41,16 @@ _What the product actually is today, as of 2026-04-17. Keep accurate._
   live eye-contact pill.
 - `/history` — full session list, expandable; clear-history button.
 - `/practice` — 301 redirect to `/speak` (via `next.config.ts`).
+- `/for-educators`, `/for-schools` — educator-facing landing pages
+  (shipped night 1).
+- `/pilot` — dedicated 30-day classroom pilot page (shipped
+  night 2). Linked from nav, footer, homepage CTA, and both
+  educator landing pages.
+- `/blog`, `/blog/reduce-filler-words-k12`,
+  `/blog/ten-minute-weekly-speaking-drill` — classroom resources
+  (2 posts as of night 2).
+- `/privacy`, `/terms`, `/contact` — plain-English stubs. No
+  formal compliance claims.
 
 ## Data model (current, client-side)
 
@@ -55,6 +65,23 @@ Keys in `localStorage`:
 
 **Implication**: Data is per-browser, not per-user. Clearing cookies
 or switching devices wipes progress. Not suitable for a pilot.
+
+## Filler-word detection (updated night 2)
+
+Canonical list lives in `src/lib/fillerWords.ts`, covered by
+`src/lib/fillerWords.test.ts` (8 tests).
+
+**Counted:**
+- Core disfluencies: `um, uh, er, erm, hmm, uhh, umm`.
+- Common verbal tics: `like`, `you know`.
+
+**Explicitly NOT counted** (tuned night 2 because they
+over-flagged normal kid speech):
+- `so`, `well`, `yeah`, `right`, `actually`, `literally`,
+  `basically`.
+
+Detection is case-insensitive with whole-word boundaries.
+Multi-word tics ("you know") are safe-escaped before regex.
 
 ## Scoring formula
 
@@ -103,17 +130,26 @@ teacher to review the prompt and the output shape. See
 
 - Home link in `app/page.tsx` uses the `Play` icon import that's
   mostly decorative; harmless but dead weight.
-- "Watch Demo" button does nothing.
-- Footer Privacy / Terms / Contact links are `href="#"`.
-- Silent failure on speech-API unsupported browsers.
-- Filler word list includes `"so"`, `"well"`, `"yeah"`, `"actually"`,
-  `"literally"` — over-flags normal speech for younger kids.
 - Face-API weights (~300KB+ per shard) are loaded on every
-  `/speak` visit.
-- `startWebcam` uses `alert()` on failure — not great UX for kids.
-- Brand pages (`/for-schools`, `/for-educators`, privacy, terms,
-  contact) don't exist yet — **shipped tonight (2026-04-17)**.
-- No sitemap, robots, or OG image. **Shipped tonight.**
+  `/speak` visit. Candidate for service-worker or preload
+  caching. Bumped to night 3+.
+- Eye contact detection is a face-box centering proxy, not gaze.
+  Honest-copy on the results screen is fine; don't market it
+  as "eye tracking."
 - Live site (`brightspeaker.com`) returned 403 to WebFetch on
-  2026-04-17. Might be Vercel deployment protection / preview
-  gating. **Flag to Brandon.**
+  2026-04-17 and again on 2026-04-18. Still open with Brandon.
+
+## Fixed on night 2 (2026-04-18)
+
+- `alert()` on webcam failure → inline kid-friendly error panel
+  with a retry button, three distinct error states
+  (permission / device / unknown).
+- Silent failure when Web Speech API is unsupported → detects
+  Safari/Firefox on load and renders an inline "Use Chrome"
+  notice before the student starts a session.
+- Over-flagged filler words (`so, well, yeah, right, actually,
+  literally, basically`) → removed from the detection list;
+  see Filler-word detection section above.
+- `/speak` a11y gaps → skip link to main, `aria-label` on the
+  countdown timer, `aria-live="polite"` on the live filler
+  counter, `aria-hidden` on decorative icons.

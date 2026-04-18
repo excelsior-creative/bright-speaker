@@ -181,12 +181,20 @@ export default function Home() {
               Run a 60-second practice session in your browser. No sign-up
               needed to try it.
             </p>
-            <Link
-              href="/dashboard"
-              className="inline-block bg-white text-warm-coral px-8 py-4 rounded-2xl font-extrabold text-lg btn-playful shadow-lg"
-            >
-              Try a practice session
-            </Link>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                href="/dashboard"
+                className="inline-block bg-white text-warm-coral px-8 py-4 rounded-2xl font-extrabold text-lg btn-playful shadow-lg"
+              >
+                Try a practice session
+              </Link>
+              <Link
+                href="/pilot"
+                className="inline-block text-white/90 hover:text-white font-semibold px-4 py-4 underline underline-offset-4 decoration-white/40 hover:decoration-white transition"
+              >
+                Run a free classroom pilot →
+              </Link>
+            </div>
           </div>
         </div>
       </main>

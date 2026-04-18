@@ -11,6 +11,15 @@ export const metadata: Metadata = {
 
 const posts = [
   {
+    slug: "ten-minute-weekly-speaking-drill",
+    title: "A 10-minute weekly speaking drill for ELA classrooms",
+    excerpt:
+      "A printable, Monday-morning-friendly drill that fits into a full ELA block — five minutes of practice, five minutes of reflection, and a progress line that actually moves.",
+    date: "2026-04-18",
+    readMinutes: 7,
+    audience: "ELA teachers, grades 4–8",
+  },
+  {
     slug: "reduce-filler-words-k12",
     title: "How to help K-12 students actually reduce filler words",
     excerpt:

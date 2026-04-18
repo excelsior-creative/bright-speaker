@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Mic, MicOff, Eye, EyeOff, Clock, AlertCircle, CheckCircle, Home, RotateCcw, Loader2, Star } from "lucide-react";
 import Link from "next/link";
 import { saveSession } from "@/lib/sessions";
+import { analyzeTranscript as analyzeFillers, countFillers } from "@/lib/fillerWords";
 
 const prompts: Record<number, { title: string; description: string; emoji: string; tips: string[] }> = {
   1: {
@@ -45,8 +46,6 @@ const prompts: Record<number, { title: string; description: string; emoji: strin
   },
 };
 
-const FILLER_WORDS = ["um", "uh", "like", "you know", "basically", "actually", "literally", "so", "well", "yeah", "right"];
-
 interface SessionResults {
   transcript: string;
   fillerCount: number;
@@ -86,6 +85,8 @@ function SpeakContent() {
   const [eyeContactHistory, setEyeContactHistory] = useState<boolean[]>([]);
   const [results, setResults] = useState<SessionResults | null>(null);
   const [faceApiReady, setFaceApiReady] = useState(false);
+  const [mediaError, setMediaError] = useState<null | "permission" | "device" | "unknown">(null);
+  const [speechUnsupported, setSpeechUnsupported] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
@@ -134,13 +135,23 @@ function SpeakContent() {
     }
   }, []);
 
-  const startWebcam = async () => {
+  const startWebcam = async (): Promise<boolean> => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       mediaStreamRef.current = stream;
+      setMediaError(null);
+      return true;
     } catch (err) {
       console.error("Error accessing webcam:", err);
-      alert("Please allow camera and microphone access to use Bright Speaker!");
+      const name = (err as { name?: string })?.name ?? "";
+      if (name === "NotAllowedError" || name === "SecurityError") {
+        setMediaError("permission");
+      } else if (name === "NotFoundError" || name === "OverconstrainedError") {
+        setMediaError("device");
+      } else {
+        setMediaError("unknown");
+      }
+      return false;
     }
   };
 
@@ -183,11 +194,7 @@ function SpeakContent() {
         if (finalTranscript) {
           setTranscript(prev => {
             const updated = prev + finalTranscript;
-            const fillerMatches = FILLER_WORDS.reduce((count, filler) => {
-              const regex = new RegExp(`\\b${filler}\\b`, "gi");
-              return count + (updated.match(regex)?.length || 0);
-            }, 0);
-            setLiveFillerCount(fillerMatches);
+            setLiveFillerCount(countFillers(updated));
             return updated;
           });
         }
@@ -203,18 +210,6 @@ function SpeakContent() {
     }
   };
 
-  const analyzeTranscript = (text: string): { word: string; count: number }[] => {
-    const lowerText = text.toLowerCase();
-    const results: { word: string; count: number }[] = [];
-    FILLER_WORDS.forEach(filler => {
-      const regex = new RegExp(`\\b${filler}\\b`, "gi");
-      const matches = lowerText.match(regex);
-      if (matches && matches.length > 0) {
-        results.push({ word: filler, count: matches.length });
-      }
-    });
-    return results.sort((a, b) => b.count - a.count);
-  };
 
   const calculateScore = (fillerCount: number, eyePercent: number, wpm: number) => {
     let score = 100;
@@ -227,7 +222,8 @@ function SpeakContent() {
   };
 
   const startRecording = async () => {
-    await startWebcam();
+    const ok = await startWebcam();
+    if (!ok) return;
     initSpeechRecognition();
     setPhase("recording");
     setIsRecording(true);
@@ -258,7 +254,7 @@ function SpeakContent() {
       const duration = 60 - prev;
       setTranscript(currentTranscript => {
         setEyeContactHistory(currentHistory => {
-          const fillerAnalysis = analyzeTranscript(currentTranscript);
+          const fillerAnalysis = analyzeFillers(currentTranscript);
           const totalFillers = fillerAnalysis.reduce((sum, f) => sum + f.count, 0);
           const wordCount = currentTranscript.split(/\s+/).filter(w => w.length > 0).length;
           const wpm = duration > 0 ? Math.round((wordCount / duration) * 60) : 0;
@@ -284,6 +280,11 @@ function SpeakContent() {
 
   useEffect(() => {
     initFaceDetection();
+    if (typeof window !== "undefined") {
+      const hasSpeech =
+        "SpeechRecognition" in window || "webkitSpeechRecognition" in window;
+      setSpeechUnsupported(!hasSpeech);
+    }
     return () => {
       stopWebcam();
       recognitionRef.current?.stop();
@@ -302,53 +303,104 @@ function SpeakContent() {
 
   return (
     <div className="min-h-screen bg-warm-gradient">
+      <a
+        href="#speak-main"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-white focus:text-warm-coral focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:outline-2 focus:outline-warm-coral"
+      >
+        Skip to practice session
+      </a>
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 max-w-5xl mx-auto">
         <Link href="/dashboard" className="flex items-center gap-2 text-foreground/50 hover:text-warm-coral transition font-semibold">
-          <Home className="w-5 h-5" />
+          <Home className="w-5 h-5" aria-hidden="true" />
           <span>Back to Dashboard</span>
         </Link>
 
         {phase === "recording" && (
-          <div className={`flex items-center gap-2 px-4 py-2 rounded-full font-extrabold text-lg ${timeLeft <= 10 ? "bg-warm-coral-light text-warm-coral" : "bg-warm-teal-light text-warm-teal-dark"}`}>
-            <Clock className="w-5 h-5" />
-            {timeLeft}s
+          <div
+            role="timer"
+            aria-live="off"
+            aria-label={`${timeLeft} seconds remaining`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full font-extrabold text-lg ${timeLeft <= 10 ? "bg-warm-coral-light text-warm-coral" : "bg-warm-teal-light text-warm-teal-dark"}`}
+          >
+            <Clock className="w-5 h-5" aria-hidden="true" />
+            <span>{timeLeft}s</span>
           </div>
         )}
       </div>
 
-      <main className="max-w-5xl mx-auto px-6 py-8">
+      <main id="speak-main" className="max-w-5xl mx-auto px-6 py-8">
         {/* PREP PHASE */}
         {phase === "prep" && (
           <div className="max-w-2xl mx-auto text-center">
-            <span className="text-6xl mb-6 block animate-bounce-in">{prompt.emoji}</span>
+            <span className="text-6xl mb-6 block animate-bounce-in" aria-hidden="true">{prompt.emoji}</span>
             <h1 className="text-3xl font-extrabold text-foreground mb-4">{prompt.title}</h1>
             <p className="text-xl text-foreground/60 mb-8">{prompt.description}</p>
 
             <div className="card-warm p-6 mb-8 text-left">
-              <h3 className="font-bold text-foreground mb-3">💡 Tips for this prompt:</h3>
+              <h2 className="font-bold text-foreground mb-3">Tips for this prompt</h2>
               <ul className="space-y-2">
                 {prompt.tips.map((tip, i) => (
                   <li key={i} className="flex items-start gap-2 text-foreground/60">
-                    <CheckCircle className="w-5 h-5 text-warm-teal flex-shrink-0 mt-0.5" />
-                    {tip}
+                    <CheckCircle className="w-5 h-5 text-warm-teal flex-shrink-0 mt-0.5" aria-hidden="true" />
+                    <span>{tip}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
             <div className="bg-warm-gold-light rounded-xl p-4 mb-8 flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-warm-gold-dark flex-shrink-0 mt-0.5" />
+              <AlertCircle className="w-5 h-5 text-warm-gold-dark flex-shrink-0 mt-0.5" aria-hidden="true" />
               <p className="text-sm text-warm-gold-dark text-left">
-                You&apos;ll have <strong>60 seconds</strong> to speak. Try to look at the camera and avoid filler words like &quot;um&quot; and &quot;like&quot;.
+                You&apos;ll have <strong>60 seconds</strong> to speak. Try to look at the camera and pause instead of saying &quot;um&quot; or &quot;like&quot;.
               </p>
             </div>
+
+            {mediaError && (
+              <div role="alert" className="bg-warm-coral-light border-2 border-warm-coral rounded-xl p-5 mb-6 text-left">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-warm-coral flex-shrink-0 mt-0.5" aria-hidden="true" />
+                  <div className="flex-1">
+                    <h3 className="font-bold text-warm-coral-dark mb-1">
+                      {mediaError === "permission" && "We need camera and microphone access"}
+                      {mediaError === "device" && "We couldn't find a camera or microphone"}
+                      {mediaError === "unknown" && "Something went wrong starting your camera"}
+                    </h3>
+                    <p className="text-sm text-warm-coral-dark/80 mb-3">
+                      {mediaError === "permission" && "Click the camera icon in your browser's address bar, choose Allow, then try again."}
+                      {mediaError === "device" && "Check that a camera and microphone are connected. If you're on a school Chromebook, ask your teacher if camera use is turned on."}
+                      {mediaError === "unknown" && "It might help to refresh the page and try again."}
+                    </p>
+                    <button
+                      onClick={startRecording}
+                      className="bg-warm-coral text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-warm-coral-dark transition"
+                    >
+                      Try again
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {speechUnsupported && (
+              <div role="status" className="bg-warm-gold-light border-2 border-warm-gold rounded-xl p-5 mb-6 text-left">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-warm-gold-dark flex-shrink-0 mt-0.5" aria-hidden="true" />
+                  <div>
+                    <h3 className="font-bold text-warm-gold-dark mb-1">Use Chrome for the best experience</h3>
+                    <p className="text-sm text-warm-gold-dark/80">
+                      Live transcript and filler-word detection work in Chrome and Edge. You can still record your session, but we won&apos;t be able to score your words until you switch browsers. Most school Chromebooks use Chrome by default.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <button
               onClick={startRecording}
               className="flex items-center justify-center gap-3 bg-warm-coral text-white px-10 py-5 rounded-2xl font-extrabold text-xl btn-playful shadow-xl shadow-warm-coral/30 mx-auto"
             >
-              <Mic className="w-6 h-6" />
+              <Mic className="w-6 h-6" aria-hidden="true" />
               Start Speaking
             </button>
           </div>
@@ -374,26 +426,31 @@ function SpeakContent() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-3" aria-label="Live session metrics">
                 <div className="card-warm p-3 text-center">
-                  <div className={`text-2xl font-extrabold ${liveFillerCount > 5 ? "text-warm-coral" : liveFillerCount > 2 ? "text-warm-gold" : "text-warm-teal"}`}>
+                  <div
+                    className={`text-2xl font-extrabold ${liveFillerCount > 5 ? "text-warm-coral" : liveFillerCount > 2 ? "text-warm-gold" : "text-warm-teal"}`}
+                    aria-live="polite"
+                    aria-atomic="true"
+                  >
+                    <span className="sr-only">Filler words: </span>
                     {liveFillerCount}
                   </div>
-                  <div className="text-xs text-foreground/40 font-semibold mt-0.5">Filler words</div>
+                  <div className="text-xs text-foreground/40 font-semibold mt-0.5" aria-hidden="true">Filler words</div>
                 </div>
                 <div className="card-warm p-3 text-center">
-                  <div className="text-2xl font-extrabold text-warm-coral">
+                  <div className="text-2xl font-extrabold text-warm-coral" aria-hidden="true">
                     {transcript.split(/\s+/).filter(w => w.length > 0).length}
                   </div>
-                  <div className="text-xs text-foreground/40 font-semibold mt-0.5">Words spoken</div>
+                  <div className="text-xs text-foreground/40 font-semibold mt-0.5" aria-hidden="true">Words spoken</div>
                 </div>
                 <div className="card-warm p-3 text-center">
-                  <div className={`text-2xl font-extrabold ${eyeContact ? "text-warm-teal" : "text-warm-gold"}`}>
+                  <div className={`text-2xl font-extrabold ${eyeContact ? "text-warm-teal" : "text-warm-gold"}`} aria-hidden="true">
                     {eyeContactHistory.length > 0
                       ? Math.round((eyeContactHistory.filter(Boolean).length / eyeContactHistory.length) * 100)
                       : 100}%
                   </div>
-                  <div className="text-xs text-foreground/40 font-semibold mt-0.5">Eye contact</div>
+                  <div className="text-xs text-foreground/40 font-semibold mt-0.5" aria-hidden="true">Eye contact</div>
                 </div>
               </div>
             </div>

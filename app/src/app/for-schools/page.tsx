@@ -37,10 +37,10 @@ export default function ForSchools() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
             <Link
-              href="/contact"
+              href="/pilot"
               className="bg-warm-coral text-white px-8 py-4 rounded-2xl font-extrabold text-lg btn-playful shadow-xl shadow-warm-coral/30"
             >
-              Start a pilot conversation
+              See the 30-day pilot
             </Link>
             <Link
               href="/privacy"
