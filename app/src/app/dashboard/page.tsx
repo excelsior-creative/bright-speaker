@@ -234,7 +234,7 @@ export default function Dashboard() {
                       </span>
                       <span className="flex items-center gap-1">
                         <Eye className="w-3 h-3" />
-                        {session.eyeContactPercent}% eye contact
+                        {session.eyeContactPercent >= 0 ? `${session.eyeContactPercent}% eye contact` : "eye contact —"}
                       </span>
                       <span>{session.wordsPerMinute} WPM</span>
                     </div>
