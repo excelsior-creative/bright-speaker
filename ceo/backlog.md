@@ -4,25 +4,15 @@ _Unscheduled. Tag with area. Groom weekly; promote to roadmap when ready._
 
 ## Product — practice flow
 
-- [P][a11y] Add `aria-live` region to live filler count and timer so
-  screen readers announce updates.
 - [P][a11y] Keyboard-accessible "End Session" (focusable, Enter to
-  activate; already a button, verify focus styles).
-- [P][ux] "Watch Demo" button on landing currently does nothing. Either
-  wire to a short Loom or remove until we have one.
-- [P][bug] `startWebcam` error path just `alert()`s. Replace with a
-  friendly in-page state that explains how to grant permission,
-  with a retry button.
-- [P][bug] If speech recognition isn't supported (Safari, Firefox
-  historically), the user sees a silent failure. Detect and show a
-  "please use Chrome on your school Chromebook" message.
-- [P][bug] Filler word "so" and "well" are over-flagged; they're often
-  legitimate speech. Tune the detector.
-- [P][bug] `liveFillerCount` counts `"actually"` and `"literally"` —
-  age-inappropriate flagging for younger students. Consider a grade-
-  band-tuned filler list.
+  activate; already a button, verify focus styles). Baseline a11y
+  (skip link, aria-live, aria-hidden icons) shipped night 2.
+- [P][a11y] Focus management across phase transitions
+  (prep → recording → results). A screen-reader user should land
+  on the new heading each phase.
 - [P][perf] `tinyFaceDetector` weights are loaded on every `/speak`
   visit. Cache via service worker or preload on dashboard.
+  Requires testing on a cold cache.
 - [P][ux] Session length fixed at 60s; add 30s and 90s options per PRD.
 - [P][ux] Prompt library is 6 prompts. Expand to 30+ with grade-band
   tagging (K–2, 3–5, 6–8, 9–12).
@@ -44,23 +34,25 @@ _Unscheduled. Tag with area. Groom weekly; promote to roadmap when ready._
 
 ## GTM / marketing
 
-- [G][site] Add a pricing page (pilot-only framing for now).
-- [G][site] Add a "Trust & privacy" page explaining data flows in
-  plain language.
 - [G][site] Add a case-study template page so we can ship a case
   study the minute we have one.
-- [G][site] OG image + Twitter card for social shares.
-- [G][seo] Robots + sitemap + indexable. Currently 403'd from our
-  own WebFetch bot — confirm with Brandon the site is publicly
-  reachable.
-- [G][content] Blog posts:
-  - How to help middle-schoolers reduce filler words (first post).
-  - A 10-minute weekly speaking drill for ELA classrooms.
+- [G][site] Design a real OG image (currently metadata set; need
+  actual image assets at `/og/*`).
+- [G][site] `/for-speech-debate` coach-specific landing page
+  (expand the Night-1 coach outreach draft into a page).
+- [G][seo] Confirm brightspeaker.com is indexable — still 403 as
+  of night 2. Open ask to Brandon.
+- [G][content] Blog posts — tracked:
+  - ✅ How to help middle-schoolers reduce filler words (night 1).
+  - ✅ A 10-minute weekly speaking drill for ELA classrooms (night 2).
   - Speech & debate practice on a budget.
   - What research actually says about practice-based speaking
     improvement in K-12.
+  - "Eye contact" for middle schoolers: what we're actually
+    teaching when we teach it.
 - [G][outreach] Enrich the ICP list. Start with NSDA coach directory
-  and state speech association rosters.
+  and state speech association rosters. **Deferred two nights —
+  pick up first on the next night with research tool access.**
 - [G][outreach] Draft a summer-pilot pitch for fall launches.
 
 ## Trust / compliance

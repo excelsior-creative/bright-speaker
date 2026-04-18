@@ -2,7 +2,7 @@
 
 _What we know and what we wish we knew._
 
-_Last checked: 2026-04-17 (night 1 — baselines not yet established)._
+_Last checked: 2026-04-18 (night 2)._
 
 ## Traffic / site
 
@@ -37,12 +37,13 @@ Brandon approval (sub-processor).
 
 | Stage | Count | Source |
 |---|---|---|
-| Cold emails drafted | 2 (tonight) | `outreach-drafts/` |
+| Cold emails drafted | 3 (2 teacher/coach, 1 C&I director) | `outreach-drafts/` |
 | Cold emails sent | 0 | — |
 | Replies | 0 | — |
 | Demo booked | 0 | — |
 | Pilot agreements signed | 0 | — |
 | Pilot schools live | 0 | — |
+| Pilot-program page visits | unknown | `/pilot` live as of night 2 |
 
 ## Revenue
 

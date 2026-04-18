@@ -14,6 +14,9 @@ export default function SiteNav() {
         <Link href="/for-schools" className="hidden sm:inline hover:text-warm-coral transition px-2 py-1">
           Schools
         </Link>
+        <Link href="/pilot" className="hidden md:inline hover:text-warm-coral transition px-2 py-1">
+          Pilots
+        </Link>
         <Link href="/blog" className="hidden md:inline hover:text-warm-coral transition px-2 py-1">
           Resources
         </Link>

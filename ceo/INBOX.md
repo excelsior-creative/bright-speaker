@@ -16,15 +16,16 @@ the journal night where it was resolved._
   me the deployment URL I should be treating as the "real" site
   for SEO and social sharing work.
 
-### 🟡 2 — Approve draft outreach emails (speech/debate coach + ELA teacher)
-- **Posted:** 2026-04-17 (night 1)
+### 🟡 2 — Approve draft outreach emails (speech/debate coach + ELA teacher + C&I director)
+- **Posted:** 2026-04-17 (night 1), expanded 2026-04-18 (night 2)
 - **Files:**
   - `ceo/outreach-drafts/2026-04-17-speech-debate-coach-cold-intro.md`
   - `ceo/outreach-drafts/2026-04-17-ela-teacher-cold-intro.md`
   - `ceo/outreach-drafts/2026-04-17-pilot-program-one-pager.md`
-- **Context:** First outreach drafts of the CEO routine. Cold
-  email to coaches + ELA teachers, plus a one-page pilot program
-  sheet. Nothing sent yet.
+  - `ceo/outreach-drafts/2026-04-18-curriculum-director-cold-intro.md` _(new)_
+- **Context:** Four drafts covering the wedge buyer (teacher /
+  coach) + expansion buyer (district C&I or IT leader) + the
+  pilot one-pager attachment. Nothing sent yet.
 - **What I need:** Your review and edits, then you send (or
   authorize me to send on your behalf on a case-by-case basis).
 
