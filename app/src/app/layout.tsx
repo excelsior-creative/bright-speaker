@@ -1,36 +1,24 @@
 import type { Metadata } from "next";
-import { Nunito, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ClerkProvider, SignInButton, SignUpButton, Show, UserButton } from "@clerk/nextjs";
-
-const nunito = Nunito({
-  variable: "--font-nunito",
-  subsets: ["latin"],
-  weight: ["400", "600", "700", "800", "900"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { ClerkProvider } from "@clerk/nextjs";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://brightspeaker.com"),
   title: {
-    default: "Bright Speaker — Speaking practice for K-12 classrooms",
-    template: "%s · Bright Speaker",
+    default: "BrightSpeaker — the AI speech coach built for every kid",
+    template: "%s · BrightSpeaker",
   },
   description:
-    "Bright Speaker gives K-12 students the reps they need to become confident speakers — in a Chromebook browser, with student video that never leaves the device.",
-  applicationName: "Bright Speaker",
+    "BrightSpeaker is the AI speech coach built for K-5 classrooms. Real-time coaching on eye contact, pacing, posture, and volume — on the kid's device. No video ever leaves the classroom.",
+  applicationName: "BrightSpeaker",
   keywords: [
-    "K-12 public speaking",
-    "classroom speaking practice",
-    "filler word coaching",
-    "speech and debate practice",
-    "middle school ELA",
-    "oral presentation",
-    "Chromebook speaking tool",
+    "K-5 public speaking",
+    "elementary speaking practice",
+    "AI speech coach",
+    "Common Core SL standards",
+    "on-device speech AI",
+    "MediaPipe classroom",
+    "COPPA FERPA speaking tool",
   ],
   icons: {
     icon: "/favicon.ico",
@@ -38,18 +26,18 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    siteName: "Bright Speaker",
-    title: "Bright Speaker — Speaking practice for K-12 classrooms",
+    siteName: "BrightSpeaker",
+    title: "BrightSpeaker — the AI speech coach built for every kid",
     description:
-      "Speaking reps for every student, without adding another video pile for teachers to grade.",
+      "Real-time, on-device speech coaching for K-5 classrooms. COPPA/FERPA friendly by design.",
     url: "https://brightspeaker.com",
-    images: [{ url: "/brand/mascot-logo.png", width: 512, height: 512, alt: "Bright Speaker" }],
+    images: [{ url: "/brand/mascot-logo.png", width: 512, height: 512, alt: "BrightSpeaker" }],
   },
   twitter: {
     card: "summary",
-    title: "Bright Speaker — Speaking practice for K-12 classrooms",
+    title: "BrightSpeaker — the AI speech coach built for every kid",
     description:
-      "Speaking reps for every student, without adding another video pile for teachers to grade.",
+      "Real-time, on-device speech coaching for K-5 classrooms.",
     images: ["/brand/mascot-logo.png"],
   },
   alternates: {
@@ -64,27 +52,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${nunito.variable} ${geistMono.variable} antialiased`}>
-        <ClerkProvider>
-          <header className="flex justify-end items-center px-6 py-3 gap-3 h-14 border-b border-border-warm bg-surface/80 backdrop-blur-sm">
-            <Show when="signed-out">
-              <SignInButton>
-                <button className="text-sm font-semibold text-foreground/70 hover:text-warm-coral transition">
-                  Sign In
-                </button>
-              </SignInButton>
-              <SignUpButton>
-                <button className="text-sm font-bold text-white bg-warm-coral hover:bg-warm-coral-dark px-4 py-1.5 rounded-full transition btn-playful">
-                  Sign Up Free
-                </button>
-              </SignUpButton>
-            </Show>
-            <Show when="signed-in">
-              <UserButton />
-            </Show>
-          </header>
-          {children}
-        </ClerkProvider>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Nunito:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="antialiased">
+        <ClerkProvider>{children}</ClerkProvider>
       </body>
     </html>
   );

@@ -1,29 +1,35 @@
 import Link from "next/link";
 import Logo from "./Logo";
+import { SignInButton, Show, UserButton } from "@clerk/nextjs";
 
 export default function SiteNav() {
   return (
-    <nav className="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
-      <Link href="/" aria-label="Bright Speaker home">
-        <Logo size="md" />
-      </Link>
-      <div className="flex items-center gap-2 sm:gap-4 text-sm font-semibold text-foreground/60">
-        <Link href="/for-educators" className="hidden sm:inline hover:text-warm-coral transition px-2 py-1">
-          Teachers
+    <div className="max-w-[1280px] mx-auto px-6 md:px-10">
+      <nav className="flex items-center justify-between py-5">
+        <Link href="/" aria-label="BrightSpeaker home">
+          <Logo size="md" />
         </Link>
-        <Link href="/for-schools" className="hidden sm:inline hover:text-warm-coral transition px-2 py-1">
-          Schools
-        </Link>
-        <Link href="/blog" className="hidden md:inline hover:text-warm-coral transition px-2 py-1">
-          Resources
-        </Link>
-        <Link
-          href="/dashboard"
-          className="bg-warm-coral text-white px-5 py-2 rounded-full font-bold hover:bg-warm-coral-dark transition btn-playful shadow-lg shadow-warm-coral/25"
-        >
-          Try it
-        </Link>
-      </div>
-    </nav>
+
+        <div className="hidden lg:flex items-center gap-7 text-[15px] font-semibold text-[var(--ink-2)] whitespace-nowrap">
+          <Link href="/#how" className="hover:text-[var(--ink)] transition">How it works</Link>
+          <Link href="/#features" className="hover:text-[var(--ink)] transition">Features</Link>
+          <Link href="/#standards" className="hover:text-[var(--ink)] transition">Standards</Link>
+          <Link href="/#privacy" className="hover:text-[var(--ink)] transition">Privacy</Link>
+          <Link href="/#pricing" className="hover:text-[var(--ink)] transition">Pricing</Link>
+        </div>
+
+        <div className="flex items-center gap-2.5">
+          <Show when="signed-out">
+            <SignInButton>
+              <button className="btn btn-ghost btn-sm hidden sm:inline-flex">Sign in</button>
+            </SignInButton>
+          </Show>
+          <Show when="signed-in">
+            <UserButton />
+          </Show>
+          <Link href="/contact" className="btn btn-primary btn-sm">Book a demo</Link>
+        </div>
+      </nav>
+    </div>
   );
 }
