@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Home, Clock, Eye, Mic, Trophy, ChevronLeft, Trash2 } from "lucide-react";
+import { Home, Clock, Eye, Mic, Trophy, ChevronLeft, Trash2, Loader2 } from "lucide-react";
 import Logo from "@/components/Logo";
-import { getSessions, type SessionRecord } from "@/lib/sessions";
+import { clearSessions, fetchSessions, type SessionRecord } from "@/lib/sessions";
 
 function formatDate(isoString: string) {
   const d = new Date(isoString);
@@ -31,14 +31,37 @@ const promptEmojis: Record<number, string> = {
 };
 
 export default function HistoryPage() {
-  const [sessions, setSessions] = useState<SessionRecord[]>(() => getSessions());
-  const loaded = true;
+  const [sessions, setSessions] = useState<SessionRecord[]>([]);
+  const [loaded, setLoaded] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [clearing, setClearing] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  const clearHistory = () => {
-    if (confirm("Clear all session history? This cannot be undone.")) {
-      localStorage.removeItem("bright_speaker_sessions");
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const s = await fetchSessions();
+        if (!cancelled) setSessions(s);
+      } catch (err) {
+        if (!cancelled) setLoadError(err instanceof Error ? err.message : "Failed to load sessions");
+      } finally {
+        if (!cancelled) setLoaded(true);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  const clearHistory = async () => {
+    if (!confirm("Clear all session history? This cannot be undone.")) return;
+    setClearing(true);
+    try {
+      await clearSessions();
       setSessions([]);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to clear history");
+    } finally {
+      setClearing(false);
     }
   };
 
@@ -71,13 +94,33 @@ export default function HistoryPage() {
           {loaded && sessions.length > 0 && (
             <button
               onClick={clearHistory}
-              className="flex items-center gap-2 text-warm-coral hover:text-warm-coral-dark text-sm font-bold transition"
+              disabled={clearing}
+              className="flex items-center gap-2 text-warm-coral hover:text-warm-coral-dark text-sm font-bold transition disabled:opacity-50"
             >
-              <Trash2 className="w-4 h-4" />
+              {clearing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
               Clear History
             </button>
           )}
         </div>
+
+        {!loaded && (
+          <div
+            role="status"
+            aria-live="polite"
+            className="flex items-center gap-2 text-foreground/50 text-sm mb-4"
+          >
+            <Loader2 className="w-4 h-4 animate-spin" />
+            Loading sessions…
+          </div>
+        )}
+        {loadError && (
+          <div
+            role="alert"
+            className="mb-4 p-3 rounded-xl bg-warm-coral-light text-warm-coral-dark text-sm font-semibold"
+          >
+            Couldn&apos;t load sessions: {loadError}
+          </div>
+        )}
 
         {/* Empty state */}
         {loaded && sessions.length === 0 && (

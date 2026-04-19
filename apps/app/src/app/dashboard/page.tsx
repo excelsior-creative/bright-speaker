@@ -1,11 +1,18 @@
 "use client";
 
-import { Trophy, Flame, Star, Play, ChevronRight, User, History, Clock, Eye } from "lucide-react";
+import { Trophy, Flame, Star, Play, ChevronRight, History, Clock, Eye, Loader2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { UserButton } from "@clerk/nextjs";
 import Logo from "@/components/Logo";
-import { getProgress, getSessions, getXpForNextLevel, type UserProgress, type SessionRecord } from "@/lib/sessions";
+import {
+  fetchProgress,
+  fetchSessions,
+  getXpForNextLevel,
+  type UserProgress,
+  type SessionRecord,
+} from "@/lib/sessions";
 
 const prompts = [
   { id: 1, title: "Tell a Funny Story", difficulty: "Easy", xp: 25, emoji: "😄" },
@@ -30,10 +37,29 @@ function getScoreColor(score: number) {
 export default function Dashboard() {
   const [selectedPrompt, setSelectedPrompt] = useState<number | null>(null);
   const [filter, setFilter] = useState<string>("All");
-  const [progress] = useState<UserProgress | null>(() => getProgress());
-  const [recentSessions] = useState<SessionRecord[]>(() => getSessions().slice(0, 3));
-  const loaded = true;
+  const [progress, setProgress] = useState<UserProgress | null>(null);
+  const [recentSessions, setRecentSessions] = useState<SessionRecord[]>([]);
+  const [loaded, setLoaded] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [randomPromptId] = useState(() => Math.floor(Math.random() * 6) + 1);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const [p, s] = await Promise.all([fetchProgress(), fetchSessions()]);
+        if (cancelled) return;
+        setProgress(p);
+        setRecentSessions(s.slice(0, 3));
+      } catch (err) {
+        if (cancelled) return;
+        setLoadError(err instanceof Error ? err.message : "Failed to load dashboard");
+      } finally {
+        if (!cancelled) setLoaded(true);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   const filteredPrompts = filter === "All"
     ? prompts
@@ -66,13 +92,31 @@ export default function Dashboard() {
             </div>
           )}
 
-          <div className="w-9 h-9 bg-warm-coral rounded-full flex items-center justify-center shadow-md">
-            <User className="w-5 h-5 text-white" />
-          </div>
+          <UserButton
+            appearance={{ elements: { userButtonAvatarBox: "w-9 h-9 shadow-md" } }}
+          />
         </div>
       </nav>
 
       <main className="max-w-7xl mx-auto px-6 py-8">
+        {!loaded && (
+          <div
+            role="status"
+            aria-live="polite"
+            className="flex items-center gap-2 text-foreground/50 text-sm mb-4"
+          >
+            <Loader2 className="w-4 h-4 animate-spin" />
+            Loading your progress…
+          </div>
+        )}
+        {loadError && (
+          <div
+            role="alert"
+            className="mb-4 p-3 rounded-xl bg-warm-coral-light text-warm-coral-dark text-sm font-semibold"
+          >
+            Couldn&apos;t load your data: {loadError}
+          </div>
+        )}
         {/* Welcome + Level */}
         <div className="grid lg:grid-cols-3 gap-6 mb-8">
           <div className="lg:col-span-2 card-warm p-8">
