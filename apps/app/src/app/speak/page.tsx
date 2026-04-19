@@ -87,6 +87,7 @@ function SpeakContent() {
   const [results, setResults] = useState<SessionResults | null>(null);
   const [faceApiReady, setFaceApiReady] = useState(false);
   const [mediaError, setMediaError] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
@@ -284,12 +285,15 @@ function SpeakContent() {
             : -1;
           const score = calculateScore(totalFillers, eyePercent, wpm);
           const xpEarned = Math.round(score / 2);
-          let rewardSummary = { newBadges: [] as string[], levelUp: null as { previousLevel: number; newLevel: number } | null };
-          try {
-            const savedSession = saveSession({ promptId, promptTitle: prompt.title, score, fillerCount: totalFillers, fillerWords: fillerAnalysis, duration, eyeContactPercent: eyePercent, wordsPerMinute: wpm, xpEarned, transcript: currentTranscript });
-            rewardSummary = { newBadges: savedSession.newBadges, levelUp: savedSession.levelUp };
-          } catch (e) { console.error("Failed to save session:", e); }
-          setResults({ transcript: currentTranscript, fillerCount: totalFillers, fillerWords: fillerAnalysis, duration, eyeContactPercent: eyePercent, wordsPerMinute: wpm, score, xpEarned, ...rewardSummary });
+          setResults({ transcript: currentTranscript, fillerCount: totalFillers, fillerWords: fillerAnalysis, duration, eyeContactPercent: eyePercent, wordsPerMinute: wpm, score, xpEarned, newBadges: [], levelUp: null });
+          saveSession({ promptId, promptTitle: prompt.title, score, fillerCount: totalFillers, fillerWords: fillerAnalysis, duration, eyeContactPercent: eyePercent, wordsPerMinute: wpm, xpEarned, transcript: currentTranscript })
+            .then(saved => {
+              setResults(prev => prev ? { ...prev, newBadges: saved.newBadges, levelUp: saved.levelUp } : prev);
+            })
+            .catch(e => {
+              console.error("Failed to save session:", e);
+              setSaveError(e instanceof Error ? e.message : "Failed to save session");
+            });
           return currentHistory;
         });
         return currentTranscript;
@@ -461,6 +465,14 @@ function SpeakContent() {
         {/* RESULTS PHASE */}
         {phase === "results" && results && (
           <div className="max-w-2xl mx-auto">
+            {saveError && (
+              <div
+                role="alert"
+                className="mb-4 p-3 rounded-xl bg-warm-coral-light text-warm-coral-dark text-sm font-semibold"
+              >
+                Couldn&apos;t save this session: {saveError}. Your score is shown below but won&apos;t appear in history.
+              </div>
+            )}
             {(() => {
               const { grade, color, message } = getScoreGrade(results.score);
               return (
@@ -553,7 +565,7 @@ function SpeakContent() {
 
                   <div className="flex gap-4">
                     <button
-                      onClick={() => { setPhase("prep"); setResults(null); setTranscript(""); }}
+                      onClick={() => { setPhase("prep"); setResults(null); setTranscript(""); setSaveError(null); }}
                       className="flex-1 flex items-center justify-center gap-2 bg-warm-coral text-white py-4 rounded-xl font-bold btn-playful shadow-lg"
                     >
                       <RotateCcw className="w-5 h-5" />

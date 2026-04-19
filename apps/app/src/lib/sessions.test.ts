@@ -1,51 +1,32 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { getProgress, getSessions, saveSession, type SessionRecord } from "./sessions";
+import { describe, expect, it } from "vitest";
+import {
+  applySessionToProgress,
+  computeLevel,
+  defaultProgress,
+  getXpForNextLevel,
+} from "./sessions-types";
 
-const storage = new Map<string, string>();
+const TODAY = "Sun Apr 19 2026";
+const YESTERDAY = "Sat Apr 18 2026";
 
-const localStorageMock = {
-  getItem: vi.fn((key: string) => storage.get(key) ?? null),
-  setItem: vi.fn((key: string, value: string) => {
-    storage.set(key, value);
-  }),
-  removeItem: vi.fn((key: string) => {
-    storage.delete(key);
-  }),
-  clear: vi.fn(() => {
-    storage.clear();
-  }),
-};
-
-beforeEach(() => {
-  storage.clear();
-  vi.clearAllMocks();
-  Object.defineProperty(globalThis, "window", {
-    value: globalThis,
-    configurable: true,
-  });
-  Object.defineProperty(globalThis, "localStorage", {
-    value: localStorageMock,
-    configurable: true,
-  });
-  Object.defineProperty(globalThis, "crypto", {
-    value: { randomUUID: () => "session-1" },
-    configurable: true,
-  });
-});
-
-describe("saveSession rewards", () => {
-  it("returns unlocked badges for a first strong session", () => {
-    const result = saveSession({
-      promptId: 1,
-      promptTitle: "Tell a Funny Story",
-      score: 90,
-      fillerCount: 1,
-      fillerWords: [{ word: "um", count: 1 }],
-      duration: 60,
-      eyeContactPercent: 92,
-      wordsPerMinute: 120,
-      xpEarned: 45,
-      transcript: "One time I told a fun story",
+describe("applySessionToProgress", () => {
+  it("unlocks first-session, low-filler, and eye-contact badges on a strong first session", () => {
+    const result = applySessionToProgress({
+      progress: defaultProgress(),
+      session: {
+        promptId: 1,
+        promptTitle: "Tell a Funny Story",
+        score: 90,
+        fillerCount: 1,
+        fillerWords: [{ word: "um", count: 1 }],
+        duration: 60,
+        eyeContactPercent: 92,
+        wordsPerMinute: 120,
+        xpEarned: 45,
+        transcript: "One time I told a fun story",
+      },
+      today: TODAY,
+      yesterday: YESTERDAY,
     });
 
     expect(result.newBadges).toEqual([
@@ -54,64 +35,89 @@ describe("saveSession rewards", () => {
       "Eye Contact Pro",
     ]);
     expect(result.levelUp).toBeNull();
-    expect(getProgress()).toMatchObject({
+    expect(result.progress).toMatchObject({
       level: 1,
       totalSessions: 1,
       xp: 45,
+      streak: 1,
       badges: ["First Speech", "Low Filler", "Eye Contact Pro"],
     });
   });
 
-  it("returns level-up metadata when a session crosses a threshold", () => {
-    const existingSession: SessionRecord = {
-      id: "existing",
-      promptId: 2,
-      promptTitle: "Describe Your Favorite Place",
-      date: new Date("2026-04-03T12:00:00.000Z").toISOString(),
-      score: 90,
-      fillerCount: 0,
-      fillerWords: [],
-      duration: 60,
-      eyeContactPercent: 90,
-      wordsPerMinute: 115,
-      xpEarned: 80,
-      transcript: "My favorite place is the beach",
+  it("reports levelUp and Level 2 badge when xp crosses the threshold", () => {
+    const starting = {
+      level: 1,
+      xp: 80,
+      totalSessions: 1,
+      streak: 1,
+      lastSessionDate: YESTERDAY,
+      badges: ["First Speech"],
     };
 
-    localStorage.setItem("bright_speaker_sessions", JSON.stringify([existingSession]));
-    localStorage.setItem(
-      "bright_speaker_progress",
-      JSON.stringify({
-        level: 1,
-        xp: 80,
-        totalSessions: 1,
-        streak: 1,
-        lastSessionDate: new Date().toDateString(),
-        badges: ["First Speech"],
-      })
-    );
-
-    const result = saveSession({
-      promptId: 3,
-      promptTitle: "Explain How to Make a Sandwich",
-      score: 80,
-      fillerCount: 3,
-      fillerWords: [{ word: "like", count: 3 }],
-      duration: 60,
-      eyeContactPercent: 75,
-      wordsPerMinute: 130,
-      xpEarned: 30,
-      transcript: "First you get bread and peanut butter",
+    const result = applySessionToProgress({
+      progress: starting,
+      session: {
+        promptId: 3,
+        promptTitle: "Explain How to Make a Sandwich",
+        score: 80,
+        fillerCount: 3,
+        fillerWords: [{ word: "like", count: 3 }],
+        duration: 60,
+        eyeContactPercent: 75,
+        wordsPerMinute: 130,
+        xpEarned: 30,
+        transcript: "First you get bread and peanut butter",
+      },
+      today: TODAY,
+      yesterday: YESTERDAY,
     });
 
     expect(result.levelUp).toEqual({ previousLevel: 1, newLevel: 2 });
     expect(result.newBadges).toEqual(["Level 2"]);
-    expect(getProgress()).toMatchObject({
+    expect(result.progress).toMatchObject({
       level: 2,
       xp: 110,
       totalSessions: 2,
+      streak: 2,
       badges: ["First Speech", "Level 2"],
     });
-    expect(getSessions()[0].id).toBe("session-1");
+  });
+
+  it("does not mutate the progress object passed in", () => {
+    const starting = defaultProgress();
+    applySessionToProgress({
+      progress: starting,
+      session: {
+        promptId: 1,
+        promptTitle: "t",
+        score: 50,
+        fillerCount: 5,
+        fillerWords: [],
+        duration: 60,
+        eyeContactPercent: 40,
+        wordsPerMinute: 100,
+        xpEarned: 25,
+        transcript: "",
+      },
+      today: TODAY,
+      yesterday: YESTERDAY,
+    });
+    expect(starting).toEqual(defaultProgress());
+  });
+});
+
+describe("level math", () => {
+  it("computeLevel maps xp to the right tier", () => {
+    expect(computeLevel(0)).toBe(1);
+    expect(computeLevel(99)).toBe(1);
+    expect(computeLevel(100)).toBe(2);
+    expect(computeLevel(5000)).toBe(7);
+    expect(computeLevel(99999)).toBe(7);
+  });
+
+  it("getXpForNextLevel returns the next threshold", () => {
+    expect(getXpForNextLevel(1)).toBe(100);
+    expect(getXpForNextLevel(2)).toBe(250);
+    expect(getXpForNextLevel(7)).toBe(9999);
   });
 });
