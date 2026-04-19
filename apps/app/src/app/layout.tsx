@@ -1,6 +1,6 @@
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import "./globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://brightspeaker.com"),
@@ -31,13 +31,19 @@ export const metadata: Metadata = {
     description:
       "Real-time, on-device speech coaching for K-5 classrooms. COPPA/FERPA friendly by design.",
     url: "https://brightspeaker.com",
-    images: [{ url: "/brand/mascot-logo.png", width: 512, height: 512, alt: "BrightSpeaker" }],
+    images: [
+      {
+        url: "/brand/mascot-logo.png",
+        width: 512,
+        height: 512,
+        alt: "BrightSpeaker",
+      },
+    ],
   },
   twitter: {
     card: "summary",
     title: "BrightSpeaker — the AI speech coach built for every kid",
-    description:
-      "Real-time, on-device speech coaching for K-5 classrooms.",
+    description: "Real-time, on-device speech coaching for K-5 classrooms.",
     images: ["/brand/mascot-logo.png"],
   },
   alternates: {
@@ -45,6 +51,7 @@ export const metadata: Metadata = {
   },
 };
 
+// root
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -54,7 +61,11 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
         <link
           href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Nunito:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap"
           rel="stylesheet"
