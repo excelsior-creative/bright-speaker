@@ -45,7 +45,7 @@ const prompts: Record<number, { title: string; description: string; emoji: strin
   },
 };
 
-const FILLER_WORDS = ["um", "uh", "like", "you know", "basically", "actually", "literally", "so", "well", "yeah", "right"];
+const FILLER_WORDS = ["um", "uh", "er", "ah", "like", "you know", "i mean", "sort of", "kind of"];
 
 interface SessionResults {
   transcript: string;
@@ -86,6 +86,7 @@ function SpeakContent() {
   const [eyeContactHistory, setEyeContactHistory] = useState<boolean[]>([]);
   const [results, setResults] = useState<SessionResults | null>(null);
   const [faceApiReady, setFaceApiReady] = useState(false);
+  const [mediaError, setMediaError] = useState<string | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
@@ -134,13 +135,26 @@ function SpeakContent() {
     }
   }, []);
 
-  const startWebcam = async () => {
+  const startWebcam = async (): Promise<boolean> => {
+    if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
+      setMediaError("This browser doesn't support camera access. Try Chrome, Edge, or Safari on a laptop, Chromebook, or iPad.");
+      return false;
+    }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       mediaStreamRef.current = stream;
+      setMediaError(null);
+      return true;
     } catch (err) {
-      console.error("Error accessing webcam:", err);
-      alert("Please allow camera and microphone access to use Bright Speaker!");
+      const name = (err as DOMException)?.name;
+      if (name === "NotAllowedError" || name === "SecurityError") {
+        setMediaError("Camera and microphone access was blocked. Click the camera icon in your browser's address bar to allow it, then try again.");
+      } else if (name === "NotFoundError" || name === "OverconstrainedError") {
+        setMediaError("No camera was found on this device. Plug in a webcam or switch to a device with a built-in camera.");
+      } else {
+        setMediaError("We couldn't start your camera. Close other apps using the camera and try again.");
+      }
+      return false;
     }
   };
 
@@ -219,15 +233,18 @@ function SpeakContent() {
   const calculateScore = (fillerCount: number, eyePercent: number, wpm: number) => {
     let score = 100;
     score -= Math.min(fillerCount * 5, 40);
-    if (eyePercent >= 80) score += 10;
-    else if (eyePercent < 50) score -= 20;
+    if (eyePercent >= 0) {
+      if (eyePercent >= 80) score += 10;
+      else if (eyePercent < 50) score -= 20;
+    }
     if (wpm >= 100 && wpm <= 160) score += 10;
     else if (wpm > 180 || wpm < 80) score -= 10;
     return Math.max(0, Math.min(100, score));
   };
 
   const startRecording = async () => {
-    await startWebcam();
+    const ok = await startWebcam();
+    if (!ok) return;
     initSpeechRecognition();
     setPhase("recording");
     setIsRecording(true);
@@ -243,7 +260,6 @@ function SpeakContent() {
     timerRef.current = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) { endRecording(); return 0; }
-        if (!faceApiRef.current) { setEyeContactHistory(h => [...h, Math.random() > 0.3]); }
         return prev - 1;
       });
     }, 1000);
@@ -262,8 +278,10 @@ function SpeakContent() {
           const totalFillers = fillerAnalysis.reduce((sum, f) => sum + f.count, 0);
           const wordCount = currentTranscript.split(/\s+/).filter(w => w.length > 0).length;
           const wpm = duration > 0 ? Math.round((wordCount / duration) * 60) : 0;
-          const eyePercent = currentHistory.length > 0
-            ? Math.round((currentHistory.filter(e => e).length / currentHistory.length) * 100) : 85;
+          const eyeMeasured = currentHistory.length > 0;
+          const eyePercent = eyeMeasured
+            ? Math.round((currentHistory.filter(e => e).length / currentHistory.length) * 100)
+            : -1;
           const score = calculateScore(totalFillers, eyePercent, wpm);
           const xpEarned = Math.round(score / 2);
           let rewardSummary = { newBadges: [] as string[], levelUp: null as { previousLevel: number; newLevel: number } | null };
@@ -344,6 +362,13 @@ function SpeakContent() {
               </p>
             </div>
 
+            {mediaError && (
+              <div role="alert" className="bg-warm-coral-light border-2 border-warm-coral rounded-xl p-4 mb-6 flex items-start gap-3 text-left">
+                <AlertCircle className="w-5 h-5 text-warm-coral-dark flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-warm-coral-dark">{mediaError}</p>
+              </div>
+            )}
+
             <button
               onClick={startRecording}
               className="flex items-center justify-center gap-3 bg-warm-coral text-white px-10 py-5 rounded-2xl font-extrabold text-xl btn-playful shadow-xl shadow-warm-coral/30 mx-auto"
@@ -368,10 +393,17 @@ function SpeakContent() {
                   <Clock className="w-4 h-4" />
                   {timeLeft}s
                 </div>
-                <div className={`absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold shadow-lg transition-colors ${eyeContact ? "bg-warm-teal text-white" : "bg-warm-gold text-white"}`}>
-                  {eyeContact ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                  {eyeContact ? "Great eye contact! 👀" : "Look at the camera!"}
-                </div>
+                {faceApiReady ? (
+                  <div className={`absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold shadow-lg transition-colors ${eyeContact ? "bg-warm-teal text-white" : "bg-warm-gold text-white"}`}>
+                    {eyeContact ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                    {eyeContact ? "Great eye contact! 👀" : "Look at the camera!"}
+                  </div>
+                ) : (
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold shadow-lg bg-foreground/60 text-white">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Loading camera coach…
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-3 gap-3">
@@ -388,10 +420,10 @@ function SpeakContent() {
                   <div className="text-xs text-foreground/40 font-semibold mt-0.5">Words spoken</div>
                 </div>
                 <div className="card-warm p-3 text-center">
-                  <div className={`text-2xl font-extrabold ${eyeContact ? "text-warm-teal" : "text-warm-gold"}`}>
-                    {eyeContactHistory.length > 0
-                      ? Math.round((eyeContactHistory.filter(Boolean).length / eyeContactHistory.length) * 100)
-                      : 100}%
+                  <div className={`text-2xl font-extrabold ${faceApiReady ? (eyeContact ? "text-warm-teal" : "text-warm-gold") : "text-foreground/40"}`}>
+                    {faceApiReady && eyeContactHistory.length > 0
+                      ? `${Math.round((eyeContactHistory.filter(Boolean).length / eyeContactHistory.length) * 100)}%`
+                      : "—"}
                   </div>
                   <div className="text-xs text-foreground/40 font-semibold mt-0.5">Eye contact</div>
                 </div>
@@ -474,8 +506,12 @@ function SpeakContent() {
                       <div className="text-sm text-foreground/50 font-semibold">Filler Words</div>
                     </div>
                     <div className="card-warm p-4 text-center">
-                      <div className="text-3xl font-extrabold text-warm-gold">{results.eyeContactPercent}%</div>
-                      <div className="text-sm text-foreground/50 font-semibold">Eye Contact</div>
+                      <div className="text-3xl font-extrabold text-warm-gold">
+                        {results.eyeContactPercent >= 0 ? `${results.eyeContactPercent}%` : "—"}
+                      </div>
+                      <div className="text-sm text-foreground/50 font-semibold">
+                        {results.eyeContactPercent >= 0 ? "Eye Contact" : "Eye Contact (not measured)"}
+                      </div>
                     </div>
                     <div className="card-warm p-4 text-center">
                       <div className="text-3xl font-extrabold text-warm-teal">{results.wordsPerMinute}</div>
@@ -502,7 +538,7 @@ function SpeakContent() {
                       {results.fillerCount > 3 && (
                         <li>• Try pausing instead of saying &quot;um&quot; or &quot;like&quot;</li>
                       )}
-                      {results.eyeContactPercent < 70 && (
+                      {results.eyeContactPercent >= 0 && results.eyeContactPercent < 70 && (
                         <li>• Practice looking right at the camera when you speak</li>
                       )}
                       {results.wordsPerMinute > 160 && (

@@ -120,7 +120,7 @@ export default function HistoryPage() {
                         </span>
                         <span className="flex items-center gap-1">
                           <Eye className="w-3 h-3" />
-                          {session.eyeContactPercent}% eye contact
+                          {session.eyeContactPercent >= 0 ? `${session.eyeContactPercent}% eye contact` : "eye contact —"}
                         </span>
                         <span className="flex items-center gap-1">
                           <Mic className="w-3 h-3" />
@@ -157,7 +157,9 @@ export default function HistoryPage() {
                           <div className="text-xs text-foreground/40 font-semibold">Filler Words</div>
                         </div>
                         <div className="card-warm p-3 text-center">
-                          <div className="text-xl font-extrabold text-warm-gold-dark">{session.eyeContactPercent}%</div>
+                          <div className="text-xl font-extrabold text-warm-gold-dark">
+                            {session.eyeContactPercent >= 0 ? `${session.eyeContactPercent}%` : "—"}
+                          </div>
                           <div className="text-xs text-foreground/40 font-semibold">Eye Contact</div>
                         </div>
                         <div className="card-warm p-3 text-center">
