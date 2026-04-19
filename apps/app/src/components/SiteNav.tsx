@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Logo from "./Logo";
-import { SignInButton, Show, UserButton } from "@clerk/nextjs";
+import { SignInButton, SignUpButton, Show, UserButton } from "@clerk/nextjs";
 
 export default function SiteNav() {
   return (
@@ -23,6 +23,9 @@ export default function SiteNav() {
             <SignInButton>
               <button className="btn btn-ghost btn-sm hidden sm:inline-flex">Sign in</button>
             </SignInButton>
+            <SignUpButton>
+              <button className="btn btn-ghost btn-sm hidden sm:inline-flex">Sign up</button>
+            </SignUpButton>
           </Show>
           <Show when="signed-in">
             <UserButton />
