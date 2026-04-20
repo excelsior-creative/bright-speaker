@@ -1,6 +1,6 @@
 "use client";
 
-import { Trophy, Flame, Star, Play, ChevronRight, History, Clock, Eye, Loader2 } from "lucide-react";
+import { Trophy, Flame, Star, Play, ChevronRight, History, Clock, Eye } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -98,17 +98,10 @@ export default function Dashboard() {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-6 py-8">
-        {!loaded && (
-          <div
-            role="status"
-            aria-live="polite"
-            className="flex items-center gap-2 text-foreground/50 text-sm mb-4"
-          >
-            <Loader2 className="w-4 h-4 animate-spin" />
-            Loading your progress…
-          </div>
-        )}
+      <main className="max-w-7xl mx-auto px-6 py-8" aria-busy={!loaded}>
+        <span role="status" aria-live="polite" className="sr-only">
+          {loaded ? "Dashboard loaded" : "Loading your progress"}
+        </span>
         {loadError && (
           <div
             role="alert"
@@ -118,7 +111,7 @@ export default function Dashboard() {
           </div>
         )}
         {/* Welcome + Level */}
-        <div className="grid lg:grid-cols-3 gap-6 mb-8">
+        <div className={`grid lg:grid-cols-3 gap-6 mb-8 ${!loaded ? "animate-pulse" : ""}`}>
           <div className="lg:col-span-2 card-warm p-8">
             <div className="flex items-start justify-between mb-6">
               <div>

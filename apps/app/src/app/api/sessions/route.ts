@@ -6,8 +6,12 @@ import {
   saveSession,
 } from '@/lib/db/sessions-server';
 import type { NewSessionInput } from '@/lib/sessions-types';
+import { rateLimit } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
+
+const POST_LIMIT = { limit: 20, windowMs: 60_000 };
+const DELETE_LIMIT = { limit: 5, windowMs: 60_000 };
 
 function validate(body: unknown): NewSessionInput | null {
   if (!body || typeof body !== 'object') return null;
@@ -59,9 +63,20 @@ export async function GET() {
   return NextResponse.json({ sessions });
 }
 
+function tooManyRequests(resetAt: number) {
+  const retryAfterSec = Math.max(1, Math.ceil((resetAt - Date.now()) / 1000));
+  return NextResponse.json(
+    { error: 'Too many requests' },
+    { status: 429, headers: { 'retry-after': String(retryAfterSec) } },
+  );
+}
+
 export async function POST(request: Request) {
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  const limit = rateLimit(`sessions:post:${userId}`, POST_LIMIT);
+  if (!limit.ok) return tooManyRequests(limit.resetAt);
 
   let body: unknown;
   try {
@@ -80,6 +95,10 @@ export async function POST(request: Request) {
 export async function DELETE() {
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  const limit = rateLimit(`sessions:delete:${userId}`, DELETE_LIMIT);
+  if (!limit.ok) return tooManyRequests(limit.resetAt);
+
   await clearSessions(userId);
   return NextResponse.json({ ok: true });
 }
