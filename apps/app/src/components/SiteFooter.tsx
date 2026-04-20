@@ -36,9 +36,9 @@ export default function SiteFooter() {
           <div>
             <h4 className="font-display text-[14px] mb-3.5 text-[var(--ink)]">Trust</h4>
             <ul className="list-none p-0 m-0 grid gap-2">
-              <li><Link href="/privacy" className="hover:text-[var(--ink)] transition">Privacy policy</Link></li>
-              <li><Link href="/privacy" className="hover:text-[var(--ink)] transition">COPPA &amp; FERPA</Link></li>
-              <li><Link href="/for-schools" className="hover:text-[var(--ink)] transition">DPA</Link></li>
+              <li><Link href="/privacy" className="hover:text-[var(--ink)] transition">Privacy</Link></li>
+              <li><Link href="/privacy" className="hover:text-[var(--ink)] transition">Data &amp; student records</Link></li>
+              <li><Link href="/contact" className="hover:text-[var(--ink)] transition">DPA (on request)</Link></li>
               <li><Link href="/terms" className="hover:text-[var(--ink)] transition">Terms</Link></li>
             </ul>
           </div>

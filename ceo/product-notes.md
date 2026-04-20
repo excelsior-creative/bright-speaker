@@ -1,64 +1,98 @@
 # Product notes
 
-_What the product actually is today, as of 2026-04-17. Keep accurate._
+_What the product actually is today, as of 2026-04-20. Keep accurate._
+
+## Repo layout
+
+**As of 2026-04-19 the repo is a pnpm monorepo managed by Turbo.** The
+app now lives at `apps/app/`. The top-level `/app` directory from night 1
+has been moved into `apps/app/`. Any docs that say "`src/app/page.tsx`"
+now mean `apps/app/src/app/page.tsx`.
+
+Top-level files:
+
+- `package.json` + `pnpm-workspace.yaml` + `turbo.json` — monorepo
+  plumbing.
+- `apps/app/` — the Next.js app.
+- `PRD.md` — original product doc.
+- `LAUNCH_CHECKLIST.md` — Brandon's ordered path from today's state to
+  a first paid pilot. Read this before planning product work.
 
 ## Stack
 
 - **Framework**: Next.js 16.1.6 App Router, React 19, TypeScript 5.
-- **Styling**: Tailwind v4 with a custom "Playful & Warm" palette
-  (`warm-coral`, `warm-gold`, `warm-teal`, `warm-purple`) in
-  `src/app/globals.css`.
+- **Styling**: Tailwind v4. The landing page now uses a distinct
+  "sticker-brand" design system (cream background, hard borders,
+  high-contrast sun/coral/blue fills, chunky drop shadows). The
+  older warm-coral/warm-teal palette still lives on `/for-schools`,
+  `/for-educators`, `/privacy`, `/terms`, `/contact`, `/blog`,
+  `/history`, `/dashboard`, `/speak`. **This is a design-system split
+  that should be reconciled** — see backlog.
 - **Auth**: Clerk (`@clerk/nextjs` ^7.0.4). Middleware at
-  `src/proxy.ts` wraps everything with `clerkMiddleware()` but **no
-  routes are actually gated**. Sign-in/up buttons render in the
-  header but `/dashboard`, `/speak`, `/history` are publicly
-  accessible today.
-- **Database**: `@neondatabase/auth` in deps but **no server code
-  reads or writes a DB**. All session state is in browser
-  `localStorage`.
+  `apps/app/src/proxy.ts` wraps everything with `clerkMiddleware()`.
+  `apps/app/src/app/sign-in/[[...sign-in]]/page.tsx` and `.../sign-up/`
+  pages exist and render Clerk components. **No routes are gated yet**
+  — `/dashboard`, `/speak`, `/history` remain publicly accessible.
+  `SiteNav` renders `SignInButton` + `SignUpButton`; the dashboard has
+  its own layout that wires a `UserButton`.
+- **Database**: `@neondatabase/auth` in deps; no server code reads or
+  writes a DB. Session state remains in `localStorage`.
 - **Speech-to-text**: Web Speech API (`webkitSpeechRecognition`),
-  client-side only. Falls back silently on unsupported browsers.
+  client-side only. In Chrome this streams audio to Google —
+  disclosed on `/privacy` and (as of tonight) on the homepage panel.
 - **Face detection**: `face-api.js` ^0.22.2, `tinyFaceDetector`
-  weights loaded from `/public/models`. Client-side only. "Eye
-  contact" is detected as "face box horizontally within the
-  center 60% of the video frame" — not true gaze tracking.
-- **Hosting**: Vercel (inferred from Next.js conventions; domain
-  `brightspeaker.com` is live but returned 403 to WebFetch on
-  2026-04-17 — verify deployment status with Brandon).
-- **Testing**: Vitest; one test file (`sessions.test.ts`) covers
-  reward/level logic.
+  weights in `apps/app/public/models`. "Eye contact" = face box
+  centered horizontally in the video frame. Not gaze tracking.
+- **Hosting**: Vercel. Domain `brightspeaker.com` returned 403 to
+  WebFetch on 2026-04-20 (still). Either deployment protection or a
+  WAF rule. Open ask in INBOX #1.
+- **Testing**: Vitest. `apps/app/src/lib/sessions.test.ts` covers
+  reward/level logic. 2/2 green.
 
-## Routes
+## Routes (under `apps/app/src/app/`)
 
-- `/` — landing page. Parent-flavored hero ("Help Your Child…").
-  Features cards, "How It Works" 4-step strip, CTA block, footer.
-  Footer has `href="#"` stubs for Privacy / Terms / Contact
-  (broken).
-- `/dashboard` — level/XP card, prompts grid (6 prompts, filterable
-  by Easy/Medium/Hard), recent sessions, badges.
-- `/speak?prompt=N` — three phases: `prep` → `recording` (60s fixed)
-  → `results`. Webcam preview, live transcript, live filler count,
-  live eye-contact pill.
+- `/` — sticker-brand landing page. Hero ("A personal speech coach for
+  every kid in the room"), value strip, 4-step how-it-works,
+  feature grid, Common Core SL.K–SL.5 standards map, privacy dark-mode
+  section, audience tabs (teachers/admins/parents), who-it's-for,
+  pricing (Classroom $4 / School $3 / District "let's talk"), FAQ,
+  footer CTA.
+- `/dashboard` — level/XP card, prompts grid, recent sessions, badges.
+  Now wrapped in a `dashboard/layout.tsx` that uses the app header.
+- `/speak?prompt=N` — three-phase flow: prep → recording (60s) →
+  results. Webcam preview, live transcript, live filler counter, live
+  eye-contact pill.
 - `/history` — full session list, expandable; clear-history button.
-- `/practice` — 301 redirect to `/speak` (via `next.config.ts`).
+- `/for-educators`, `/for-schools` — still on the older warm-coral/
+  warm-teal design. Copy is on the honest side.
+- `/privacy` — plain-English data-flow page. Explicitly non-legal.
+- `/terms` — plain-language stub.
+- `/contact` — mailto-backed (`hello@brightspeaker.com`). Phase 0.3 of
+  the launch checklist replaces this with a real form.
+- `/blog`, `/blog/reduce-filler-words-k12` — first post.
+- `/sign-in/[[...sign-in]]`, `/sign-up/[[...sign-up]]` — Clerk pages.
+- `/robots.ts`, `/sitemap.ts` — SEO basics.
+
+## ICP shift recorded in PR #3
+
+The landing page hero now says **"Built for ages 5–11"** and the
+standards map shows **SL.K–SL.5**. This is a material shift from
+night-1 strategy, which targeted ELA grades 4–8 and speech/debate
+6–12. Reconciled in `strategy.md` and `decisions/0002-k5-primary-
+wedge.md` on 2026-04-20.
 
 ## Data model (current, client-side)
 
-Keys in `localStorage`:
+Unchanged from night 1. `localStorage` keys `bright_speaker_sessions`
+and `bright_speaker_progress`, capped at 100 sessions.
 
-- `bright_speaker_sessions` — array of `SessionRecord`:
-  `{ id, promptId, promptTitle, date, score, fillerCount,
-     fillerWords[], duration, eyeContactPercent, wordsPerMinute,
-     xpEarned, transcript }`. Capped at 100 most recent.
-- `bright_speaker_progress` — `UserProgress`:
-  `{ level, xp, totalSessions, streak, lastSessionDate, badges[] }`.
-
-**Implication**: Data is per-browser, not per-user. Clearing cookies
-or switching devices wipes progress. Not suitable for a pilot.
+**Implication**: Data is per-browser, not per-user. A pilot needs
+Phase 1 of `LAUNCH_CHECKLIST.md` (Clerk roles + Neon schema + server
+actions).
 
 ## Scoring formula
 
-In `src/app/speak/page.tsx:calculateScore`:
+Unchanged. `apps/app/src/app/speak/page.tsx:calculateScore`:
 
 - Start at 100.
 - Subtract `min(fillerCount * 5, 40)` for filler words.
@@ -66,54 +100,68 @@ In `src/app/speak/page.tsx:calculateScore`:
 - +10 if WPM in [100, 160]; −10 if WPM > 180 or < 80.
 - Clamp to [0, 100].
 
-XP = `round(score / 2)` per session.
+XP = `round(score / 2)` per session. Level thresholds in
+`apps/app/src/lib/sessions.ts`: `[0, 100, 250, 500, 1000, 2000, 5000]`.
 
-## Level thresholds
+## Badges
 
-In `src/lib/sessions.ts`: `[0, 100, 250, 500, 1000, 2000, 5000]`
-XP cumulative for levels 1–7.
+Unchanged: "First Speech", "Streak 3", "Streak 7", "Level 2",
+"10 Sessions", "Low Filler", "Eye Contact Pro".
 
-## Badges (all static strings today)
+## AI feedback
 
-- "First Speech" (first session)
-- "Streak 3" / "Streak 7"
-- "Level 2"
-- "10 Sessions"
-- "Low Filler" (≤2 fillers in a session)
-- "Eye Contact Pro" (≥80% in a session)
+**Still rule-based; no LLM call.** The `if/else` ladder in
+`speak/page.tsx` is unchanged. LLM layer stays roadmap-only until we
+have teacher review per OKR 1.2.
 
-## AI feedback (important)
+## What's honest on the site now (2026-04-20)
 
-**There is no actual LLM call in the product today.** Despite the
-PRD's mention of Claude API feedback, the "tips for next time" on
-the results screen are a small `if/else` ladder in `speak/page.tsx`:
+Tonight's honesty pass on the homepage:
 
-- `fillerCount > 3` → "Try pausing instead of saying um or like"
-- `eyeContactPercent < 70` → "Practice looking right at the camera"
-- `wordsPerMinute > 160` → "Slow down a bit — take your time!"
-- `wordsPerMinute < 100` → "Try to speak a little faster with more
-  energy"
-- Always: "Great job completing this session!"
+- Removed "MediaPipe" claims (we use `face-api.js`). Replaced with
+  "in-browser face detection." Also cleared "MediaPipe classroom" from
+  the SEO keyword list and the coaching-feature photo caption.
+- Replaced "Built for COPPA" / "Built for FERPA" pills with "Private
+  by design" / "On-device video" / "No ad tracking" / "No student
+  data sold." Compliance.md is explicit that we don't claim COPPA/
+  FERPA until we have a formal review.
+- Removed "signed DPAs" + "full-day audit log" from the Privacy list
+  (neither exists). Disclosed Google Web Speech API ASR explicitly in
+  the public panel.
+- Tightened hero + STEPS copy that claimed "posture, pacing, volume"
+  — posture and volume aren't implemented. Now says "eye contact,
+  filler words, and pacing."
+- Pricing tiers:
+  - School: "Clever, ClassLink, Google" SSO → "Google Workspace for
+    Education SSO" only, with a small caveat below the tier listing
+    some items are on the near-term roadmap.
+  - District: "SOC 2 Type II & security review" → "Security review
+    on request," with a pre-launch disclosure below.
+- `AudienceTabs.tsx`: removed "Signed DPA, SOC 2 Type II" claim,
+  "80+ activities" (we have 6), "Clever + ClassLink SSO," and the
+  parent-email + at-home features that don't exist.
+- `SiteFooter.tsx`: "COPPA & FERPA" footer link → "Data & student
+  records"; "DPA" link → "DPA (on request)" → routes to `/contact`.
 
-Before we ship any LLM-generated feedback to a student, we need a
-teacher to review the prompt and the output shape. See
-`compliance.md` and `okrs.md` KR 1.2.
+## Still overclaiming somewhere
+
+- `apps/app/src/components/CoachUI.tsx` is a mock with "Mrs. Rivera"
+  + animated fake metrics. Called out in LAUNCH_CHECKLIST Appendix A
+  as a thing to optionally tighten. Not shipped tonight.
+- `/for-schools` still uses warm-coral/warm-teal; hasn't been
+  reconciled against the sticker-brand homepage. Copy is honest.
 
 ## Known issues / smells
 
-- Home link in `app/page.tsx` uses the `Play` icon import that's
-  mostly decorative; harmless but dead weight.
-- "Watch Demo" button does nothing.
-- Footer Privacy / Terms / Contact links are `href="#"`.
-- Silent failure on speech-API unsupported browsers.
-- Filler word list includes `"so"`, `"well"`, `"yeah"`, `"actually"`,
-  `"literally"` — over-flags normal speech for younger kids.
-- Face-API weights (~300KB+ per shard) are loaded on every
-  `/speak` visit.
-- `startWebcam` uses `alert()` on failure — not great UX for kids.
-- Brand pages (`/for-schools`, `/for-educators`, privacy, terms,
-  contact) don't exist yet — **shipped tonight (2026-04-17)**.
-- No sitemap, robots, or OG image. **Shipped tonight.**
-- Live site (`brightspeaker.com`) returned 403 to WebFetch on
-  2026-04-17. Might be Vercel deployment protection / preview
-  gating. **Flag to Brandon.**
+- The `/for-schools` and `/for-educators` pages live in a different
+  design system than the homepage. Needs an unified visual pass.
+- `startWebcam` error path still uses `alert()` (per LAUNCH_CHECKLIST
+  2.x and existing backlog).
+- Filler word list still over-flags younger students ("so", "well",
+  "actually", "literally"). Backlog item for grade-band tuning.
+- Face-API weights load on every `/speak` visit. Cache via service
+  worker.
+- Silent failure on non-Web-Speech browsers (Firefox).
+- `public/brand/favicon-source.png` is a 1.8 MB unused source file.
+- `brightspeaker.com` still 403s to WebFetch — crawler/indexability
+  unknown. Open ask in INBOX.

@@ -6,10 +6,19 @@ import SiteFooter from "@/components/SiteFooter";
 export const metadata: Metadata = {
   title: "Classroom resources — Bright Speaker",
   description:
-    "Practical, classroom-tested writing on K-12 speaking practice: filler words, oral presentations, speech & debate drills, and the research behind the reps.",
+    "Practical, classroom-tested writing on elementary speaking practice: standards-aligned warm-ups, filler words, oral language, and the research behind the reps.",
 };
 
 const posts = [
+  {
+    slug: "five-minute-elementary-speaking-warmup",
+    title: "A 5-minute speaking warm-up for elementary classrooms",
+    excerpt:
+      "A low-prep, standards-aligned warm-up you can run every morning in a K-5 classroom. Maps to SL.K–SL.5. Works with or without technology.",
+    date: "2026-04-20",
+    readMinutes: 7,
+    audience: "K–5 classroom teachers",
+  },
   {
     slug: "reduce-filler-words-k12",
     title: "How to help K-12 students actually reduce filler words",

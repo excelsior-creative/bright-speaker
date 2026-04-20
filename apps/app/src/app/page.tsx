@@ -8,7 +8,7 @@ import { AudienceTabsClient } from "@/components/AudienceTabs";
 const STEPS = [
   { n: 1, icon: "🎯", title: "Pick an activity", body: "Story retelling, show-and-tell, opinion speech, book report, or a prompt the teacher assigns." },
   { n: 2, icon: "🎥", title: "Speak to the camera", body: "Students practice on a Chromebook, iPad, or laptop — with privacy built right in." },
-  { n: 3, icon: "🤖", title: "Get real-time coaching", body: "On-device AI reads body language, pacing, and volume — offering kid-friendly encouragement." },
+  { n: 3, icon: "🤖", title: "Get real-time coaching", body: "On-device face detection tracks eye contact; live transcription flags filler words and pacing — with kid-friendly encouragement." },
   { n: 4, icon: "🏆", title: "Earn XP and badges", body: "Streaks, achievements, and a teacher dashboard turn steady practice into real growth." },
 ];
 
@@ -30,15 +30,15 @@ const STANDARDS = [
 const PRIVACY_ITEMS = [
   {
     title: "On-device processing",
-    body: "Video stays in the browser. Only aggregate metrics (e.g. \"spoke for 48s\") are sent to the dashboard.",
+    body: "Video stays in the browser. Only aggregate metrics (e.g. \"spoke for 48s\") are stored for the teacher.",
   },
   {
-    title: "No student accounts required",
-    body: "Students launch with a class code. Optional SSO via Clever, ClassLink, or Google for Education.",
+    title: "No student accounts required during pilots",
+    body: "Pilots run with shared-device or class-code entry. Google Workspace for Education sign-in is on the near-term roadmap.",
   },
   {
     title: "Transparent data practices",
-    body: "Plain-English privacy policy, signed DPAs, and a full-day audit log available to admins.",
+    body: "A plain-English privacy page describes every data flow, including the one caveat: Chrome's built-in Web Speech API transcribes audio via Google.",
   },
   {
     title: "No ads. Ever.",
@@ -119,7 +119,7 @@ export default function Home() {
             </h1>
             <p className="mt-6 text-[20px] text-[var(--ink-2)] max-w-[48ch] leading-[1.5]">
               BrightSpeaker turns public speaking into a game K–5 students actually ask to play.
-              Real-time coaching on eye contact, pacing, posture, and volume — all on the kid&apos;s
+              Real-time coaching on eye contact, filler words, and pacing — all on the kid&apos;s
               device. No video ever leaves the classroom.
             </p>
             <div className="flex gap-3.5 mt-8 flex-wrap">
@@ -213,7 +213,7 @@ export default function Home() {
                 className="min-h-[240px] bg-[var(--cream-2)] flex items-center justify-center"
                 style={{ borderLeft: "2.5px solid var(--ink)" }}
               >
-                <PhotoPlaceholder label="photo: 2nd grader speaking, MediaPipe overlay" tone="blue" />
+                <PhotoPlaceholder label="photo: 2nd grader speaking, coaching overlay" tone="blue" />
               </div>
             </div>
 
@@ -309,12 +309,13 @@ export default function Home() {
                 The video never leaves the device. Period.
               </h2>
               <p className="mt-4 text-[17px]" style={{ color: "#D6DAE6" }}>
-                All pose and face analysis happens locally in the browser using MediaPipe. We never
-                upload, store, or transmit student video — so COPPA, FERPA, and your district&apos;s data
-                team can breathe easy.
+                Face detection runs locally in the browser. Student video is never uploaded, stored,
+                or transmitted. The one caveat we disclose plainly: Chrome&apos;s built-in Web Speech API
+                streams audio to Google for transcription — we describe that in plain English on our
+                privacy page.
               </p>
               <div className="mt-7 flex gap-2 flex-wrap">
-                {["Built for COPPA", "Built for FERPA", "On-device video", "No ad tracking"].map((label) => (
+                {["Private by design", "On-device video", "No ad tracking", "No student data sold"].map((label) => (
                   <span
                     key={label}
                     className="pill"
@@ -424,12 +425,16 @@ export default function Home() {
                 For K–5 schools (100–800 students). Everything in Classroom, plus:
               </p>
               <ul className="list-none p-0 m-0 mt-2 grid gap-2 text-[15px]">
-                {["SSO: Clever, ClassLink, Google", "Roster sync & bulk admin", "School-level analytics", "Dedicated onboarding specialist"].map((i) => (
+                {["Google Workspace for Education SSO", "Building-level admin view", "School-level progress exports", "Dedicated onboarding specialist"].map((i) => (
                   <li key={i} className="flex gap-2.5">
                     <span style={{ color: "var(--green)", fontWeight: 900 }}>✓</span>{i}
                   </li>
                 ))}
               </ul>
+              <p className="text-[12px] text-[var(--ink-2)] mt-1 m-0">
+                Some School features are on our near-term roadmap — we&apos;ll be transparent about what
+                ships on day one of your pilot.
+              </p>
               <Link href="/contact" className="btn mt-auto">Book a demo</Link>
             </div>
 
@@ -440,12 +445,16 @@ export default function Home() {
                 For multi-school districts. Everything in School, plus:
               </p>
               <ul className="list-none p-0 m-0 mt-2 grid gap-2 text-[15px]">
-                {["Signed DPA & custom procurement", "District rollup reporting", "PD & teacher training", "SOC 2 Type II & security review"].map((i) => (
+                {["DPA review with your legal team", "District rollup reporting", "Teacher PD & training", "Security review on request"].map((i) => (
                   <li key={i} className="flex gap-2.5">
                     <span style={{ color: "var(--green)", fontWeight: 900 }}>✓</span>{i}
                   </li>
                 ))}
               </ul>
+              <p className="text-[12px] text-[var(--ink-2)] mt-1 m-0">
+                We&apos;re pre-launch: no SOC 2 attestation yet. Talk to us about what your procurement
+                office actually requires.
+              </p>
               <Link href="/contact" className="btn mt-auto">Get a quote</Link>
             </div>
           </div>
