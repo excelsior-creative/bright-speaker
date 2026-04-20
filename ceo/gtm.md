@@ -2,35 +2,46 @@
 
 _Target customers, pricing, pipeline, pitch state._
 
-## Ideal customer profile (working hypothesis)
+## Ideal customer profile (working hypothesis — revised 2026-04-20)
 
-**Primary buyer (wedge)** — Individual educator with spending
-autonomy and a personal stake in communication outcomes:
+**Primary buyer (wedge)** — Individual K–5 educator or building-
+level leader with spending autonomy and a personal stake in oral-
+language outcomes:
 
-- Middle / high school speech & debate coach (6–12).
-- ELA teacher grades 4–8 who runs an oral presentation unit or
-  Socratic seminar.
-- Enrichment program director at a private or independent school.
+- K–5 ELA / classroom teacher who already runs oral presentation,
+  show-and-tell, or Socratic circles.
+- Elementary building principal or assistant principal at a Title I
+  school — our 50% Title I discount makes this an equity story, not
+  a discount ask.
+- Elementary literacy coach or instructional coach.
+- Enrichment program director at a private or independent K–5.
+
+**Secondary wedge (kept on outreach list, not headline)** —
+
+- Middle-school ELA teachers grades 6–8 running oral presentations.
+- Speech & debate coaches grades 6–12. The product works fine for
+  them; they're just not our landing-page story.
 
 **Expansion buyer (after the wedge takes hold)** — Building-level
-or district curriculum/instructional technology decision-maker:
+or district decision-makers:
 
-- Curriculum & Instruction director for ELA or literacy.
-- Instructional Technology coordinator evaluating communication
-  tools.
-- Assistant Superintendent for Teaching & Learning.
+- Director of Elementary Curriculum / ELA.
+- Assistant Superintendent for Teaching & Learning (elementary
+  portfolio).
+- Instructional Technology coordinator evaluating communication or
+  literacy tools.
 
-**School profile we're targeting first** — Suburban or independent,
-1:1 device programs (usually Chromebook), with an existing speech &
-debate program or a teacher champion who already runs oral
-practice. Avoid the largest urban districts until we have a case
-study; their procurement cycles are multi-quarter.
+**School profile we're targeting first** — K–5 schools, 1:1 or
+shared-cart Chromebook programs, with a teacher champion who already
+runs oral practice. Title I schools are a high-priority lane. Avoid
+the largest urban districts until we have a case study; their
+procurement cycles are multi-quarter.
 
-## Positioning — one sentence
+## Positioning — one sentence (revised 2026-04-20)
 
-> Bright Speaker gives every K-12 student the reps they need to
-> become a confident speaker, without adding a minute to a teacher's
-> day.
+> Bright Speaker gives every K–5 student the reps they need to become
+> a confident speaker — aligned to Common Core SL.K–SL.5, private by
+> design, and built for the way elementary classrooms actually run.
 
 ## Key messages for educators
 
@@ -96,25 +107,41 @@ second. Deck should be 8–10 slides max, designed to be emailed
 
 ## Conferences and associations to track
 
+**Primary — elementary:**
+- **NAESP** — National Association of Elementary School Principals.
+  Annual Best Practices Conference. Our principal buyer is here.
+- **ILA** — International Literacy Association. Annual conference
+  and Reading Research Institute; elementary ELA / oral-language
+  attendees.
+- **NCTE** — National Council of Teachers of English. Broad K–12;
+  elementary strand is real.
+- **ASCD** — curriculum leaders, many elementary.
+
+**Secondary (kept in backlog):**
 - **NSDA** — National Speech & Debate Association; annual Nationals
-  in June. Coach directory is the biggest single ICP list.
-- **State forensics associations** — varies by state; good for
-  regional outreach.
-- **NCTE** — National Council of Teachers of English; ELA.
-- **ISTE** — edtech-at-scale; probably too broad for wedge but
-  useful once we have case studies.
-- **AMLE** — Association for Middle Level Education.
+  in June. Coach directory is still our best 6–12 wedge list.
+- **State forensics associations** — regional outreach.
+- **ISTE** — edtech-at-scale; useful once we have case studies.
+- **AMLE** — middle-level.
 
 ## SEO targets (educator-intent)
 
-Prioritized by intent quality, not volume:
+Prioritized by intent quality, not volume. _(Revised 2026-04-20 toward
+K–5 elementary queries.)_
 
-- "reduce filler words in students"
+**Primary (K–5):**
+- "elementary speaking practice activities"
+- "show and tell activities for kindergarten"
+- "Common Core SL.K–SL.5 speaking checklist"
+- "oral language activities for 2nd grade"
+- "how to teach public speaking in elementary school"
+- "elementary speaking rubric Common Core"
+- "5-minute classroom speaking warm-up"
+
+**Secondary (still valuable):**
 - "middle school public speaking rubric"
-- "classroom speech practice activities"
 - "speech and debate practice drills"
-- "how to teach eye contact public speaking"
-- "oral presentation feedback rubric"
+- "reduce filler words in students"
 
 ## Open GTM questions
 

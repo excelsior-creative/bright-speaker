@@ -16,9 +16,9 @@ export const metadata: Metadata = {
     "elementary speaking practice",
     "AI speech coach",
     "Common Core SL standards",
-    "on-device speech AI",
-    "MediaPipe classroom",
-    "COPPA FERPA speaking tool",
+    "on-device speech coaching",
+    "classroom speaking rubric",
+    "elementary oral presentation",
   ],
   icons: {
     icon: "/favicon.ico",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     siteName: "BrightSpeaker",
     title: "BrightSpeaker — the AI speech coach built for every kid",
     description:
-      "Real-time, on-device speech coaching for K-5 classrooms. COPPA/FERPA friendly by design.",
+      "Real-time, on-device speech coaching for K-5 classrooms. Private by design — student video never leaves the device.",
     url: "https://brightspeaker.com",
     images: [
       {

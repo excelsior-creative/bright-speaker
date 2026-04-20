@@ -24,28 +24,39 @@ something weird to a seventh-grader.
 
 Direct-to-consumer is a grind for a kids product. Teachers hand-
 adopting a new tool is slow. The leverage point is district-level
-speech/ELA curriculum decisions, but those cycles are 6–18 months.
+curriculum decisions, but those cycles are 6–18 months.
 
-Our wedge: speech & debate programs and middle-school ELA teachers
-who care about communication outcomes and have personal agency. They
-pilot it, see results, and become the internal champion for a
-district-wide purchase.
+**Updated 2026-04-20.** The homepage redesign (PR #3 + production-
+readiness pass PR #4) and the follow-on copy updates have shifted
+our primary wedge to **K–5 elementary classrooms**, with Common
+Core SL.K–SL.5 as the alignment story and a Title I discount as an
+equity-forward pricing signal. See `decisions/0002-k5-primary-
+wedge.md`. The 6–12 speech/debate angle remains a secondary lane
+(the product works fine for that audience), but our positioning,
+prompts, rewards, FAQ, and outreach are now K–5 first.
 
-## Target customer (refined over time — current best guess)
+## Target customer (current, 2026-04-20)
 
-- **Wedge 1 — Speech & debate coaches**, 6th–12th grade. Highly
-  motivated, autonomous spenders for small-ticket tools. Word-of-mouth
-  inside state activity associations.
-- **Wedge 2 — ELA teachers grades 4–8**, especially those running oral
-  presentation units or Socratic seminars.
-- **Expansion** — building-level adoption → district-level license.
+- **Wedge 1 — K–5 ELA / classroom teachers**, especially those who
+  already run oral-presentation units, show-and-tell, or Socratic-
+  style circles. A single teacher can run a pilot on the Chromebook
+  cart they already have.
+- **Wedge 2 — K–5 building principals and curriculum coaches**,
+  particularly at Title I schools where oral-language instructional
+  time is under-resourced and our 50% Title I pricing reads as
+  alignment, not a discount gimmick.
+- **Wedge 3 (secondary, not primary) — Middle-school ELA + speech/
+  debate coaches, 6–12.** Still a fit, still on our outreach list,
+  but not the headline story on the site.
+- **Expansion** — building-level adoption → district-level license
+  under an elementary-curriculum VP.
 
 Not our ICP (for now):
-- PreK / K–2 — too young for webcam-based self-practice.
+- Pre-K. Too young for webcam-based self-practice; different product
+  category.
 - High-stakes test-prep (college interview coaching, etc.) — exists
   already in adult products (Yoodli, Orai).
-- Adult / professional — the competitive field is crowded; kids is the
-  wedge.
+- Adult / professional — crowded field; kids is the wedge.
 
 ## Pricing thesis (draft — not yet tested)
 
@@ -64,8 +75,11 @@ Validate with ≥5 educator conversations before committing to numbers.
    side face detection is sufficient for MVP. No native app.
 2. **Rule-based feedback is sufficient for the MVP loop.** LLM layer
    comes later for constructive coaching tips, not scoring.
-3. **Speech/debate coaches are the fastest wedge** into school
-   adoption, faster than top-down district sales.
+3. **K–5 elementary is the primary wedge.** Rep-based speaking practice
+   tied to SL.K–SL.5 is where the classroom need is clearest and the
+   "no student accounts, kid launches with a class code" story is most
+   compelling. Title I principals are our acquisition engine. _(Revised
+   2026-04-20; see decision 0002.)_
 4. **Privacy-first architecture is a feature, not overhead.** No video
    leaves the device; transcripts minimized; explicit data flow story
    is a competitive advantage in the K-12 procurement conversation.

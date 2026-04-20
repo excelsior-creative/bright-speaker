@@ -6,45 +6,66 @@ the journal night where it was resolved._
 ## Open
 
 ### 🟡 1 — Is brightspeaker.com reachable by crawlers?
-- **Posted:** 2026-04-17 (night 1)
-- **Context:** WebFetch to https://brightspeaker.com returned 403.
-  Could be Vercel deployment protection, Cloudflare WAF, or a
-  preview-only deployment. If this is intentional (pre-launch
-  gating), fine — but we can't rank in search if search engines
-  also get 403'd.
+- **Posted:** 2026-04-17 (night 1) — still open 2026-04-20.
+- **Context:** WebFetch to https://brightspeaker.com returned 403
+  on night 1 and again tonight (night 2). Could be Vercel deployment
+  protection, Cloudflare WAF, or a preview-only deployment. If this
+  is intentional (pre-launch gating), fine — but we can't rank in
+  search if search engines also get 403'd, and the blog post work
+  from nights 1 and 2 won't compound.
 - **What I need:** Confirm the site is publicly reachable, or tell
   me the deployment URL I should be treating as the "real" site
   for SEO and social sharing work.
 
-### 🟡 2 — Approve draft outreach emails (speech/debate coach + ELA teacher)
-- **Posted:** 2026-04-17 (night 1)
+### 🟡 2 — Approve draft outreach emails (speech/debate coach + ELA teacher + Title I principal)
+- **Posted:** 2026-04-17 (nights 1 & 2).
 - **Files:**
   - `ceo/outreach-drafts/2026-04-17-speech-debate-coach-cold-intro.md`
   - `ceo/outreach-drafts/2026-04-17-ela-teacher-cold-intro.md`
   - `ceo/outreach-drafts/2026-04-17-pilot-program-one-pager.md`
-- **Context:** First outreach drafts of the CEO routine. Cold
-  email to coaches + ELA teachers, plus a one-page pilot program
-  sheet. Nothing sent yet.
-- **What I need:** Your review and edits, then you send (or
-  authorize me to send on your behalf on a case-by-case basis).
+  - `ceo/outreach-drafts/2026-04-20-title-i-elementary-principal-cold-intro.md`
+    _(new tonight; leads the K–5 ICP pivot per decision 0002)_
+- **Context:** Tonight's Title I principal draft is the first one
+  aligned to the new K–5 primary wedge. The night-1 drafts
+  (speech/debate + ELA 4–8) are still valid as a secondary lane,
+  but lower priority.
+- **What I need:** Your review + edits, then you send.
 
 ### 🟢 3 — FYI: no analytics yet
-- **Posted:** 2026-04-17
-- **Context:** We have zero server-side telemetry. Can't answer
-  basic questions like "how many sessions were completed this
-  week." Proposal in `backlog.md`: Plausible or self-hosted
-  PostHog. Both are sub-processors → gate on your approval.
-- **What I need:** Decision on a privacy-friendly analytics tool.
+- **Posted:** 2026-04-17 (night 1) — no change tonight.
+- **Context:** Zero server-side telemetry. Can't answer "how many
+  sessions were completed this week."
+- **Recommendation:** Vercel Analytics. Free tier, privacy-first,
+  already a sub-processor (assuming you're on Vercel). Cheapest
+  path to answering basic traffic questions.
+- **What I need:** Your go-ahead to enable.
 
 ### 🟢 4 — FYI: privacy policy / terms are still stubs
-- **Posted:** 2026-04-17
-- **Context:** I shipped placeholder `/privacy`, `/terms`, `/contact`
-  pages tonight. The privacy page explains our current data
-  flows in plain English — it is NOT a formal privacy policy and
-  I have not made compliance claims. When we're ready for the
-  first pilot, you'll drive formal policy drafting (counsel or
-  Iubenda). See `ceo/compliance.md`.
-- **What I need:** Nothing immediately. Just visibility.
+- **Posted:** 2026-04-17 (night 1) — still true.
+- **Context:** `/privacy` and `/terms` are plain-English stubs.
+  Tonight's honesty pass made the homepage consistent with this
+  stance. Formal legal drafting still blocked on you.
+- **What I need:** Eventually, counsel or Iubenda. Not urgent.
+
+### 🟢 5 — FYI: K–5 is now the primary wedge
+- **Posted:** 2026-04-20 (night 2).
+- **Context:** PR #3 and PR #4 shifted the site's positioning to K–5
+  elementary. I took that as read and reconciled `strategy.md`,
+  `gtm.md`, and `product-notes.md` around it. Full reasoning in
+  `ceo/decisions/0002-k5-primary-wedge.md`. The 6–12 speech/debate
+  lane is demoted to secondary, not cut.
+- **What I need:** Confirm this matches your intent. If not, we can
+  revert the positioning documents; the homepage is your call.
+
+### 🟢 6 — FYI: design-system split between homepage and the rest
+- **Posted:** 2026-04-20 (night 2).
+- **Context:** The new sticker-brand homepage doesn't match
+  `/for-schools`, `/for-educators`, `/privacy`, `/terms`, `/contact`,
+  `/blog`, `/history`, or `/dashboard` — those are still on the
+  warm-coral/warm-teal design. Copy is honest, but the brand looks
+  disconnected when a visitor leaves the homepage.
+- **What I need:** Nothing immediately. Queued for a later night
+  unless you want me to prioritize.
 
 ## Resolved
 
