@@ -15,7 +15,7 @@ export default function NotFound() {
           <Logo size="md" />
         </Link>
       </nav>
-      <main className="flex-1 flex items-center justify-center px-6 py-8">
+      <main id="main" className="flex-1 flex items-center justify-center px-6 py-8">
         <div className="card-warm p-10 max-w-lg w-full text-center">
           <div className="w-14 h-14 rounded-full bg-warm-teal-light flex items-center justify-center mx-auto mb-4">
             <Compass className="w-7 h-7 text-warm-teal-dark" aria-hidden="true" />

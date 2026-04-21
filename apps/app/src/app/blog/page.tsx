@@ -26,9 +26,9 @@ export default function BlogIndex() {
     <div className="min-h-screen bg-warm-gradient">
       <SiteNav />
 
-      <main className="max-w-4xl mx-auto px-6 pt-8 pb-16">
+      <main id="main" className="max-w-4xl mx-auto px-6 pt-8 pb-16">
         <div className="mb-10">
-          <Link href="/" className="text-sm font-semibold text-foreground/40 hover:text-warm-coral">
+          <Link href="/" className="text-sm font-semibold text-foreground/60 hover:text-warm-coral">
             ← Back
           </Link>
         </div>
@@ -47,7 +47,7 @@ export default function BlogIndex() {
               href={`/blog/${p.slug}`}
               className="card-warm p-6 block hover:scale-[1.005] transition group"
             >
-              <div className="flex items-center gap-2 text-xs text-foreground/40 font-semibold mb-2">
+              <div className="flex items-center gap-2 text-xs text-foreground/60 font-semibold mb-2">
                 <span>{p.date}</span>
                 <span>·</span>
                 <span>{p.readMinutes} min read</span>

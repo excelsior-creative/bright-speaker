@@ -15,7 +15,7 @@ export default function SignInPage() {
           <Logo size="md" />
         </Link>
       </nav>
-      <main className="flex-1 flex items-center justify-center px-6 py-8">
+      <main id="main" className="flex-1 flex items-center justify-center px-6 py-8">
         <SignIn signUpUrl="/sign-up" fallbackRedirectUrl="/dashboard" />
       </main>
     </div>

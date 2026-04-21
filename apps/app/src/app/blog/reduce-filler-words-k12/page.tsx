@@ -22,14 +22,14 @@ export default function Post() {
     <div className="min-h-screen bg-warm-gradient">
       <SiteNav />
 
-      <main className="max-w-3xl mx-auto px-6 pt-8 pb-16">
+      <main id="main" className="max-w-3xl mx-auto px-6 pt-8 pb-16">
         <div className="mb-6">
-          <Link href="/blog" className="text-sm font-semibold text-foreground/40 hover:text-warm-coral">
+          <Link href="/blog" className="text-sm font-semibold text-foreground/60 hover:text-warm-coral">
             ← All resources
           </Link>
         </div>
 
-        <div className="flex items-center gap-2 text-xs text-foreground/40 font-semibold mb-3">
+        <div className="flex items-center gap-2 text-xs text-foreground/60 font-semibold mb-3">
           <span>April 17, 2026</span>
           <span>·</span>
           <span>6 min read</span>

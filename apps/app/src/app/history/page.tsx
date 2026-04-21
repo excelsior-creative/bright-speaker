@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Home, Clock, Eye, Mic, Trophy, ChevronLeft, Trash2, Loader2 } from "lucide-react";
 import Logo from "@/components/Logo";
-import { clearSessions, fetchSessions, type SessionRecord } from "@/lib/sessions";
+import { clearSessions, deleteSessionById, fetchSessions, type SessionRecord } from "@/lib/sessions";
 
 function formatDate(isoString: string) {
   const d = new Date(isoString);
@@ -35,6 +35,7 @@ export default function HistoryPage() {
   const [loaded, setLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [clearing, setClearing] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -65,6 +66,20 @@ export default function HistoryPage() {
     }
   };
 
+  const deleteOne = async (id: string) => {
+    if (!confirm("Delete this session? This cannot be undone.")) return;
+    setDeletingId(id);
+    try {
+      await deleteSessionById(id);
+      setSessions(prev => prev.filter(s => s.id !== id));
+      setExpandedId(prev => (prev === id ? null : prev));
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to delete session");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-warm-gradient">
       {/* Nav */}
@@ -78,11 +93,11 @@ export default function HistoryPage() {
         </Link>
       </nav>
 
-      <main className="max-w-4xl mx-auto px-6 py-8">
+      <main id="main" className="max-w-4xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            <Link href="/dashboard" className="flex items-center gap-1 text-foreground/40 hover:text-warm-coral text-sm font-semibold transition">
+            <Link href="/dashboard" className="flex items-center gap-1 text-foreground/60 hover:text-warm-coral text-sm font-semibold transition">
               <ChevronLeft className="w-4 h-4" />
               Back
             </Link>
@@ -156,7 +171,7 @@ export default function HistoryPage() {
 
                     <div className="flex-1 min-w-0">
                       <div className="font-bold text-foreground truncate">{session.promptTitle}</div>
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-foreground/40 mt-1">
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-foreground/60 mt-1">
                         <span className="flex items-center gap-1">
                           <Clock className="w-3 h-3" />
                           {formatDate(session.date)}
@@ -176,11 +191,11 @@ export default function HistoryPage() {
                     <div className="flex items-center gap-4 flex-shrink-0">
                       <div className="text-center hidden sm:block">
                         <div className="text-lg font-extrabold text-warm-coral">{session.fillerCount}</div>
-                        <div className="text-xs text-foreground/40 font-semibold">fillers</div>
+                        <div className="text-xs text-foreground/60 font-semibold">fillers</div>
                       </div>
                       <div className="text-center hidden sm:block">
                         <div className="text-lg font-extrabold text-warm-gold-dark">+{session.xpEarned}</div>
-                        <div className="text-xs text-foreground/40 font-semibold">XP</div>
+                        <div className="text-xs text-foreground/60 font-semibold">XP</div>
                       </div>
                       <div className={`flex items-center justify-center w-14 h-14 rounded-xl font-extrabold text-xl ${color}`}>
                         {grade}
@@ -193,21 +208,21 @@ export default function HistoryPage() {
                       <div className="grid sm:grid-cols-4 gap-4 mb-4">
                         <div className="card-warm p-3 text-center">
                           <div className="text-xl font-extrabold text-foreground">{session.score}</div>
-                          <div className="text-xs text-foreground/40 font-semibold">Score</div>
+                          <div className="text-xs text-foreground/60 font-semibold">Score</div>
                         </div>
                         <div className="card-warm p-3 text-center">
                           <div className="text-xl font-extrabold text-warm-coral">{session.fillerCount}</div>
-                          <div className="text-xs text-foreground/40 font-semibold">Filler Words</div>
+                          <div className="text-xs text-foreground/60 font-semibold">Filler Words</div>
                         </div>
                         <div className="card-warm p-3 text-center">
                           <div className="text-xl font-extrabold text-warm-gold-dark">
                             {session.eyeContactPercent >= 0 ? `${session.eyeContactPercent}%` : "—"}
                           </div>
-                          <div className="text-xs text-foreground/40 font-semibold">Eye Contact</div>
+                          <div className="text-xs text-foreground/60 font-semibold">Eye Contact</div>
                         </div>
                         <div className="card-warm p-3 text-center">
                           <div className="text-xl font-extrabold text-warm-teal">{session.wordsPerMinute}</div>
-                          <div className="text-xs text-foreground/40 font-semibold">WPM</div>
+                          <div className="text-xs text-foreground/60 font-semibold">WPM</div>
                         </div>
                       </div>
 
@@ -233,9 +248,24 @@ export default function HistoryPage() {
                         </div>
                       )}
 
-                      <div className="mt-4 flex items-center gap-2 text-sm text-warm-gold-dark font-bold">
-                        <Trophy className="w-4 h-4" />
-                        +{session.xpEarned} XP earned in this session
+                      <div className="mt-4 flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 text-sm text-warm-gold-dark font-bold">
+                          <Trophy className="w-4 h-4" />
+                          +{session.xpEarned} XP earned in this session
+                        </div>
+                        <button
+                          onClick={() => deleteOne(session.id)}
+                          disabled={deletingId === session.id}
+                          className="flex items-center gap-1.5 text-xs font-bold text-warm-coral hover:text-warm-coral-dark transition disabled:opacity-50"
+                          aria-label={`Delete session from ${formatDate(session.date)}`}
+                        >
+                          {deletingId === session.id ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          ) : (
+                            <Trash2 className="w-3.5 h-3.5" />
+                          )}
+                          Delete session
+                        </button>
                       </div>
                     </div>
                   )}

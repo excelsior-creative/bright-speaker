@@ -21,7 +21,7 @@ export default function ForEducators() {
     <div className="min-h-screen bg-warm-gradient">
       <SiteNav />
 
-      <main className="max-w-5xl mx-auto px-6 pt-8 pb-16">
+      <main id="main" className="max-w-5xl mx-auto px-6 pt-8 pb-16">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 bg-warm-teal-light text-warm-teal-dark px-4 py-2 rounded-full text-sm font-bold mb-6">
             🍎 For teachers &amp; coaches
@@ -179,8 +179,8 @@ export default function ForEducators() {
           </div>
         </section>
 
-        <div className="mt-16 text-center text-foreground/40 text-sm flex items-center justify-center gap-2">
-          <Image src="/brand/mascot-logo.png" alt="" width={32} height={32} className="rounded-lg" />
+        <div className="mt-16 text-center text-foreground/60 text-sm flex items-center justify-center gap-2">
+          <Image src="/brand/mascot-logo.png" alt="" aria-hidden="true" width={32} height={32} className="rounded-lg" />
           Speaking is a muscle. Bright Speaker gives every student the reps.
         </div>
       </main>

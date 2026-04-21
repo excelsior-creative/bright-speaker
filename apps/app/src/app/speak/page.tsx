@@ -339,7 +339,7 @@ function SpeakContent() {
         )}
       </div>
 
-      <main className="max-w-5xl mx-auto px-6 py-8">
+      <main id="main" className="max-w-5xl mx-auto px-6 py-8">
         {/* PREP PHASE */}
         {phase === "prep" && (
           <div className="max-w-2xl mx-auto text-center">
@@ -415,21 +415,21 @@ function SpeakContent() {
                   <div className={`text-2xl font-extrabold ${liveFillerCount > 5 ? "text-warm-coral" : liveFillerCount > 2 ? "text-warm-gold" : "text-warm-teal"}`}>
                     {liveFillerCount}
                   </div>
-                  <div className="text-xs text-foreground/40 font-semibold mt-0.5">Filler words</div>
+                  <div className="text-xs text-foreground/60 font-semibold mt-0.5">Filler words</div>
                 </div>
                 <div className="card-warm p-3 text-center">
                   <div className="text-2xl font-extrabold text-warm-coral">
                     {transcript.split(/\s+/).filter(w => w.length > 0).length}
                   </div>
-                  <div className="text-xs text-foreground/40 font-semibold mt-0.5">Words spoken</div>
+                  <div className="text-xs text-foreground/60 font-semibold mt-0.5">Words spoken</div>
                 </div>
                 <div className="card-warm p-3 text-center">
-                  <div className={`text-2xl font-extrabold ${faceApiReady ? (eyeContact ? "text-warm-teal" : "text-warm-gold") : "text-foreground/40"}`}>
+                  <div className={`text-2xl font-extrabold ${faceApiReady ? (eyeContact ? "text-warm-teal" : "text-warm-gold") : "text-foreground/60"}`}>
                     {faceApiReady && eyeContactHistory.length > 0
                       ? `${Math.round((eyeContactHistory.filter(Boolean).length / eyeContactHistory.length) * 100)}%`
                       : "—"}
                   </div>
-                  <div className="text-xs text-foreground/40 font-semibold mt-0.5">Eye contact</div>
+                  <div className="text-xs text-foreground/60 font-semibold mt-0.5">Eye contact</div>
                 </div>
               </div>
             </div>
@@ -442,11 +442,11 @@ function SpeakContent() {
               </div>
 
               <div className="bg-muted rounded-2xl p-4 flex-1 min-h-[140px] max-h-[200px] overflow-y-auto">
-                <p className="text-xs text-foreground/30 uppercase tracking-wide mb-2 font-bold">Live transcript</p>
+                <p className="text-xs text-foreground/50 uppercase tracking-wide mb-2 font-bold">Live transcript</p>
                 <p className="text-foreground/70 text-sm leading-relaxed">
                   {transcript}
-                  {interimText && <span className="text-foreground/30 italic">{interimText}</span>}
-                  {!transcript && !interimText && <span className="text-foreground/30 italic">Start speaking...</span>}
+                  {interimText && <span className="text-foreground/50 italic">{interimText}</span>}
+                  {!transcript && !interimText && <span className="text-foreground/50 italic">Start speaking...</span>}
                 </p>
               </div>
 

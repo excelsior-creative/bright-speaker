@@ -79,6 +79,7 @@ export default function RootLayout({
       className={`${bricolage.variable} ${nunito.variable} ${jetbrainsMono.variable}`}
     >
       <body className="antialiased">
+        <a href="#main" className="skip-link">Skip to main content</a>
         <ClerkProvider>{children}</ClerkProvider>
       </body>
     </html>

@@ -98,7 +98,7 @@ export default function Dashboard() {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-6 py-8" aria-busy={!loaded}>
+      <main id="main" className="max-w-7xl mx-auto px-6 py-8" aria-busy={!loaded}>
         <span role="status" aria-live="polite" className="sr-only">
           {loaded ? "Dashboard loaded" : "Loading your progress"}
         </span>
@@ -168,7 +168,7 @@ export default function Dashboard() {
           {/* Quick Start */}
           <div className="bg-brand-gradient rounded-[1.25rem] p-8 text-white shadow-xl relative overflow-hidden">
             <div className="absolute -right-4 -bottom-4 opacity-20">
-              <Image src="/brand/mascot-logo.png" alt="" width={100} height={100} />
+              <Image src="/brand/mascot-logo.png" alt="" aria-hidden="true" width={100} height={100} />
             </div>
             <div className="relative z-10">
               <div className="text-4xl mb-4">🎙️</div>
@@ -232,8 +232,8 @@ export default function Dashboard() {
                   {prompt.title}
                 </h3>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-foreground/40 font-semibold">+{prompt.xp} XP</span>
-                  <ChevronRight className="w-4 h-4 text-foreground/30 group-hover:text-warm-coral transition" />
+                  <span className="text-foreground/60 font-semibold">+{prompt.xp} XP</span>
+                  <ChevronRight className="w-4 h-4 text-foreground/50 group-hover:text-warm-coral transition" />
                 </div>
               </Link>
             ))}
@@ -241,20 +241,39 @@ export default function Dashboard() {
         </div>
 
         {/* Recent Sessions */}
-        {loaded && recentSessions.length > 0 && (
+        {loaded && (
           <div className="card-warm p-8 mb-8">
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="text-xl font-extrabold text-foreground">Recent Sessions</h2>
                 <p className="text-foreground/50 text-sm">Your latest practice runs</p>
               </div>
-              <Link
-                href="/history"
-                className="text-sm text-warm-coral hover:text-warm-coral-dark font-bold flex items-center gap-1"
-              >
-                View all <ChevronRight className="w-4 h-4" />
-              </Link>
+              {recentSessions.length > 0 && (
+                <Link
+                  href="/history"
+                  className="text-sm text-warm-coral hover:text-warm-coral-dark font-bold flex items-center gap-1"
+                >
+                  View all <ChevronRight className="w-4 h-4" />
+                </Link>
+              )}
             </div>
+
+            {recentSessions.length === 0 && (
+              <div className="text-center py-8">
+                <div className="text-4xl mb-3" aria-hidden="true">🎙️</div>
+                <p className="font-bold text-foreground mb-1">No sessions yet</p>
+                <p className="text-foreground/60 text-sm mb-5">
+                  Finish your first 60-second speech to start earning XP and badges.
+                </p>
+                <Link
+                  href={`/speak?prompt=${randomPromptId}`}
+                  className="inline-flex items-center gap-2 bg-warm-coral text-white px-5 py-2.5 rounded-xl font-bold btn-playful shadow-md"
+                >
+                  <Play className="w-4 h-4 fill-white" />
+                  Start your first session
+                </Link>
+              </div>
+            )}
 
             <div className="space-y-3">
               {recentSessions.map((session) => (
@@ -264,7 +283,7 @@ export default function Dashboard() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="font-bold text-foreground text-sm truncate">{session.promptTitle}</div>
-                    <div className="flex items-center gap-3 text-xs text-foreground/40 mt-0.5">
+                    <div className="flex items-center gap-3 text-xs text-foreground/60 mt-0.5">
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         {formatDate(session.date)}
@@ -280,7 +299,7 @@ export default function Dashboard() {
                     <div className={`text-lg font-extrabold ${getScoreColor(session.score)}`}>
                       {session.score}
                     </div>
-                    <div className="text-xs text-foreground/40 font-semibold">+{session.xpEarned} XP</div>
+                    <div className="text-xs text-foreground/60 font-semibold">+{session.xpEarned} XP</div>
                   </div>
                 </div>
               ))}
@@ -300,9 +319,9 @@ export default function Dashboard() {
                 </div>
               ))
             ) : (
-              <p className="text-foreground/40 text-sm">Complete your first session to earn badges! 🏅</p>
+              <p className="text-foreground/60 text-sm">Complete your first session to earn badges! 🏅</p>
             )}
-            <div className="flex items-center gap-2 bg-muted px-4 py-2 rounded-full text-foreground/30">
+            <div className="flex items-center gap-2 bg-muted px-4 py-2 rounded-full text-foreground/50">
               <Star className="w-4 h-4" />
               <span className="text-sm font-semibold">More to unlock...</span>
             </div>

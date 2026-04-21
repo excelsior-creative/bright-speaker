@@ -15,9 +15,9 @@ export default function PrivacyPage() {
     <div className="min-h-screen bg-warm-gradient">
       <SiteNav />
 
-      <main className="max-w-3xl mx-auto px-6 pt-8 pb-16">
+      <main id="main" className="max-w-3xl mx-auto px-6 pt-8 pb-16">
         <div className="mb-10">
-          <Link href="/" className="text-sm font-semibold text-foreground/40 hover:text-warm-coral">
+          <Link href="/" className="text-sm font-semibold text-foreground/60 hover:text-warm-coral">
             ← Back
           </Link>
         </div>
@@ -119,7 +119,7 @@ export default function PrivacyPage() {
             .
           </p>
 
-          <p className="text-xs text-foreground/40 mt-10">
+          <p className="text-xs text-foreground/60 mt-10">
             Last updated: 2026-04-17.
           </p>
         </section>

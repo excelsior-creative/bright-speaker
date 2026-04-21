@@ -53,3 +53,8 @@ export async function clearSessions(): Promise<void> {
   const res = await fetch('/api/sessions', { method: 'DELETE' });
   await handle<{ ok: true }>(res);
 }
+
+export async function deleteSessionById(id: string): Promise<void> {
+  const res = await fetch(`/api/sessions/${encodeURIComponent(id)}`, { method: 'DELETE' });
+  await handle<{ ok: true }>(res);
+}
