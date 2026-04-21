@@ -1,6 +1,6 @@
 # Product notes
 
-_What the product actually is today, as of 2026-04-20. Keep accurate._
+_What the product actually is today, as of 2026-04-21. Keep accurate._
 
 ## Repo layout
 
@@ -21,13 +21,16 @@ Top-level files:
 ## Stack
 
 - **Framework**: Next.js 16.1.6 App Router, React 19, TypeScript 5.
-- **Styling**: Tailwind v4. The landing page now uses a distinct
-  "sticker-brand" design system (cream background, hard borders,
-  high-contrast sun/coral/blue fills, chunky drop shadows). The
-  older warm-coral/warm-teal palette still lives on `/for-schools`,
-  `/for-educators`, `/privacy`, `/terms`, `/contact`, `/blog`,
-  `/history`, `/dashboard`, `/speak`. **This is a design-system split
-  that should be reconciled** — see backlog.
+- **Styling**: Tailwind v4. Sticker-brand design system (cream
+  background, hard borders, high-contrast sun/coral/blue fills,
+  chunky drop shadows) is now the product's primary look. Pages
+  on the sticker-brand as of 2026-04-21: `/`, `/for-schools`,
+  `/for-educators`, new blog post `/blog/why-pauses-beat-um`.
+  Still on the older warm-coral/warm-teal palette: `/privacy`,
+  `/terms`, `/contact`, `/blog` index + older posts, `/history`,
+  `/dashboard`, `/speak`. The `--warm-*` CSS variables still
+  alias to the new palette so cascades hold. Reconciliation is
+  the night-4 priority.
 - **Auth**: Clerk (`@clerk/nextjs` ^7.0.4). Middleware at
   `apps/app/src/proxy.ts` wraps everything with `clerkMiddleware()`.
   `apps/app/src/app/sign-in/[[...sign-in]]/page.tsx` and `.../sign-up/`
@@ -63,8 +66,11 @@ Top-level files:
   results. Webcam preview, live transcript, live filler counter, live
   eye-contact pill.
 - `/history` — full session list, expandable; clear-history button.
-- `/for-educators`, `/for-schools` — still on the older warm-coral/
-  warm-teal design. Copy is on the honest side.
+- `/for-educators`, `/for-schools` — rewritten 2026-04-21 onto the
+  sticker-brand system. K–5 is the primary audience on both; the
+  6–12 lane is explicit and secondary. All honest compliance
+  stances preserved (no SOC 2 / COPPA / FERPA claims; Web Speech
+  Google dependency disclosed in the FAQ).
 - `/privacy` — plain-English data-flow page. Explicitly non-legal.
 - `/terms` — plain-language stub.
 - `/contact` — mailto-backed (`hello@brightspeaker.com`). Phase 0.3 of
@@ -145,23 +151,29 @@ Tonight's honesty pass on the homepage:
 
 ## Still overclaiming somewhere
 
-- `apps/app/src/components/CoachUI.tsx` is a mock with "Mrs. Rivera"
-  + animated fake metrics. Called out in LAUNCH_CHECKLIST Appendix A
-  as a thing to optionally tighten. Not shipped tonight.
-- `/for-schools` still uses warm-coral/warm-teal; hasn't been
-  reconciled against the sticker-brand homepage. Copy is honest.
+- `apps/app/src/components/CoachUI.tsx` still shows animated fake
+  metrics (eye contact / pacing / volume / posture bars). The
+  fabricated "Mrs. Rivera" URL slug was replaced with `/classroom/
+  demo/` tonight, and the honesty regression test now guards against
+  regressions, but the four mocked metrics remain — and only two of
+  those (eye contact, pacing) are actually implemented. Flagged in
+  LAUNCH_CHECKLIST Appendix A.
 
 ## Known issues / smells
 
-- The `/for-schools` and `/for-educators` pages live in a different
-  design system than the homepage. Needs an unified visual pass.
+- `/privacy`, `/terms`, `/contact`, `/blog` index + older posts,
+  `/history`, `/dashboard`, `/speak` still use the warm-coral/
+  warm-teal system. Queued for night 4 — the `--warm-*` aliases
+  still resolve to the new palette so it's a visual-pass, not a
+  hard break.
 - `startWebcam` error path still uses `alert()` (per LAUNCH_CHECKLIST
   2.x and existing backlog).
-- Filler word list still over-flags younger students ("so", "well",
-  "actually", "literally"). Backlog item for grade-band tuning.
+- Filler-word list is now tuned for K–5 (only true hesitations:
+  um/uh/er/ah). 6–12 will need a wider grade-band list when that
+  surface exists.
 - Face-API weights load on every `/speak` visit. Cache via service
   worker.
 - Silent failure on non-Web-Speech browsers (Firefox).
 - `public/brand/favicon-source.png` is a 1.8 MB unused source file.
 - `brightspeaker.com` still 403s to WebFetch — crawler/indexability
-  unknown. Open ask in INBOX.
+  unknown. Open ask in INBOX #1, now 🔴.

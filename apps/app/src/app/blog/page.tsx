@@ -11,6 +11,15 @@ export const metadata: Metadata = {
 
 const posts = [
   {
+    slug: "why-pauses-beat-um",
+    title: "Why pauses beat \"um\" — a 2-minute explainer for K–5 classrooms",
+    excerpt:
+      "The fastest way to help an elementary student stop saying \"um\" is not to tell them to stop saying \"um.\" A one-page, printable explainer for the speaking corner of your classroom.",
+    date: "2026-04-21",
+    readMinutes: 2,
+    audience: "K–5 classroom teachers",
+  },
+  {
     slug: "five-minute-elementary-speaking-warmup",
     title: "A 5-minute speaking warm-up for elementary classrooms",
     excerpt:

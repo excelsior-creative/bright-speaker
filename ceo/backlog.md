@@ -16,11 +16,15 @@ _Unscheduled. Tag with area. Groom weekly; promote to roadmap when ready._
 - [P][bug] If speech recognition isn't supported (Safari, Firefox
   historically), the user sees a silent failure. Detect and show a
   "please use Chrome on your school Chromebook" message.
-- [P][bug] Filler word "so" and "well" are over-flagged; they're often
-  legitimate speech. Tune the detector.
-- [P][bug] `liveFillerCount` counts `"actually"` and `"literally"` —
+- [P][bug] ~~Filler word "so" and "well" are over-flagged; they're often
+  legitimate speech. Tune the detector.~~ ✅ Resolved night 3 (2026-04-21):
+  K–5 default is now um/uh/er/ah only. See `speak/page.tsx:FILLER_WORDS`
+  and `ceo/journal/2026-04-21.md`.
+- [P][bug] ~~`liveFillerCount` counts `"actually"` and `"literally"` —
   age-inappropriate flagging for younger students. Consider a grade-
-  band-tuned filler list.
+  band-tuned filler list.~~ ✅ Resolved night 3 (2026-04-21) by the same
+  K–5 tuning. A 6–12 grade-band list is now a future-surface item, not
+  a current bug.
 - [P][perf] `tinyFaceDetector` weights are loaded on every `/speak`
   visit. Cache via service worker or preload on dashboard.
 - [P][ux] Session length fixed at 60s; add 30s and 90s options per PRD.
@@ -54,9 +58,13 @@ _Unscheduled. Tag with area. Groom weekly; promote to roadmap when ready._
   own WebFetch bot — confirm with Brandon the site is publicly
   reachable.
 - [G][content] Blog posts:
-  - How to help middle-schoolers reduce filler words (first post).
-  - A 10-minute weekly speaking drill for ELA classrooms.
-  - Speech & debate practice on a budget.
+  - ~~How to help middle-schoolers reduce filler words (first post).~~
+    ✅ Shipped `blog/reduce-filler-words-k12` (re-angled K–5).
+  - ~~A 10-minute weekly speaking drill for ELA classrooms.~~ ✅ Shipped
+    as `blog/five-minute-elementary-speaking-warmup` (night 2, K–5).
+  - ~~Why pauses beat "um" (K–5 parent/teacher explainer).~~ ✅ Shipped
+    night 3 as `blog/why-pauses-beat-um`.
+  - Speech & debate practice on a budget (6–12 secondary lane).
   - What research actually says about practice-based speaking
     improvement in K-12.
 - [G][outreach] Enrich the ICP list. Start with NSDA coach directory
@@ -73,6 +81,17 @@ _Unscheduled. Tag with area. Groom weekly; promote to roadmap when ready._
 - [T] Retention policy (how long do we keep transcripts / scores?).
 - [T] Plain-English privacy explainer (not the legal policy; a public
   page a teacher can skim in 30 seconds).
+
+## Design reconciliation (sticker-brand rollout)
+
+- [P][design] ~~Port `/for-schools` to sticker-brand.~~ ✅ Night 3.
+- [P][design] ~~Port `/for-educators` to sticker-brand.~~ ✅ Night 3.
+- [P][design] Port `/blog` index + existing posts to sticker-brand.
+- [P][design] Port `/privacy`, `/terms`, `/contact` to sticker-brand.
+- [P][design] Port `/dashboard`, `/history`, `/speak` to sticker-brand
+  (bigger lift — these are in-product surfaces).
+- [P][design] Remove the `--warm-*` CSS variable aliases once every
+  page is off them.
 
 ## Infrastructure / hygiene
 
