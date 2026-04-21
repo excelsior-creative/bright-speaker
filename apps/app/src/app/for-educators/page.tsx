@@ -1,189 +1,249 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
-import { CheckCircle, Mic, Eye, Clock, Users, Shield } from "lucide-react";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
 
 export const metadata: Metadata = {
   title: "For teachers & coaches — Bright Speaker",
   description:
-    "How Bright Speaker fits into ELA units, speech & debate practice, and Socratic seminars. Browser-based speaking practice for K-12 classrooms. Free during pilots.",
+    "How Bright Speaker fits into an elementary classroom day: 5-minute warm-ups, Common Core SL.K–SL.5 alignment, private-by-design practice, and no new grading pile. Free during pilots.",
   openGraph: {
     title: "Bright Speaker for teachers & coaches",
     description:
-      "Speaking practice that doesn't add another video pile to grade.",
+      "Speaking practice that doesn't add another video pile to grade. Built for K–5 classrooms.",
   },
+  alternates: { canonical: "/for-educators" },
 };
+
+const FEATURES = [
+  {
+    icon: "🎤",
+    title: "Filler-word coaching",
+    body: "The live counter catches the classic K–5 culprits — \"um,\" \"uh,\" \"er,\" \"ah\" — without over-flagging the normal stuff kids say. Over a few sessions, the pause habit starts to stick.",
+  },
+  {
+    icon: "👀",
+    title: "Eye contact in frame",
+    body: "On-device camera analysis shows students a friendly reminder when they drift off-camera. The video itself never leaves the Chromebook.",
+  },
+  {
+    icon: "⏱",
+    title: "60-second reps",
+    body: "Students pick a prompt and speak for one minute. Short enough to fit a morning-meeting warm-up, long enough to build speaking stamina.",
+  },
+  {
+    icon: "👩‍🏫",
+    title: "Classroom view (coming soon)",
+    body: "See who's practicing, how often, and where they're stuck. CSV export for your own gradebook or parent reports. Pilot teachers help shape what ships.",
+  },
+  {
+    icon: "📚",
+    title: "Aligned to SL.K–SL.5",
+    body: "Every prompt maps to Common Core Speaking & Listening standards: conversation rules (SL.1), presentation (SL.4), and adaptation (SL.6). No new rubric to build.",
+  },
+  {
+    icon: "🔒",
+    title: "Private by design",
+    body: "Student video is processed in the browser and never uploaded. Transcripts and scores are all we store. No ads, no reselling, no surprise data flows.",
+  },
+];
+
+const WEEK = [
+  {
+    day: "Monday",
+    body: "Whole class does one 60-second warm-up during morning meeting or bell-work. Picks a prompt, speaks, sees their result. Nobody has to share.",
+  },
+  {
+    day: "Wednesday",
+    body: "Assign a prompt that ties to this week's unit — retell the story, describe a character, explain how something works. Students practice once before a real presentation day.",
+  },
+  {
+    day: "Friday",
+    body: "Open the teacher view for two minutes: who practiced, who didn't, who's stuck. Call out growth, not grades. Done.",
+  },
+];
+
+const AUDIENCE = [
+  {
+    emoji: "🎒",
+    title: "K–5 classroom teachers",
+    body: "The oral-presentation expectations in SL.K–SL.5 are real, and your morning meeting is already doing some of the work. BrightSpeaker gives every student the reps a single teacher can&apos;t realistically run 1:1.",
+    bullets: [
+      "Fits a 5-minute morning-meeting slot with zero prep.",
+      "Feedback is about the speaking, not the speaker.",
+      "Works on the Chromebooks or iPads you already have.",
+    ],
+  },
+  {
+    emoji: "📖",
+    title: "Middle-school ELA (6–8)",
+    body: "The oral presentation unit is valuable and exhausting to run at scale. BrightSpeaker gives every student low-stakes reps leading up to the real presentation, so presentation day feels earned.",
+    bullets: [
+      "Same prompts, same standards map, same privacy stance.",
+      "Student-facing feedback stays warm and growth-framed.",
+      "Speech &amp; debate coaches use it as between-meeting homework.",
+    ],
+  },
+];
 
 export default function ForEducators() {
   return (
-    <div className="min-h-screen bg-warm-gradient">
+    <div className="min-h-screen bg-[var(--cream)]">
       <SiteNav />
 
-      <main className="max-w-5xl mx-auto px-6 pt-8 pb-16">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 bg-warm-teal-light text-warm-teal-dark px-4 py-2 rounded-full text-sm font-bold mb-6">
-            🍎 For teachers &amp; coaches
-          </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-foreground leading-tight mb-5">
-            Speaking reps for every student — without adding another video pile to grade.
+      {/* ---------- Hero ---------- */}
+      <section className="pt-10 pb-20">
+        <div className="max-w-[1100px] mx-auto px-6 md:px-10 text-center">
+          <span className="pill mb-5">
+            <span className="w-2 h-2 rounded-full bg-[var(--coral)] inline-block" />
+            For teachers &amp; coaches
+          </span>
+          <h1 className="text-[clamp(40px,4.8vw,64px)]">
+            Speaking reps for every student —{" "}
+            <span
+              style={{
+                background:
+                  "linear-gradient(180deg, transparent 62%, var(--sun) 62%, var(--sun) 92%, transparent 92%)",
+                padding: "0 4px",
+              }}
+            >
+              without another video pile to grade
+            </span>
+            .
           </h1>
-          <p className="text-lg text-foreground/60 leading-relaxed">
-            Bright Speaker gives your students structured, private practice
-            on the things that actually make a speaker: filler words, pacing,
-            and eye contact. You get a classroom view. They get reps.
+          <p className="mt-6 text-[19px] text-[var(--ink-2)] max-w-[62ch] mx-auto leading-[1.5]">
+            BrightSpeaker gives your students structured, private practice on
+            the things that make a speaker: filler words, pacing, and eye
+            contact. You get a classroom view. They get reps.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
-            <Link
-              href="/dashboard"
-              className="flex items-center gap-2 bg-warm-coral text-white px-8 py-4 rounded-2xl font-extrabold text-lg btn-playful shadow-xl shadow-warm-coral/30"
-            >
-              Try a practice session
-            </Link>
-            <Link
-              href="/contact"
-              className="text-foreground/70 hover:text-warm-teal-dark font-semibold px-4 py-4 transition"
-            >
-              Talk to us about a classroom pilot →
-            </Link>
+          <div className="flex gap-3.5 mt-8 flex-wrap justify-center">
+            <Link href="/dashboard" className="btn btn-primary">Try a practice session →</Link>
+            <Link href="/contact" className="btn">Talk to us about a pilot</Link>
+          </div>
+          <div className="flex gap-[22px] mt-7 flex-wrap text-sm font-semibold text-[var(--ink-2)] justify-center">
+            <span className="inline-flex items-center gap-1.5 whitespace-nowrap">🧒 Ages 5–11 first</span>
+            <span className="inline-flex items-center gap-1.5 whitespace-nowrap">📚 Aligned to SL.K–SL.5</span>
+            <span className="inline-flex items-center gap-1.5 whitespace-nowrap">💻 Chromebook &amp; iPad ready</span>
           </div>
         </div>
+      </section>
 
-        <section className="grid md:grid-cols-3 gap-6 mb-20">
-          {[
-            {
-              icon: <Mic className="w-6 h-6" />,
-              title: "Filler-word coaching",
-              desc: "The live counter catches \"um,\" \"uh,\" \"like,\" and \"you know\" as students speak. Over a few sessions, the pause habit starts to stick.",
-            },
-            {
-              icon: <Eye className="w-6 h-6" />,
-              title: "Eye contact in frame",
-              desc: "On-device camera analysis shows students a friendly reminder when they drift off-camera. The video itself never leaves the Chromebook.",
-            },
-            {
-              icon: <Clock className="w-6 h-6" />,
-              title: "60-second reps",
-              desc: "Students pick a prompt and speak for one minute. Short enough to fit in a warm-up, long enough to build real speaking stamina.",
-            },
-            {
-              icon: <Users className="w-6 h-6" />,
-              title: "Classroom view",
-              desc: "See which students are practicing, how often, and where they're stuck. CSV export for your own gradebook or progress reports.",
-            },
-            {
-              icon: <CheckCircle className="w-6 h-6" />,
-              title: "Aligned to SL standards",
-              desc: "Prompts map to Common Core Speaking & Listening strands: presentation (SL.4), clarity (SL.6), and collaborative conversations (SL.1).",
-            },
-            {
-              icon: <Shield className="w-6 h-6" />,
-              title: "Private by design",
-              desc: "Student video is processed in the browser and never uploaded. We store transcripts and scores. No ads, no reselling, no surprise data flows.",
-            },
-          ].map((f) => (
-            <div key={f.title} className="card-warm p-6">
-              <div className="w-10 h-10 rounded-xl bg-warm-coral-light text-warm-coral flex items-center justify-center mb-4">
-                {f.icon}
-              </div>
-              <h3 className="font-extrabold text-foreground mb-2">{f.title}</h3>
-              <p className="text-sm text-foreground/60 leading-relaxed">{f.desc}</p>
-            </div>
-          ))}
-        </section>
-
-        <section className="card-warm p-8 mb-20">
-          <h2 className="text-2xl font-extrabold text-foreground mb-2">
-            How a week with Bright Speaker looks
-          </h2>
-          <p className="text-foreground/60 mb-6">
-            A realistic cadence — nothing added to your prep, and no grading pile.
-          </p>
-          <div className="space-y-4">
-            {[
-              { day: "Monday", what: "Whole class does one 60-second warm-up session during morning routine or bell-work (picks a prompt, speaks, sees their result)." },
-              { day: "Wednesday", what: "Assign a prompt that ties to the week's unit (book talk, persuasive argument, how-to explanation)." },
-              { day: "Friday", what: "Open the teacher view for two minutes: who practiced, who didn't, who's stuck on filler words. Call out growth, not grades." },
-            ].map((row) => (
-              <div key={row.day} className="flex gap-4 items-start">
-                <div className="w-24 flex-shrink-0 font-extrabold text-warm-coral">{row.day}</div>
-                <div className="text-foreground/70 leading-relaxed">{row.what}</div>
+      {/* ---------- Features ---------- */}
+      <section className="band-paper py-24">
+        <div className="max-w-[1100px] mx-auto px-6 md:px-10">
+          <div className="text-center mb-14">
+            <span className="eyebrow block mb-3.5">What your students get</span>
+            <h2 className="text-[clamp(32px,3.4vw,48px)]">
+              A speaking coach for every kid in the room.
+            </h2>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-[18px]">
+            {FEATURES.map((f) => (
+              <div key={f.title} className="feature-card">
+                <div className="text-[28px]">{f.icon}</div>
+                <h3 className="mt-3.5 text-[22px]">{f.title}</h3>
+                <p className="text-[var(--ink-2)] text-[15px] mt-1.5">{f.body}</p>
               </div>
             ))}
           </div>
-        </section>
-
-        <section className="mb-20">
-          <h2 className="text-2xl font-extrabold text-foreground mb-6 text-center">
-            Built for the coach and teacher we were thinking about from day one
-          </h2>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="card-warm p-8">
-              <div className="text-3xl mb-3">🎤</div>
-              <h3 className="font-extrabold text-foreground mb-2">Speech &amp; debate coaches</h3>
-              <p className="text-foreground/60 leading-relaxed mb-4">
-                You can&apos;t run 1:1 drills with 30 kids. Structured reps
-                between practices are how an average speaker becomes a
-                varsity-level one. Use Bright Speaker as homework reps, as
-                pre-tournament prep, or as open-lab practice during rotations.
-              </p>
-              <ul className="text-sm text-foreground/70 space-y-2">
-                <li>• Assign prompts that match the event (extemp, persuasive, informative).</li>
-                <li>• See which students are actually practicing outside of meetings.</li>
-                <li>• Pull a CSV for your program&apos;s own growth reporting.</li>
-              </ul>
-            </div>
-
-            <div className="card-warm p-8">
-              <div className="text-3xl mb-3">📚</div>
-              <h3 className="font-extrabold text-foreground mb-2">ELA teachers, grades 4–8</h3>
-              <p className="text-foreground/60 leading-relaxed mb-4">
-                The oral presentation unit is valuable — and exhausting to run
-                at scale. Bright Speaker gives every student low-stakes reps
-                leading up to the real presentation, so the presentation day
-                feels less scary and more earned.
-              </p>
-              <ul className="text-sm text-foreground/70 space-y-2">
-                <li>• Fits a 5-minute warm-up slot without prep.</li>
-                <li>• Student-facing feedback is about the speaking, not the speaker.</li>
-                <li>• Maps to Speaking &amp; Listening standards your admin already knows.</li>
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        <section className="bg-brand-gradient rounded-3xl p-10 text-white text-center">
-          <h2 className="text-3xl font-extrabold mb-3">Try it with a classroom this semester</h2>
-          <p className="text-white/80 max-w-2xl mx-auto mb-6">
-            Free 30-day pilots, no install, Google Workspace for Education
-            sign-in, and a 20-minute onboarding call with the founder.
-            We&apos;re looking for a small number of classrooms to help us
-            make this product what it needs to be.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link
-              href="/contact"
-              className="bg-white text-warm-coral px-8 py-4 rounded-2xl font-extrabold btn-playful shadow-lg"
-            >
-              Start a pilot
-            </Link>
-            <Link
-              href="/dashboard"
-              className="text-white/90 font-semibold underline underline-offset-4 hover:text-white transition px-4 py-4"
-            >
-              Or try a session first →
-            </Link>
-          </div>
-        </section>
-
-        <div className="mt-16 text-center text-foreground/40 text-sm flex items-center justify-center gap-2">
-          <Image src="/brand/mascot-logo.png" alt="" width={32} height={32} className="rounded-lg" />
-          Speaking is a muscle. Bright Speaker gives every student the reps.
         </div>
-      </main>
+      </section>
+
+      {/* ---------- Weekly cadence ---------- */}
+      <section className="py-24">
+        <div className="max-w-[1100px] mx-auto px-6 md:px-10">
+          <div className="text-center mb-14">
+            <span className="eyebrow block mb-3.5">A week of BrightSpeaker</span>
+            <h2 className="text-[clamp(32px,3.4vw,48px)]">
+              A realistic cadence. No new prep.
+            </h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-[18px]">
+            {WEEK.map((row) => (
+              <div key={row.day} className="step">
+                <div
+                  className="step-num"
+                  style={{
+                    background: "var(--coral)",
+                    color: "#fff",
+                    width: "auto",
+                    padding: "2px 14px",
+                    borderRadius: 999,
+                  }}
+                >
+                  {row.day}
+                </div>
+                <p className="text-[var(--ink-2)] text-[15px] mt-2 mb-0 leading-relaxed">{row.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- Audiences ---------- */}
+      <section className="band-paper py-24">
+        <div className="max-w-[1100px] mx-auto px-6 md:px-10">
+          <div className="text-center mb-14">
+            <span className="eyebrow block mb-3.5">Who it&apos;s for</span>
+            <h2 className="text-[clamp(32px,3.4vw,48px)]">
+              Built for the teacher we had in mind from day one.
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-[18px]">
+            {AUDIENCE.map((a) => (
+              <div key={a.title} className="feature-card">
+                <div className="text-[32px]">{a.emoji}</div>
+                <h3 className="mt-3 text-[24px]">{a.title}</h3>
+                <p className="text-[var(--ink-2)] text-[15px] mt-2 leading-relaxed">
+                  {a.body}
+                </p>
+                <ul className="list-none p-0 mt-4 grid gap-2 text-[15px]">
+                  {a.bullets.map((b) => (
+                    <li key={b} className="flex gap-2.5 items-start">
+                      <span style={{ color: "var(--green)", fontWeight: 900 }}>✓</span>
+                      <span className="text-[var(--ink-2)]">{b}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- CTA ---------- */}
+      <section className="pb-24">
+        <div className="max-w-[1280px] mx-auto px-6 md:px-10">
+          <div className="footer-cta">
+            <div>
+              <span className="eyebrow" style={{ color: "var(--sun)" }}>
+                Ready when you are
+              </span>
+              <h2 className="mt-2.5">Try it with a classroom this semester.</h2>
+              <p>
+                Free 30-day pilots, no install, a 20-minute onboarding call
+                with the founder. We&apos;re looking for a small number of
+                K–5 classrooms to help us make this product what it needs
+                to be.
+              </p>
+            </div>
+            <div className="flex flex-col gap-3.5">
+              <Link href="/contact" className="btn btn-primary">Start a pilot →</Link>
+              <Link href="/dashboard" className="btn" style={{ background: "#fff" }}>
+                Or try a session first
+              </Link>
+              <span className="text-[13px] text-center" style={{ color: "#B9C0D4" }}>
+                Questions?{" "}
+                <a href="mailto:hello@brightspeaker.com" className="text-white underline">
+                  hello@brightspeaker.com
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <SiteFooter />
     </div>

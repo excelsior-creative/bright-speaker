@@ -5,14 +5,17 @@ the journal night where it was resolved._
 
 ## Open
 
-### 🟡 1 — Is brightspeaker.com reachable by crawlers?
-- **Posted:** 2026-04-17 (night 1) — still open 2026-04-20.
+### 🔴 1 — Is brightspeaker.com reachable by crawlers? _(escalated night 3)_
+- **Posted:** 2026-04-17 (night 1) — still open 2026-04-21.
+- **Status:** Third night in a row. Escalated from 🟡 to 🔴
+  tonight. Every piece of blog and outreach work we ship is
+  undercut by this. We now have three K–5-aligned blog posts,
+  a reconciled `/for-schools` page, and four outreach drafts —
+  none of it compounds if crawlers can't reach the site and
+  prospects can't land on a link we send them.
 - **Context:** WebFetch to https://brightspeaker.com returned 403
-  on night 1 and again tonight (night 2). Could be Vercel deployment
-  protection, Cloudflare WAF, or a preview-only deployment. If this
-  is intentional (pre-launch gating), fine — but we can't rank in
-  search if search engines also get 403'd, and the blog post work
-  from nights 1 and 2 won't compound.
+  on nights 1, 2, and 3. Could be Vercel deployment protection,
+  Cloudflare WAF, or a preview-only deployment.
 - **What I need:** Confirm the site is publicly reachable, or tell
   me the deployment URL I should be treating as the "real" site
   for SEO and social sharing work.
@@ -57,16 +60,26 @@ the journal night where it was resolved._
 - **What I need:** Confirm this matches your intent. If not, we can
   revert the positioning documents; the homepage is your call.
 
-### 🟢 6 — FYI: design-system split between homepage and the rest
-- **Posted:** 2026-04-20 (night 2).
-- **Context:** The new sticker-brand homepage doesn't match
-  `/for-schools`, `/for-educators`, `/privacy`, `/terms`, `/contact`,
-  `/blog`, `/history`, or `/dashboard` — those are still on the
-  warm-coral/warm-teal design. Copy is honest, but the brand looks
-  disconnected when a visitor leaves the homepage.
-- **What I need:** Nothing immediately. Queued for a later night
-  unless you want me to prioritize.
+### 🟢 6 — FYI: design-system split between homepage and the rest _(partially resolved night 3)_
+- **Posted:** 2026-04-20 (night 2). Partially resolved 2026-04-21.
+- **Context:** `/for-schools` and `/for-educators` are now on the
+  sticker-brand system as of night 3. `/privacy`, `/terms`,
+  `/contact`, `/blog` index + posts, `/history`, and `/dashboard`
+  are still on the warm-coral/warm-teal design. Queued for night 4.
+- **What I need:** Nothing. Tracking in roadmap.
+
+### 🟢 7 — FYI: honesty pass is now codified
+- **Posted:** 2026-04-21 (night 3).
+- **Context:** `pnpm test` now fails if any of 10 banned claims
+  (MediaPipe, SOC 2, Student Privacy Pledge, COPPA/FERPA claims,
+  Clever, ClassLink, fabricated teacher names, inflated counts)
+  appear in the app source. Allowlist exists for legitimate
+  "we do not have X" disclaimers.
+- **What I need:** Nothing. The test lives at
+  `apps/app/src/lib/honesty.test.ts` — update it (with sign-off)
+  the day any underlying claim becomes true.
 
 ## Resolved
 
-_Nothing yet._
+_Nothing yet. INBOX #6 partially resolved above but left open
+until all pages are reconciled._

@@ -82,7 +82,7 @@ export default function CoachUI() {
         <div className="dots">
           <span /><span /><span />
         </div>
-        <div className="url">brightspeaker.com/classroom/mrs-rivera/activity</div>
+        <div className="url">brightspeaker.com/classroom/demo/activity</div>
       </div>
       <div className="mock-body">
         <div className="mock-video">

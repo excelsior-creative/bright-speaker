@@ -1,218 +1,283 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Shield, Server, Lock, FileText, CheckCircle2 } from "lucide-react";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
 
 export const metadata: Metadata = {
   title: "For schools & districts — Bright Speaker",
   description:
-    "How Bright Speaker fits into a Chromebook district: student data handling, Google Workspace for Education sign-in, classroom pilots, and the path from a single teacher to a district license.",
+    "How Bright Speaker fits into an elementary Chromebook program: private-by-design student data handling, Google Workspace for Education sign-in, and the path from a single K–5 classroom to a district license.",
   openGraph: {
     title: "Bright Speaker for schools & districts",
     description:
-      "Private-by-design K-12 speaking practice. Chromebook-native. Free pilots.",
+      "Private-by-design speaking practice for K–5 classrooms. Chromebook-native. Pilots are free.",
   },
+  alternates: { canonical: "/for-schools" },
 };
+
+const STEPS = [
+  {
+    n: 1,
+    title: "Free classroom pilot",
+    body: "One K–5 teacher runs BrightSpeaker with their class for 30 days. We host a 20-minute onboarding call and a 20-minute day-30 review. No paperwork, no payment.",
+  },
+  {
+    n: 2,
+    title: "Building rollout",
+    body: "If the pilot clears, we expand to the building — more classrooms, shared prompts, a building admin seat. Still free while we work through your district's data review.",
+  },
+  {
+    n: 3,
+    title: "School or district license",
+    body: "Per-student annual pricing designed for elementary building budgets. Google Workspace for Education SSO, roster provisioning, a signed DPA, and named support.",
+  },
+];
+
+const DATA_ITEMS = [
+  {
+    title: "Video never leaves the device",
+    body: "The webcam stream is processed in the browser. It is not uploaded, not stored, not shared. Every practice session is private to the student.",
+  },
+  {
+    title: "Minimum viable data",
+    body: "We store what we need to show a student their progress: transcripts, scores, badges, timestamps. We do not ask for birthdate, phone, or home address.",
+  },
+  {
+    title: "Sign in with Google Workspace for Education",
+    body: "Teachers use the school account they already have. Student access in pilots runs with class-code entry so kids never need a new password. Workspace SSO is on the near-term roadmap for paid deployments.",
+  },
+  {
+    title: "DPA-ready for paid deployments",
+    body: "We will sign a data privacy agreement aligned with your district's standards — NDPA, SDPC, or your local variant — before a paid deployment goes live.",
+  },
+];
+
+const FAQS = [
+  {
+    q: "Does BrightSpeaker work on our Chromebooks?",
+    a: "Yes. The app runs in Chrome, uses the student's webcam and microphone, and needs no installs or extensions. We recommend Chromebooks made in the last four years; older models can run it but may show a slight lag on the eye-contact analysis.",
+  },
+  {
+    q: "How does sign-in work?",
+    a: "Teachers sign in with Google Workspace for Education. During a pilot, students join with a class code on a shared Chromebook — no new student account required. Workspace SSO for students is on the near-term roadmap for paid deployments, and a district admin can restrict access to a managed domain.",
+  },
+  {
+    q: "What happens to the student video?",
+    a: "It stays on the student's device. The camera stream is used for live eye-contact feedback in the browser, and it's discarded when the session ends. We never upload, store, or share student video.",
+  },
+  {
+    q: "Is the feedback safe for kids?",
+    a: "Today, our feedback is rule-based — specific, warm, and age-appropriate by design. Before we ship any LLM-generated feedback to students, we review every prompt with K–5 teachers. Feedback is about the speaking, not the speaker. No ranking, no 'bad job,' no comparisons between kids.",
+  },
+  {
+    q: "What about speech-to-text — where does the audio go?",
+    a: "Chrome's built-in Web Speech API transcribes the student's audio, which in Chrome means the audio stream is sent to Google for transcription — the same path used by Google Docs voice typing. We disclose this plainly on our privacy page. On-device speech-to-text is on our roadmap.",
+  },
+  {
+    q: "What does a pilot cost?",
+    a: "Nothing during the pilot window. When we publish commercial pricing, it is designed for elementary building budgets — not enterprise SaaS. Title I schools get a standing 50% discount.",
+  },
+  {
+    q: "Can we sign a DPA?",
+    a: "Yes, before any paid deployment. For pilots, we will work with your team if a DPA is a pre-pilot requirement, using a template aligned with your district's standards (NDPA or SDPC).",
+  },
+];
 
 export default function ForSchools() {
   return (
-    <div className="min-h-screen bg-warm-gradient">
+    <div className="min-h-screen bg-[var(--cream)]">
       <SiteNav />
 
-      <main className="max-w-5xl mx-auto px-6 pt-8 pb-16">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 bg-warm-purple-light text-warm-purple px-4 py-2 rounded-full text-sm font-bold mb-6">
-            🏫 For schools &amp; districts
-          </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-foreground leading-tight mb-5">
-            K-12 speaking practice that takes student data seriously.
+      {/* ---------- Hero ---------- */}
+      <section className="pt-10 pb-20">
+        <div className="max-w-[1100px] mx-auto px-6 md:px-10 text-center">
+          <span className="pill mb-5">
+            <span className="w-2 h-2 rounded-full bg-[var(--blue)] inline-block" />
+            For schools &amp; districts
+          </span>
+          <h1 className="text-[clamp(40px,4.8vw,64px)]">
+            Elementary speaking practice that{" "}
+            <span
+              style={{
+                background:
+                  "linear-gradient(180deg, transparent 62%, var(--sun) 62%, var(--sun) 92%, transparent 92%)",
+                padding: "0 4px",
+              }}
+            >
+              takes student data seriously
+            </span>
+            .
           </h1>
-          <p className="text-lg text-foreground/60 leading-relaxed">
-            Bright Speaker is built for the realities of your Chromebook
-            program: browser-based, no install, Google Workspace for
-            Education sign-in, and a private-by-design architecture that
-            keeps student video on the device.
+          <p className="mt-6 text-[19px] text-[var(--ink-2)] max-w-[62ch] mx-auto leading-[1.5]">
+            BrightSpeaker is built for the realities of a K–5 Chromebook program:
+            browser-based, no install, Google Workspace for Education sign-in
+            for teachers, and a private-by-design architecture that keeps
+            student video on the device.
           </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
-            <Link
-              href="/contact"
-              className="bg-warm-coral text-white px-8 py-4 rounded-2xl font-extrabold text-lg btn-playful shadow-xl shadow-warm-coral/30"
-            >
-              Start a pilot conversation
-            </Link>
-            <Link
-              href="/privacy"
-              className="text-foreground/70 hover:text-warm-teal-dark font-semibold px-4 py-4 transition"
-            >
-              Read our data &amp; privacy stance →
-            </Link>
+          <div className="flex gap-3.5 mt-8 flex-wrap justify-center">
+            <Link href="/contact" className="btn btn-primary">Start a pilot conversation →</Link>
+            <Link href="/privacy" className="btn">Read our data &amp; privacy stance</Link>
+          </div>
+          <div className="flex gap-[22px] mt-7 flex-wrap text-sm font-semibold text-[var(--ink-2)] justify-center">
+            <span className="inline-flex items-center gap-1.5 whitespace-nowrap">🔒 100% on-device video</span>
+            <span className="inline-flex items-center gap-1.5 whitespace-nowrap">🏫 Title I 50% discount</span>
+            <span className="inline-flex items-center gap-1.5 whitespace-nowrap">📚 Aligned to SL.K–SL.5</span>
           </div>
         </div>
+      </section>
 
-        <section className="mb-20">
-          <div className="text-center mb-10">
-            <h2 className="text-2xl font-extrabold text-foreground mb-3">
-              The path from one classroom to a district license
+      {/* ---------- Path: pilot → building → district ---------- */}
+      <section className="band-paper py-24">
+        <div className="max-w-[1100px] mx-auto px-6 md:px-10">
+          <div className="text-center mb-14">
+            <span className="eyebrow block mb-3.5">How we work with schools</span>
+            <h2 className="text-[clamp(32px,3.4vw,48px)]">
+              The path from one classroom to a district license.
             </h2>
-            <p className="text-foreground/60 max-w-2xl mx-auto">
-              We don&apos;t expect a district to buy a speaking tool they
-              haven&apos;t seen in a classroom. Here&apos;s how we work with schools
-              today.
+            <p className="mt-4 max-w-[60ch] mx-auto text-[var(--ink-2)] text-lg">
+              We don&apos;t expect a district to buy a speaking tool they haven&apos;t seen
+              in a classroom. We meet teachers where they are, then scale on proof.
             </p>
           </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              {
-                step: "01",
-                title: "Free classroom pilot",
-                desc: "A single teacher runs Bright Speaker with one class for 30 days. We provide onboarding and sit down with them at day 30 to review what worked.",
-              },
-              {
-                step: "02",
-                title: "Building rollout",
-                desc: "If the pilot clears, we expand to the building — more classrooms, shared prompts, and a building admin seat. Still free while we work through compliance with your district.",
-              },
-              {
-                step: "03",
-                title: "District license",
-                desc: "Per-student annual pricing designed for building budgets. Includes a signed DPA, Google Workspace for Education SSO, roster provisioning, and named support.",
-              },
-            ].map((p) => (
-              <div key={p.step} className="card-warm p-6">
-                <div className="text-warm-coral font-mono text-sm font-bold mb-2">{p.step}</div>
-                <h3 className="font-extrabold text-foreground mb-2">{p.title}</h3>
-                <p className="text-sm text-foreground/60 leading-relaxed">{p.desc}</p>
+          <div className="grid md:grid-cols-3 gap-[18px]">
+            {STEPS.map((s) => (
+              <div key={s.n} className="step">
+                <div className="step-num">{String(s.n).padStart(2, "0")}</div>
+                <h3 className="text-[22px] leading-[1.2] mb-1.5">{s.title}</h3>
+                <p className="text-[var(--ink-2)] text-[15px] m-0">{s.body}</p>
               </div>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section className="mb-20">
-          <div className="text-center mb-10">
-            <h2 className="text-2xl font-extrabold text-foreground mb-3">
-              What we do with student data
+      {/* ---------- Data stance ---------- */}
+      <section className="py-24">
+        <div className="max-w-[1100px] mx-auto px-6 md:px-10">
+          <div className="text-center mb-14">
+            <span className="eyebrow block mb-3.5">What we do with student data</span>
+            <h2 className="text-[clamp(32px,3.4vw,48px)]">
+              We minimize what we collect and we won&apos;t make claims we can&apos;t back up.
             </h2>
-            <p className="text-foreground/60 max-w-2xl mx-auto">
-              Short version: we minimize what we collect, we don&apos;t upload
-              video, and we won&apos;t make compliance claims we can&apos;t back
-              up. The longer version lives on our{" "}
-              <Link href="/privacy" className="text-warm-coral font-semibold hover:underline">
+            <p className="mt-4 max-w-[64ch] mx-auto text-[var(--ink-2)] text-lg">
+              The short version is below. The long version lives on our{" "}
+              <Link href="/privacy" className="font-bold" style={{ color: "var(--blue)" }}>
                 privacy &amp; data page
               </Link>
               .
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {[
-              {
-                icon: <Shield className="w-6 h-6" />,
-                title: "Video never leaves the device",
-                desc: "The webcam stream is processed in the browser. It is not uploaded, not stored, not shared. Every speaking session is private to the student.",
-              },
-              {
-                icon: <Server className="w-6 h-6" />,
-                title: "Minimum viable data",
-                desc: "We store what we need to show a student their progress: transcripts, scores, badges, timestamps. We don&apos;t ask for a birthdate, a phone number, or a home address.",
-              },
-              {
-                icon: <Lock className="w-6 h-6" />,
-                title: "Sign in with Google Workspace for Education",
-                desc: "Your students use the school account they already have. No new password, no student-facing email collection outside your domain.",
-              },
-              {
-                icon: <FileText className="w-6 h-6" />,
-                title: "DPA-ready for paid deployments",
-                desc: "We will sign a data privacy agreement aligned with your district&apos;s standards — NDPA, SDPC, or your local variant — before a paid deployment goes live.",
-              },
-            ].map((f) => (
-              <div key={f.title} className="card-warm p-6">
-                <div className="w-10 h-10 rounded-xl bg-warm-teal-light text-warm-teal-dark flex items-center justify-center mb-4">
-                  {f.icon}
+          <div className="grid md:grid-cols-2 gap-[18px]">
+            {DATA_ITEMS.map((item) => (
+              <div key={item.title} className="feature-card">
+                <div className="text-[22px]">
+                  <span style={{ color: "var(--green)", fontWeight: 900 }}>✓</span>
                 </div>
-                <h3 className="font-extrabold text-foreground mb-2">{f.title}</h3>
-                <p className="text-sm text-foreground/60 leading-relaxed">{f.desc}</p>
+                <h3 className="mt-3 text-[20px]">{item.title}</h3>
+                <p className="text-[var(--ink-2)] text-[15px] mt-1.5">{item.body}</p>
               </div>
             ))}
           </div>
 
-          <div className="card-warm p-6 mt-6 bg-warm-gold-light/40 border-warm-gold/40">
+          <div className="feature-card mt-6" style={{ background: "var(--cream-2)" }}>
             <div className="flex items-start gap-3">
-              <CheckCircle2 className="w-5 h-5 text-warm-gold-dark flex-shrink-0 mt-0.5" />
-              <div className="text-sm text-foreground/80 leading-relaxed">
-                <strong>About compliance claims.</strong> Bright Speaker is
-                pre-launch. We do not currently hold SOC 2 certification, a
-                COPPA Safe Harbor attestation, or a published FERPA opinion
-                letter. We will be transparent about where we are in that
-                work at every step of a procurement conversation. If your
-                district requires specific artifacts to run a pilot, tell
-                us — we&apos;ll tell you honestly whether we have them yet.
+              <span style={{ color: "var(--sun-ink)", fontWeight: 900, fontSize: 18 }}>!</span>
+              <div className="text-[15px] text-[var(--ink-2)] leading-relaxed">
+                <strong className="font-display text-[var(--ink)]">About compliance claims.</strong>{" "}
+                BrightSpeaker is pre-launch. We do not currently hold SOC 2
+                certification, a COPPA Safe Harbor attestation, or a published
+                FERPA opinion letter. We are transparent about where we are in
+                that work at every step of a procurement conversation. If your
+                district requires specific artifacts to run a pilot, tell us —
+                we&apos;ll tell you honestly whether we have them yet.
               </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section className="mb-20">
-          <h2 className="text-2xl font-extrabold text-foreground mb-6 text-center">
-            The questions we hear most
-          </h2>
+      {/* ---------- Wedge / secondary lane ---------- */}
+      <section className="band-paper py-24">
+        <div className="max-w-[1100px] mx-auto px-6 md:px-10">
+          <div className="text-center mb-14">
+            <span className="eyebrow block mb-3.5">Who we serve today</span>
+            <h2 className="text-[clamp(32px,3.4vw,48px)]">
+              Elementary first. Middle school welcome.
+            </h2>
+          </div>
+          <div className="grid md:grid-cols-2 gap-[18px]">
+            <div className="feature-card">
+              <div className="text-[28px]">🎒</div>
+              <h3 className="mt-3.5 text-[22px]">K–5 classrooms (our focus)</h3>
+              <p className="text-[var(--ink-2)] text-[15px] mt-1.5">
+                Prompts, rewards, feedback tone, and coaching signals are
+                designed for ages 5–11. We map to Common Core SL.K–SL.5.
+                Title I schools get a standing 50% discount — equity baked
+                into the pricing, not bolted on.
+              </p>
+            </div>
+            <div className="feature-card" style={{ background: "var(--cream-2)" }}>
+              <div className="text-[28px]">🎤</div>
+              <h3 className="mt-3.5 text-[22px]">Middle-school ELA &amp; speech/debate</h3>
+              <p className="text-[var(--ink-2)] text-[15px] mt-1.5">
+                The core practice loop works fine for grades 6–8 and for
+                speech/debate programs. We&apos;re a great fit for classrooms
+                already running oral presentations; we&apos;re not currently
+                the headline product for varsity competitive events.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-          <div className="space-y-4">
-            {[
-              {
-                q: "Does Bright Speaker work on our Chromebooks?",
-                a: "Yes. The app runs in Chrome, uses the student's webcam and microphone, and needs no installs or extensions. We recommend Chromebooks made in the last 4 years; older models can run it but may show a slight lag on the eye-contact analysis.",
-              },
-              {
-                q: "How does sign-in work?",
-                a: "Teachers and students sign in with their Google Workspace for Education accounts. We do not create separate Bright Speaker passwords. A district admin can restrict access to their managed domain.",
-              },
-              {
-                q: "What happens to the student video?",
-                a: "It stays on the student's device. The camera stream is used for live eye-contact feedback in the browser, and it's discarded when the session ends. We never upload, store, or share student video.",
-              },
-              {
-                q: "Is the AI feedback safe for kids?",
-                a: "Today, our feedback is rule-based — specific, warm, and kid-appropriate by design. Before we ship any LLM-generated feedback to students, we review the output shape with K-12 teachers. Feedback is about the speaking, not the speaker.",
-              },
-              {
-                q: "What does a pilot cost?",
-                a: "Nothing during the pilot window. When we publish commercial pricing, it's designed for building budgets — not enterprise SaaS.",
-              },
-              {
-                q: "Can we sign a DPA?",
-                a: "Yes, before any paid deployment. For pilots, we'll work with your team if a DPA is a pre-pilot requirement, using a template aligned with your district's standards.",
-              },
-            ].map((item) => (
-              <details key={item.q} className="card-warm p-5 group">
-                <summary className="font-bold text-foreground cursor-pointer list-none flex items-center justify-between">
-                  {item.q}
-                  <span className="text-warm-coral group-open:rotate-45 transition-transform text-xl leading-none">+</span>
-                </summary>
-                <p className="mt-3 text-foreground/70 leading-relaxed text-sm">{item.a}</p>
+      {/* ---------- FAQ ---------- */}
+      <section className="py-24">
+        <div className="max-w-[1100px] mx-auto px-6 md:px-10">
+          <div className="text-center mb-14">
+            <span className="eyebrow block mb-3.5">Questions from IT &amp; curriculum</span>
+            <h2 className="text-[clamp(32px,3.4vw,48px)]">The questions we hear most.</h2>
+          </div>
+          <div className="grid gap-2.5 max-w-[820px] mx-auto">
+            {FAQS.map((item, i) => (
+              <details key={item.q} className="faq-item" open={i === 0}>
+                <summary>{item.q}</summary>
+                <p>{item.a}</p>
               </details>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section className="bg-brand-gradient rounded-3xl p-10 text-white text-center">
-          <h2 className="text-3xl font-extrabold mb-3">Talk to us about a pilot</h2>
-          <p className="text-white/80 max-w-2xl mx-auto mb-6">
-            The fastest way to evaluate Bright Speaker is to watch a
-            classroom use it for three weeks. We&apos;ll handle setup, the
-            teacher walkthrough, and the day-30 review. Pilots are free.
-          </p>
-          <Link
-            href="/contact"
-            className="inline-block bg-white text-warm-coral px-8 py-4 rounded-2xl font-extrabold btn-playful shadow-lg"
-          >
-            Start a pilot conversation
-          </Link>
-        </section>
-      </main>
+      {/* ---------- CTA ---------- */}
+      <section className="pb-24">
+        <div className="max-w-[1280px] mx-auto px-6 md:px-10">
+          <div className="footer-cta">
+            <div>
+              <span className="eyebrow" style={{ color: "var(--sun)" }}>Ready when you are</span>
+              <h2 className="mt-2.5">Talk to us about a pilot.</h2>
+              <p>
+                The fastest way to evaluate BrightSpeaker is to watch an
+                elementary classroom use it for three weeks. We&apos;ll handle
+                setup, the teacher walkthrough, and the day-30 review.
+                Pilots are free.
+              </p>
+            </div>
+            <div className="flex flex-col gap-3.5">
+              <Link href="/contact" className="btn btn-primary">Start a pilot conversation →</Link>
+              <Link href="/privacy" className="btn" style={{ background: "#fff" }}>
+                Read our privacy stance
+              </Link>
+              <span className="text-[13px] text-center" style={{ color: "#B9C0D4" }}>
+                District procurement?{" "}
+                <a href="mailto:hello@brightspeaker.com" className="text-white underline">
+                  hello@brightspeaker.com
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <SiteFooter />
     </div>

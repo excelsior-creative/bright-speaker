@@ -45,7 +45,13 @@ const prompts: Record<number, { title: string; description: string; emoji: strin
   },
 };
 
-const FILLER_WORDS = ["um", "uh", "er", "ah", "like", "you know", "i mean", "sort of", "kind of"];
+// K–5 default: conservative list of true hesitations only.
+// "like", "you know", "i mean", "sort of", "kind of" all have legitimate
+// uses in elementary-age speech ("I like pizza", "you know the park?",
+// "sort of red") and over-flagging them makes the coaching feel punitive
+// to kids whose prompts are show-and-tell. They move to a grade-band-tuned
+// 6–12 list when that surface exists. See ceo/decisions/0002-k5-primary-wedge.md.
+const FILLER_WORDS = ["um", "uh", "er", "ah"];
 
 interface SessionResults {
   transcript: string;
@@ -301,7 +307,10 @@ function SpeakContent() {
   }, [promptId, prompt.title]);
 
   useEffect(() => {
-    initFaceDetection();
+    // initFaceDetection is async; setFaceApiReady only fires after the
+    // model weights resolve, not synchronously during render.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void initFaceDetection();
     return () => {
       stopWebcam();
       recognitionRef.current?.stop();
@@ -358,7 +367,7 @@ function SpeakContent() {
             <div className="bg-warm-gold-light rounded-xl p-4 mb-8 flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-warm-gold-dark flex-shrink-0 mt-0.5" />
               <p className="text-sm text-warm-gold-dark text-left">
-                You&apos;ll have <strong>60 seconds</strong> to speak. Try to look at the camera and avoid filler words like &quot;um&quot; and &quot;like&quot;.
+                You&apos;ll have <strong>60 seconds</strong> to speak. Try to look at the camera and swap &quot;um&quot; and &quot;uh&quot; for a quick pause.
               </p>
             </div>
 
