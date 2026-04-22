@@ -46,8 +46,20 @@ Top-level files:
 - **Hosting**: Vercel. Domain `brightspeaker.com` returned 403 to
   WebFetch on 2026-04-20 (still). Either deployment protection or a
   WAF rule. Open ask in INBOX #1.
-- **Testing**: Vitest. `apps/app/src/lib/sessions.test.ts` covers
-  reward/level logic. 2/2 green.
+- **Testing**: Vitest. Three test files:
+  - `apps/app/src/lib/sessions.test.ts` — reward/level logic.
+  - `apps/app/src/lib/filler-words.test.ts` — grade-banded filler
+    detection. Added 2026-04-22.
+  - `apps/app/src/lib/honesty.test.ts` — regression guard that greps
+    the source tree for forbidden claim strings (MediaPipe, SOC 2
+    Type II / certified / compliant, COPPA/FERPA certified or
+    compliant, "Built for COPPA/FERPA," Student Privacy Pledge,
+    Clever/ClassLink SSO, unqualified "signed DPA"). A file can
+    opt out by including the marker `honesty-allowlist` in a
+    comment (the test file itself does). Added 2026-04-22. Caught
+    a real "signed DPA" regression in `for-schools` on its first
+    run.
+  22/22 green.
 
 ## Routes (under `apps/app/src/app/`)
 
@@ -69,7 +81,9 @@ Top-level files:
 - `/terms` — plain-language stub.
 - `/contact` — mailto-backed (`hello@brightspeaker.com`). Phase 0.3 of
   the launch checklist replaces this with a real form.
-- `/blog`, `/blog/reduce-filler-words-k12` — first post.
+- `/blog`, `/blog/reduce-filler-words-k12`,
+  `/blog/five-minute-elementary-speaking-warmup`,
+  `/blog/why-pauses-beat-um` (added 2026-04-22).
 - `/sign-in/[[...sign-in]]`, `/sign-up/[[...sign-up]]` — Clerk pages.
 - `/robots.ts`, `/sitemap.ts` — SEO basics.
 
@@ -89,6 +103,28 @@ and `bright_speaker_progress`, capped at 100 sessions.
 **Implication**: Data is per-browser, not per-user. A pilot needs
 Phase 1 of `LAUNCH_CHECKLIST.md` (Clerk roles + Neon schema + server
 actions).
+
+## Filler word detection (updated 2026-04-22)
+
+Filler words are now grade-banded via `apps/app/src/lib/filler-words.ts`.
+Each prompt carries a `gradeBand` property (`"K-2"`, `"3-5"`, or
+`"6-12"`). Live filler counting and final analysis both use the prompt's
+band. Default when no band is set is `"3-5"`.
+
+- **K-2**: `["um", "uh"]` only. Developmental fillers like "like" and
+  "sort of" are **not** flagged — the feedback loop won't shame normal
+  kid speech.
+- **3-5**: adds `"er"`, `"ah"`, `"like"`.
+- **6-12**: adds `"you know"`, `"i mean"`, `"sort of"`, `"kind of"`.
+
+Current prompts' bands:
+- `2` (Favorite Place) and `3` (Sandwich) — `K-2`.
+- `1` (Funny Story), `4` (Invention), `5` (Cats vs Dogs), `6` (Book
+  Report) — `3-5`.
+
+This closes the long-standing backlog item about over-flagging
+elementary students. It also aligns the product's behavior with the
+K–5 site positioning.
 
 ## Scoring formula
 

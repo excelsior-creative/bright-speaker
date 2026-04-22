@@ -5,47 +5,52 @@ import { useSearchParams } from "next/navigation";
 import { Mic, MicOff, Eye, EyeOff, Clock, AlertCircle, CheckCircle, Home, RotateCcw, Loader2, Star } from "lucide-react";
 import Link from "next/link";
 import { saveSession } from "@/lib/sessions";
+import { analyzeFillers, countFillers, DEFAULT_GRADE_BAND, type GradeBand } from "@/lib/filler-words";
 
-const prompts: Record<number, { title: string; description: string; emoji: string; tips: string[] }> = {
+const prompts: Record<number, { title: string; description: string; emoji: string; tips: string[]; gradeBand: GradeBand }> = {
   1: {
     title: "Tell a Funny Story",
     description: "Share something funny that happened to you recently. It could be at school, at home, or anywhere!",
     emoji: "😄",
-    tips: ["Start with 'One time...'", "Describe what happened step by step", "Tell us how it ended"]
+    tips: ["Start with 'One time...'", "Describe what happened step by step", "Tell us how it ended"],
+    gradeBand: "3-5",
   },
   2: {
     title: "Describe Your Favorite Place",
     description: "Tell us about a place you love. What does it look like? Why do you like it there?",
     emoji: "🌴",
-    tips: ["Use describing words (adjectives)", "Talk about what you can see, hear, and smell", "Explain why it's special to you"]
+    tips: ["Use describing words (adjectives)", "Talk about what you can see, hear, and smell", "Explain why it's special to you"],
+    gradeBand: "K-2",
   },
   3: {
     title: "Explain How to Make a Sandwich",
     description: "Teach us how to make your favorite sandwich, step by step.",
     emoji: "🥪",
-    tips: ["Start with what ingredients you need", "Go in order: first, then, next, finally", "Make it sound yummy!"]
+    tips: ["Start with what ingredients you need", "Go in order: first, then, next, finally", "Make it sound yummy!"],
+    gradeBand: "K-2",
   },
   4: {
     title: "Present Your Dream Invention",
     description: "If you could invent anything, what would it be? How would it work?",
     emoji: "💡",
-    tips: ["Give your invention a cool name", "Explain what problem it solves", "Describe how someone would use it"]
+    tips: ["Give your invention a cool name", "Explain what problem it solves", "Describe how someone would use it"],
+    gradeBand: "3-5",
   },
   5: {
     title: "Debate: Cats vs Dogs",
     description: "Which makes a better pet - cats or dogs? Pick a side and convince us!",
     emoji: "🐱🐕",
-    tips: ["Pick one side and stick with it", "Give at least 3 reasons", "Try to predict what the other side might say"]
+    tips: ["Pick one side and stick with it", "Give at least 3 reasons", "Try to predict what the other side might say"],
+    gradeBand: "3-5",
   },
   6: {
     title: "Give a Book Report",
     description: "Tell us about a book you've read. What happened? Did you like it?",
     emoji: "📚",
-    tips: ["Don't give away the ending!", "Describe the main character", "Would you recommend it?"]
+    tips: ["Don't give away the ending!", "Describe the main character", "Would you recommend it?"],
+    gradeBand: "3-5",
   },
 };
-
-const FILLER_WORDS = ["um", "uh", "er", "ah", "like", "you know", "i mean", "sort of", "kind of"];
 
 interface SessionResults {
   transcript: string;
@@ -75,6 +80,7 @@ function SpeakContent() {
   const searchParams = useSearchParams();
   const promptId = parseInt(searchParams.get("prompt") || "1");
   const prompt = prompts[promptId] || prompts[1];
+  const gradeBand: GradeBand = prompt.gradeBand ?? DEFAULT_GRADE_BAND;
 
   const [phase, setPhase] = useState<"prep" | "recording" | "results">("prep");
   const [timeLeft, setTimeLeft] = useState(60);
@@ -97,14 +103,15 @@ function SpeakContent() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const faceApiRef = useRef<any>(null);
 
-  const initFaceDetection = async () => {
+  const loadFaceDetection = async (): Promise<boolean> => {
     try {
       const faceapi = await import("face-api.js");
       faceApiRef.current = faceapi;
       await faceapi.nets.tinyFaceDetector.loadFromUri("/models");
-      setFaceApiReady(true);
+      return true;
     } catch (e) {
       console.error("Face detection failed to load:", e);
+      return false;
     }
   };
 
@@ -197,11 +204,7 @@ function SpeakContent() {
         if (finalTranscript) {
           setTranscript(prev => {
             const updated = prev + finalTranscript;
-            const fillerMatches = FILLER_WORDS.reduce((count, filler) => {
-              const regex = new RegExp(`\\b${filler}\\b`, "gi");
-              return count + (updated.match(regex)?.length || 0);
-            }, 0);
-            setLiveFillerCount(fillerMatches);
+            setLiveFillerCount(countFillers(updated, gradeBand));
             return updated;
           });
         }
@@ -215,19 +218,6 @@ function SpeakContent() {
 
       recognitionRef.current = recognition;
     }
-  };
-
-  const analyzeTranscript = (text: string): { word: string; count: number }[] => {
-    const lowerText = text.toLowerCase();
-    const results: { word: string; count: number }[] = [];
-    FILLER_WORDS.forEach(filler => {
-      const regex = new RegExp(`\\b${filler}\\b`, "gi");
-      const matches = lowerText.match(regex);
-      if (matches && matches.length > 0) {
-        results.push({ word: filler, count: matches.length });
-      }
-    });
-    return results.sort((a, b) => b.count - a.count);
   };
 
   const calculateScore = (fillerCount: number, eyePercent: number, wpm: number) => {
@@ -274,7 +264,7 @@ function SpeakContent() {
       const duration = 60 - prev;
       setTranscript(currentTranscript => {
         setEyeContactHistory(currentHistory => {
-          const fillerAnalysis = analyzeTranscript(currentTranscript);
+          const fillerAnalysis = analyzeFillers(currentTranscript, gradeBand).sort((a, b) => b.count - a.count);
           const totalFillers = fillerAnalysis.reduce((sum, f) => sum + f.count, 0);
           const wordCount = currentTranscript.split(/\s+/).filter(w => w.length > 0).length;
           const wpm = duration > 0 ? Math.round((wordCount / duration) * 60) : 0;
@@ -298,11 +288,15 @@ function SpeakContent() {
     });
     setPhase("results");
     stopWebcam();
-  }, [promptId, prompt.title]);
+  }, [promptId, prompt.title, gradeBand]);
 
   useEffect(() => {
-    initFaceDetection();
+    let cancelled = false;
+    loadFaceDetection().then(ready => {
+      if (!cancelled && ready) setFaceApiReady(true);
+    });
     return () => {
+      cancelled = true;
       stopWebcam();
       recognitionRef.current?.stop();
       if (timerRef.current) clearInterval(timerRef.current);
