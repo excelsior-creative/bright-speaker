@@ -124,7 +124,7 @@ export default function Home() {
             </p>
             <div className="flex gap-3.5 mt-8 flex-wrap">
               <Link href="/contact" className="btn btn-primary">Book a demo →</Link>
-              <Link href="/dashboard" className="btn">Start a free pilot</Link>
+              <Link href="/pilot" className="btn">Start a free pilot</Link>
             </div>
             <div className="flex gap-[22px] mt-7 flex-wrap text-sm font-semibold text-[var(--ink-2)]">
               <span className="inline-flex items-center gap-1.5 whitespace-nowrap">🔒 100% on-device video</span>

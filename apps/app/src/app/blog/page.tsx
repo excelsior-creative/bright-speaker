@@ -11,6 +11,15 @@ export const metadata: Metadata = {
 
 const posts = [
   {
+    slug: "how-to-teach-public-speaking-elementary-school",
+    title: "How to teach public speaking in elementary school",
+    excerpt:
+      "A practical year at a glance for K–5 teachers. Daily five-minute reps, a three-part rubric, and what actually sticks. Maps to SL.K–SL.5.",
+    date: "2026-04-23",
+    readMinutes: 9,
+    audience: "K–5 teachers & literacy coaches",
+  },
+  {
     slug: "five-minute-elementary-speaking-warmup",
     title: "A 5-minute speaking warm-up for elementary classrooms",
     excerpt:

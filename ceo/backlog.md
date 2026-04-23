@@ -44,7 +44,8 @@ _Unscheduled. Tag with area. Groom weekly; promote to roadmap when ready._
 
 ## GTM / marketing
 
-- [G][site] Add a pricing page (pilot-only framing for now).
+- [G][site] ~~Add a pricing page (pilot-only framing for now).~~
+  Done 2026-04-23 as `/pilot` with "After the pilot" tier section.
 - [G][site] Add a "Trust & privacy" page explaining data flows in
   plain language.
 - [G][site] Add a case-study template page so we can ship a case
@@ -54,11 +55,14 @@ _Unscheduled. Tag with area. Groom weekly; promote to roadmap when ready._
   own WebFetch bot — confirm with Brandon the site is publicly
   reachable.
 - [G][content] Blog posts:
-  - How to help middle-schoolers reduce filler words (first post).
+  - ~~How to help middle-schoolers reduce filler words.~~ Shipped
+    night 1 as `/blog/reduce-filler-words-k12`.
   - A 10-minute weekly speaking drill for ELA classrooms.
   - Speech & debate practice on a budget.
   - What research actually says about practice-based speaking
     improvement in K-12.
+  - Case-study template page for the first pilot's day-30 report.
+  - FAQ page for pilots (companion to `/pilot`).
 - [G][outreach] Enrich the ICP list. Start with NSDA coach directory
   and state speech association rosters.
 - [G][outreach] Draft a summer-pilot pitch for fall launches.

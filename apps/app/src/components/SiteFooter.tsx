@@ -26,10 +26,10 @@ export default function SiteFooter() {
           <div>
             <h4 className="font-display text-[14px] mb-3.5 text-[var(--ink)]">For schools</h4>
             <ul className="list-none p-0 m-0 grid gap-2">
+              <li><Link href="/pilot" className="hover:text-[var(--ink)] transition">Free 30-day pilot</Link></li>
               <li><Link href="/contact" className="hover:text-[var(--ink)] transition">Book a demo</Link></li>
               <li><Link href="/for-educators" className="hover:text-[var(--ink)] transition">For teachers</Link></li>
               <li><Link href="/for-schools" className="hover:text-[var(--ink)] transition">District quote</Link></li>
-              <li><Link href="/contact" className="hover:text-[var(--ink)] transition">Title I discount</Link></li>
             </ul>
           </div>
 
