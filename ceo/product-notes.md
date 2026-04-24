@@ -1,6 +1,6 @@
 # Product notes
 
-_What the product actually is today, as of 2026-04-20. Keep accurate._
+_What the product actually is today, as of 2026-04-24. Keep accurate._
 
 ## Repo layout
 
@@ -21,13 +21,19 @@ Top-level files:
 ## Stack
 
 - **Framework**: Next.js 16.1.6 App Router, React 19, TypeScript 5.
-- **Styling**: Tailwind v4. The landing page now uses a distinct
-  "sticker-brand" design system (cream background, hard borders,
-  high-contrast sun/coral/blue fills, chunky drop shadows). The
-  older warm-coral/warm-teal palette still lives on `/for-schools`,
-  `/for-educators`, `/privacy`, `/terms`, `/contact`, `/blog`,
-  `/history`, `/dashboard`, `/speak`. **This is a design-system split
-  that should be reconciled** — see backlog.
+- **Styling**: Tailwind v4 with a single "sticker-brand" design
+  system (cream background, hard 2.5px ink borders, chunky 4–6px drop
+  shadows, Bricolage Grotesque display + Nunito body + JetBrains Mono
+  utility). As of night 3 (2026-04-24), `/for-educators`,
+  `/for-schools`, `/privacy`, `/terms`, `/contact`, and `/blog` have
+  been ported to sticker-brand (`.btn`, `.btn-coral`, `.pill`,
+  `.card`, `.feature-card`, `.step`, `.faq-item`, `.eyebrow`, `.lede`
+  utilities from globals.css). The legacy warm-coral/warm-teal
+  palette still cascades via CSS-variable aliases in `globals.css` so
+  `/history`, `/dashboard`, `/speak`, and the individual blog posts
+  continue to render fine; their visual reconciliation is queued
+  (`CoachUI.tsx`, `/speak` recording UI, `/history` list still have
+  the old warm-* visual treatment).
 - **Auth**: Clerk (`@clerk/nextjs` ^7.0.4). Middleware at
   `apps/app/src/proxy.ts` wraps everything with `clerkMiddleware()`.
   `apps/app/src/app/sign-in/[[...sign-in]]/page.tsx` and `.../sign-up/`
@@ -63,13 +69,25 @@ Top-level files:
   results. Webcam preview, live transcript, live filler counter, live
   eye-contact pill.
 - `/history` — full session list, expandable; clear-history button.
-- `/for-educators`, `/for-schools` — still on the older warm-coral/
-  warm-teal design. Copy is on the honest side.
+- `/for-educators` — sticker-brand as of 2026-04-24; leads with K–5
+  classroom teachers + elementary principals/coaches; 6–12 audience
+  demoted to an accordion block.
+- `/for-schools` — sticker-brand as of 2026-04-24; hero says
+  "Elementary speaking practice"; FAQ explicitly addresses "Is this
+  K–5 only?" with a "K–5 first, K–12 compatible" answer; District
+  step in the rollout path no longer pre-commits a signed DPA — says
+  "DPA signed before any paid deployment goes live."
 - `/privacy` — plain-English data-flow page. Explicitly non-legal.
 - `/terms` — plain-language stub.
 - `/contact` — mailto-backed (`hello@brightspeaker.com`). Phase 0.3 of
   the launch checklist replaces this with a real form.
-- `/blog`, `/blog/reduce-filler-words-k12` — first post.
+- `/blog` — sticker-brand as of 2026-04-24. Three posts listed:
+  why-pauses-beat-um (2026-04-24), five-minute-elementary-speaking-
+  warmup (2026-04-20), reduce-filler-words-k12 (2026-04-17).
+- `/blog/why-pauses-beat-um` — new K–5 explainer post, sticker-brand.
+- `/blog/five-minute-elementary-speaking-warmup` — night-2 post;
+  still on legacy warm-coral page-chrome. Queued for reconciliation.
+- `/blog/reduce-filler-words-k12` — night-1 post; same as above.
 - `/sign-in/[[...sign-in]]`, `/sign-up/[[...sign-up]]` — Clerk pages.
 - `/robots.ts`, `/sitemap.ts` — SEO basics.
 
@@ -147,21 +165,32 @@ Tonight's honesty pass on the homepage:
 
 - `apps/app/src/components/CoachUI.tsx` is a mock with "Mrs. Rivera"
   + animated fake metrics. Called out in LAUNCH_CHECKLIST Appendix A
-  as a thing to optionally tighten. Not shipped tonight.
-- `/for-schools` still uses warm-coral/warm-teal; hasn't been
-  reconciled against the sticker-brand homepage. Copy is honest.
+  as a thing to optionally tighten. Not shipped yet.
 
 ## Known issues / smells
 
-- The `/for-schools` and `/for-educators` pages live in a different
-  design system than the homepage. Needs an unified visual pass.
+- `/speak`, `/history`, `/dashboard`, and `CoachUI` still use the
+  legacy warm-coral page-chrome. Queue for reconciliation.
 - `startWebcam` error path still uses `alert()` (per LAUNCH_CHECKLIST
   2.x and existing backlog).
 - Filler word list still over-flags younger students ("so", "well",
-  "actually", "literally"). Backlog item for grade-band tuning.
+  "actually", "literally"). Backlog item for grade-band tuning. Must
+  ship as a PR (feedback-logic change, kid-facing).
 - Face-API weights load on every `/speak` visit. Cache via service
   worker.
 - Silent failure on non-Web-Speech browsers (Firefox).
 - `public/brand/favicon-source.png` is a 1.8 MB unused source file.
 - `brightspeaker.com` still 403s to WebFetch — crawler/indexability
-  unknown. Open ask in INBOX.
+  unknown. Open ask in INBOX #1 (open 3 nights running).
+
+## Lint / typecheck state (2026-04-24)
+
+- `pnpm run lint` — 0 errors, 1 pre-existing warning
+  (`layout.tsx:69` custom-font placement).
+- `npx tsc --noEmit` — clean.
+- `pnpm run test` — 2/2 pass.
+- The previous `speak/page.tsx:304` "set-state-in-effect" lint error
+  is fixed. The init-face-detection async work now runs inside an
+  IIFE with a `cancelled` guard so the setState can't fire after
+  unmount, and the lint rule no longer flags a synchronous setState
+  path inside the effect body.

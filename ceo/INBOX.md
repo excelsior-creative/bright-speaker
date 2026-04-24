@@ -17,19 +17,25 @@ the journal night where it was resolved._
   me the deployment URL I should be treating as the "real" site
   for SEO and social sharing work.
 
-### 🟡 2 — Approve draft outreach emails (speech/debate coach + ELA teacher + Title I principal)
-- **Posted:** 2026-04-17 (nights 1 & 2).
+### 🟡 2 — Approve draft outreach emails (5 drafts now)
+- **Posted:** 2026-04-17 (nights 1, 2, 3).
 - **Files:**
   - `ceo/outreach-drafts/2026-04-17-speech-debate-coach-cold-intro.md`
+    _(6–12, secondary wedge)_
   - `ceo/outreach-drafts/2026-04-17-ela-teacher-cold-intro.md`
+    _(6–8 ELA, secondary wedge)_
   - `ceo/outreach-drafts/2026-04-17-pilot-program-one-pager.md`
+    _(persona-agnostic leave-behind)_
   - `ceo/outreach-drafts/2026-04-20-title-i-elementary-principal-cold-intro.md`
-    _(new tonight; leads the K–5 ICP pivot per decision 0002)_
-- **Context:** Tonight's Title I principal draft is the first one
-  aligned to the new K–5 primary wedge. The night-1 drafts
-  (speech/debate + ELA 4–8) are still valid as a secondary lane,
-  but lower priority.
-- **What I need:** Your review + edits, then you send.
+    _(K–5 primary, equity-framed)_
+  - `ceo/outreach-drafts/2026-04-24-elementary-literacy-coach-cold-intro.md`
+    _(K–5 primary, standards-framed — NEW tonight)_
+- **Context:** Two drafts now explicitly target the K–5 primary
+  wedge. The literacy-coach draft is a new persona — a high-leverage
+  recipient who advises buildings and thinks in SL.K–SL.5 language.
+  It's timed for end-of-April professional-learning planning.
+- **What I need:** Your review + edits on any of the five, then you
+  send.
 
 ### 🟢 3 — FYI: no analytics yet
 - **Posted:** 2026-04-17 (night 1) — no change tonight.
@@ -57,15 +63,24 @@ the journal night where it was resolved._
 - **What I need:** Confirm this matches your intent. If not, we can
   revert the positioning documents; the homepage is your call.
 
-### 🟢 6 — FYI: design-system split between homepage and the rest
-- **Posted:** 2026-04-20 (night 2).
-- **Context:** The new sticker-brand homepage doesn't match
-  `/for-schools`, `/for-educators`, `/privacy`, `/terms`, `/contact`,
-  `/blog`, `/history`, or `/dashboard` — those are still on the
-  warm-coral/warm-teal design. Copy is honest, but the brand looks
-  disconnected when a visitor leaves the homepage.
-- **What I need:** Nothing immediately. Queued for a later night
-  unless you want me to prioritize.
+### 🟢 6 — FYI: design-system split (partially addressed)
+- **Posted:** 2026-04-20 (night 2). Updated 2026-04-24 (night 3).
+- **Context:** Night 3 ported `/for-educators`, `/for-schools`,
+  `/privacy`, `/terms`, `/contact`, and `/blog` to sticker-brand
+  using the existing `.btn`, `.pill`, `.card`, `.step`, `.faq-item`,
+  `.eyebrow`, `.lede` utilities in `globals.css`. Page-chrome for
+  `/speak`, `/history`, `/dashboard` and the two older blog-post
+  pages still uses legacy warm-* classes — the CSS aliases keep
+  them rendering OK but the visual feel is slightly different.
+- **What I need:** Nothing immediately. Remaining reconciliation
+  queued for a later night.
+
+### 🟢 7 — FYI: new K–5 blog post live
+- **Posted:** 2026-04-24 (night 3).
+- **Context:** `/blog/why-pauses-beat-um` is a 4-minute explainer
+  on pauses vs. fillers with a print-ready anchor chart. Second
+  K–5 post following night 2's 5-minute warm-up. Sitemap updated
+  (and backfilled to include the night-2 post which I had missed).
 
 ## Resolved
 

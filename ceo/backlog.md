@@ -5,7 +5,9 @@ _Unscheduled. Tag with area. Groom weekly; promote to roadmap when ready._
 ## Product — practice flow
 
 - [P][a11y] Add `aria-live` region to live filler count and timer so
-  screen readers announce updates.
+  screen readers announce updates. Full LAUNCH_CHECKLIST 2.4 a11y
+  pass is still outstanding; the focused-visibility and color-contrast
+  sub-items are also still pending.
 - [P][a11y] Keyboard-accessible "End Session" (focusable, Enter to
   activate; already a button, verify focus styles).
 - [P][ux] "Watch Demo" button on landing currently does nothing. Either
@@ -73,6 +75,29 @@ _Unscheduled. Tag with area. Groom weekly; promote to roadmap when ready._
 - [T] Retention policy (how long do we keep transcripts / scores?).
 - [T] Plain-English privacy explainer (not the legal policy; a public
   page a teacher can skim in 30 seconds).
+
+## Design system reconciliation (phase 2)
+
+- [P][design] `/speak`, `/history`, `/dashboard` still use
+  legacy warm-* design. Port page chrome + card styles to
+  sticker-brand.
+- [P][design] `CoachUI.tsx` marketing mock still shows
+  "Mrs. Rivera" + animated fake metrics per LAUNCH_CHECKLIST
+  Appendix A. Retire the named persona or replace with a clearly
+  stylized illustration.
+- [P][design] Older blog posts (`/blog/reduce-filler-words-k12`,
+  `/blog/five-minute-elementary-speaking-warmup`) use warm-* page
+  chrome for the article container + in-article CTA. Port when we
+  touch them for SEO updates.
+
+## Product — forbidden-string check (as-code)
+
+- [P][infra] Add a Vitest / unit check that greps the compiled
+  site for forbidden strings: "MediaPipe", "SOC 2 certified",
+  "COPPA-aligned", "FERPA-ready", "Student Privacy Pledge",
+  "signed DPA" (unqualified). Night 2 flagged this as the only
+  durable defense against the honesty pass regressing after each
+  redesign.
 
 ## Infrastructure / hygiene
 

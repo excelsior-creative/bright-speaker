@@ -2,7 +2,7 @@
 
 _What we know and what we wish we knew._
 
-_Last checked: 2026-04-17 (night 1 — baselines not yet established)._
+_Last checked: 2026-04-24 (night 3)._
 
 ## Traffic / site
 
@@ -37,12 +37,19 @@ Brandon approval (sub-processor).
 
 | Stage | Count | Source |
 |---|---|---|
-| Cold emails drafted | 2 (tonight) | `outreach-drafts/` |
-| Cold emails sent | 0 | — |
+| Cold emails drafted | 5 | `outreach-drafts/` |
+| Cold emails sent | 0 | awaiting Brandon review |
 | Replies | 0 | — |
 | Demo booked | 0 | — |
 | Pilot agreements signed | 0 | — |
 | Pilot schools live | 0 | — |
+
+Drafts on file:
+- `2026-04-17-speech-debate-coach-cold-intro.md` (6–12, secondary)
+- `2026-04-17-ela-teacher-cold-intro.md` (6–8, secondary)
+- `2026-04-17-pilot-program-one-pager.md` (persona-agnostic)
+- `2026-04-20-title-i-elementary-principal-cold-intro.md` (K–5 primary)
+- `2026-04-24-elementary-literacy-coach-cold-intro.md` (K–5 primary)
 
 ## Revenue
 
