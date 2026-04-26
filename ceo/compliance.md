@@ -10,7 +10,7 @@ and FERPA (student educational records) standards the moment a real
 school deploys us. Today we are pre-pilot, but every architecture
 choice should be made as if a district DPO will audit us next month.
 
-## Current data flows (as of 2026-04-17)
+## Current data flows (as of 2026-04-26)
 
 1. **Camera + microphone** → the student's browser, via
    `getUserMedia`. Stream is attached to a `<video>` element and a
@@ -32,6 +32,97 @@ choice should be made as if a district DPO will audit us next month.
    email / name / profile photo transit through Clerk's
    infrastructure. Clerk will be a sub-processor.
 8. **Hosting (Vercel)** — Standard edge + serverless. Sub-processor.
+
+## Data flow diagram (KR 5.1)
+
+This is the per-data-element flow as the product behaves on `main`
+today (2026-04-26). It is a working artifact, not a privacy policy.
+Update it whenever the product changes; supersede on every PR that
+touches camera, microphone, or storage.
+
+```
+                      STUDENT'S BROWSER
+                     (Chromebook, Chrome)
+
+  ┌─────────────────────────────────────────────────────────┐
+  │  CAMERA  ────────►  <video> element  (never uploaded)   │
+  │                              │                          │
+  │                              ▼                          │
+  │                      face-api.js                        │
+  │                   (in-browser, WASM)                    │
+  │                              │                          │
+  │                              ▼                          │
+  │                  eye-contact heuristic                  │
+  │                  (face-box centered)                    │
+  │                              │                          │
+  │                              ▼                          │
+  │                      "score" number                     │
+  └─────────────────────────────────────────────────────────┘
+
+  ┌─────────────────────────────────────────────────────────┐
+  │  MIC  ──►  Web Speech API  ────────►  GOOGLE servers    │
+  │             (browser-native)              ▲             │
+  │                              │            │             │
+  │                              ▼            │             │
+  │                       transcript ◄────────┘             │
+  │                              │                          │
+  │                              ▼                          │
+  │                  filler-word counter                    │
+  │                  WPM / pace counter                     │
+  └─────────────────────────────────────────────────────────┘
+
+  ┌─────────────────────────────────────────────────────────┐
+  │  RESULTS PAGE                                           │
+  │  score, XP, badges, transcript, timestamps              │
+  │                              │                          │
+  │                              ▼                          │
+  │     localStorage (this browser only, ~100 sessions)     │
+  └─────────────────────────────────────────────────────────┘
+```
+
+**Data elements that touch a third party today:**
+
+| Element                | Where it goes                | Sub-processor   |
+|------------------------|------------------------------|-----------------|
+| Live audio (during session) | Web Speech API → Google    | Google          |
+| Page request / static asset | Vercel edge + origin       | Vercel          |
+| Future: Clerk identity     | Clerk infrastructure        | Clerk (planned) |
+| Future: Session record     | Neon Postgres (US-East)     | Neon (planned)  |
+
+**Data elements that do NOT leave the device today:**
+
+- Raw video from the camera.
+- Face landmark coordinates from `face-api.js`.
+- Score, XP, badges (until persisted; localStorage only today).
+
+**What changes when PR #5 ("Persistent sessions in Neon behind
+Clerk auth") merges:**
+
+- `/dashboard`, `/history`, `/speak`, `/api/sessions`, `/api/progress`
+  become auth-gated. Anonymous students lose access; school-rostered
+  Google-Workspace students gain durable, cross-device sessions.
+- Session records (score, XP, transcript, timestamps, prompt id)
+  move from `localStorage` to Neon Postgres, keyed on Clerk
+  `userId`. **At this moment they begin to constitute "education
+  records" under FERPA** if a school is the customer.
+- Clerk becomes a sub-processor for student identity (email, name,
+  avatar). Neon becomes a sub-processor for session records.
+- Student transcripts become server-stored. We must add: a 20k-char
+  cap (the PR has it), a documented retention policy (we don't yet),
+  a per-school deletion mechanism (we don't yet), and a per-student
+  export for FERPA disclosure requests (we don't yet).
+- The data-flow diagram above gains a new arrow: results → POST
+  `/api/sessions` → Neon Postgres.
+
+**Open compliance items that should be done in the same PR cycle
+as PR #5 lands**:
+
+1. Add a documented retention policy (suggest: 13 months rolling,
+   purge older).
+2. Add a teacher-initiated per-student deletion endpoint.
+3. Add a transcript export endpoint scoped to the authed user, so
+   FERPA disclosure is mechanically possible.
+4. Update `/privacy` to reflect server-stored session records.
 
 ## Sub-processor list (living)
 
