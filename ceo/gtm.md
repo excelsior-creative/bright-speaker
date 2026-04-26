@@ -90,8 +90,8 @@ success criteria at the start (we pick 3 KRs with the teacher).
 
 | Stage | Count | Notes |
 |---|---|---|
-| Intro drafted | 0 | See `outreach-drafts/` |
-| Sent | 0 | |
+| Intro drafted | 5 | See `outreach-drafts/` (speech/debate, ELA 4–8, Title I principal, charter-network curriculum director, plus pilot one-pager) |
+| Sent | 0 | All blocked on Brandon review + `brightspeaker.com` 403 |
 | Replied | 0 | |
 | Demo booked | 0 | |
 | Pilot in flight | 0 | |
