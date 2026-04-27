@@ -5,6 +5,15 @@ the journal night where it was resolved._
 
 ## Open
 
+### 🟡 0 — Ready-spec queue is empty; choose the next two specs
+- **Posted:** 2026-04-27 nightly CEO routine.
+- **Context:** `ceo/next.md` currently says no ready specs are queued and explicitly instructs agents not to invent work when fewer than two ready items exist. `ceo/specs/` contains only `.gitkeep`, so tonight stopped before implementation.
+- **Recommended backlog-to-spec conversions:**
+  1. **Phase 0 trust/data-flow documentation** — convert the roadmap/backlog trust item into a scoped spec for `ceo/compliance.md` and any public plain-English trust copy needed. Low-risk docs; supports KR 5.1.
+  2. **Browser support + `/speak` graceful fallback** — convert the unsupported Web Speech / webcam permission UX backlog items into a scoped implementation spec. This should explicitly define risk tier because it touches camera/mic UX.
+  3. **Open PR triage / merge plan** — there are multiple open historical nightly PRs (#2, #5, #8, #9, #10, #11, #12, #13). Decide which should merge, rebase, or close before adding more parallel product work.
+- **What I need:** Promote at least two approved specs into `ceo/specs/` and list them in `ceo/next.md`, or tell me which existing open PRs to prioritize for review/merge.
+
 ### 🟡 1 — Is brightspeaker.com reachable by crawlers?
 - **Posted:** 2026-04-17 (night 1) — still open 2026-04-20.
 - **Context:** WebFetch to https://brightspeaker.com returned 403
