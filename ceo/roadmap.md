@@ -5,22 +5,32 @@ _Tags: [P] product · [G] GTM · [T] trust/compliance._
 
 ## Now (this month)
 
-- **[P] Teacher dashboard v1** — class list, per-student totals, last
-  session. No roster import yet; manual class codes.
-- **[P] Real auth gating + per-user sessions in a DB.** Clerk is
-  installed; needs to actually gate `/dashboard`, `/speak`, `/history`
-  and sessions need to persist server-side. Requires PR.
-- **[G] Marketing site v1 for educators.** `/for-schools`,
-  `/for-educators`, public trust page, pricing "pilot-only" page.
-- **[G] Outreach cadence v1.** 10 drafted emails / week to speech
-  coaches and ELA teachers; Brandon sends.
-- **[T] Data flow documentation** in `compliance.md`.
+- **[T] Data flow documentation** in `compliance.md` — current ready
+  spec, required before real student pilots or stronger trust claims.
+- **[P] `/speak` browser-support fallback** — current ready spec; no
+  silent failure when Web Speech/camera/mic support is missing.
+- **[P] Teacher class-code pilot backbone** — next major product spine:
+  teacher creates class/code, students practice, teacher sees results,
+  and pilot evidence can be summarized. Proposed spec exists; promote
+  only after R4 implementation approval because it touches student
+  records/auth/data handling.
+- **[G] Marketing site v1 for teacher pilots.** `/for-schools`,
+  `/for-educators`, public trust page, and pricing should frame a
+  30-day teacher pilot, not pretend district readiness is complete.
+- **[G] Outreach cadence v1.** Prioritize K-5 classroom teachers,
+  Title I elementary principals, and literacy/instructional coaches;
+  Brandon reviews/sends.
 
 ## Next (6–10 weeks)
 
-- **[P] Class roster via Google Classroom.** Only if Google Workspace
-  for Education SSO is live first. Requires PR.
+- **[P] Class roster via Google Classroom.** Only after the manual
+  class-code pilot loop works and Google Workspace for Education SSO is
+  live. Requires PR.
 - **[P] Assignable prompts + streak prompts from teacher.**
+- **[P] K-5 activity library v1.** 30 grade-banded prompts mapped to
+  Common Core SL.K-SL.5, designed for classroom assignment.
+- **[P] Pilot evidence package v1.** CSV/summary export, confidence
+  survey, and principal-ready outcome narrative.
 - **[P] LLM feedback coach layer** — constructive tips only, pre-tested
   prompts, never evaluative-of-the-person. Requires PR and teacher
   review before rollout.
