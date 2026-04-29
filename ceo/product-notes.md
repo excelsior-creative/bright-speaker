@@ -81,6 +81,26 @@ night-1 strategy, which targeted ELA grades 4–8 and speech/debate
 6–12. Reconciled in `strategy.md` and `decisions/0002-k5-primary-
 wedge.md` on 2026-04-20.
 
+## G-stack alignment (2026-04-29)
+
+Brandon accepted Timmy's recommended G-stack path: BrightSpeaker is a
+**teacher pilot tool first** and a **school/district edtech platform
+second**. The first real workflow is teacher creates a class/code →
+students practice → teacher sees results → pilot evidence can be
+summarized for a principal. See `decisions/0003-teacher-pilot-to-school-
+platform.md`.
+
+Product implications:
+
+- prioritize teacher class creation, class-code entry, persisted student
+  sessions, teacher progress view, and pilot summary;
+- keep the kid surface warm/simple: practice activities, feedback, XP,
+  badges;
+- keep feedback rule-based until LLM coaching is teacher-reviewed;
+- treat privacy/data-flow documentation as part of the product surface;
+- do not optimize for parent/B2C, adult coaching, live monitoring,
+  speech therapy, or peer/multiplayer.
+
 ## Data model (current, client-side)
 
 Unchanged from night 1. `localStorage` keys `bright_speaker_sessions`

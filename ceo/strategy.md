@@ -18,13 +18,41 @@ the encouragement layer that keeps them coming back.
 The reps matter more than the AI. A rule-based, age-appropriate
 feedback layer that reliably catches filler words, pacing, and eye
 contact is more valuable than a high-accuracy LLM score that says
-something weird to a seventh-grader.
+something weird to a child.
+
+## V1 product direction locked 2026-04-29
+
+BrightSpeaker is a **teacher pilot tool first** and a **school/district
+edtech platform second**. See `decisions/0003-teacher-pilot-to-school-
+platform.md`.
+
+The first real product workflow is:
+
+> Teacher creates a class + gives students a class code → students
+> practice → teacher sees results → pilot evidence can be summarized for
+> a principal.
+
+This means the next product backbone is not a generic student practice
+app or a prettier landing page. It is a privacy-minimized classroom pilot
+loop with:
+
+- teacher-created classes and class codes;
+- student practice with no confusing adult-style account burden;
+- server-side persistence scoped to the class/teacher;
+- teacher-visible progress evidence; and
+- a principal-ready pilot summary after 30 days.
 
 ## GTM thesis
 
 Direct-to-consumer is a grind for a kids product. Teachers hand-
-adopting a new tool is slow. The leverage point is district-level
-curriculum decisions, but those cycles are 6–18 months.
+adopting a new tool is slow. District-level curriculum decisions are
+valuable but too slow as the first proof point.
+
+The immediate GTM path is **teacher pilot → principal evidence → school
+license → district expansion**. The teacher pilot must be lightweight
+enough for one K-5 teacher to start quickly, while the product and trust
+artifacts are built so a principal or curriculum leader can say yes to
+expansion without feeling that the first pilot was a toy.
 
 **Updated 2026-04-20.** The homepage redesign (PR #3 + production-
 readiness pass PR #4) and the follow-on copy updates have shifted
@@ -69,6 +97,10 @@ Not our ICP (for now):
 
 Validate with ≥5 educator conversations before committing to numbers.
 
+Pilot packaging: 30-day teacher pilots are the validation motion. They
+should include explicit success criteria at kickoff and a principal-
+ready evidence summary at day 30.
+
 ## Bets we are making
 
 1. **Browser-first is enough.** Chromebook + Web Speech API + client-
@@ -80,7 +112,10 @@ Validate with ≥5 educator conversations before committing to numbers.
    "no student accounts, kid launches with a class code" story is most
    compelling. Title I principals are our acquisition engine. _(Revised
    2026-04-20; see decision 0002.)_
-4. **Privacy-first architecture is a feature, not overhead.** No video
+4. **Teacher pilot first, platform second.** The first product must make
+   one teacher successful with one class before we optimize for district
+   administration. _(Locked 2026-04-29; see decision 0003.)_
+5. **Privacy-first architecture is a feature, not overhead.** No video
    leaves the device; transcripts minimized; explicit data flow story
    is a competitive advantage in the K-12 procurement conversation.
 

@@ -1,10 +1,10 @@
 # OKRs — Q2 2026 (Apr–Jun)
 
-_Updated: 2026-04-17 (night 1 of the nightly CEO routine)._
+_Updated: 2026-04-29 after G-stack alignment._
 
 Two tracks: Product and GTM. Progress tracked nightly in journals.
 
-## Objective 1 (Product): A practice session a seventh-grader wants to do twice
+## Objective 1 (Product): A K-5 student can complete speaking reps twice a week
 
 **KR 1.1** — Practice flow runs end-to-end on Chromebook Chrome with
 webcam + mic, from dashboard → 60s session → results, with <3s of
@@ -25,23 +25,28 @@ contrast. _(Baseline unknown; audit early in quarter.)_
 
 ## Objective 2 (Product): Teacher can see what their classroom is doing
 
-**KR 2.1** — Teacher view lists students in a class, with last-
-session date, total sessions, and average score.
+**KR 2.1** — Teacher can create a class and share a class code.
 
-**KR 2.2** — Teacher can assign a specific prompt to a class.
+**KR 2.2** — Teacher view lists students in a class, with last-
+session date, total sessions, and average/recent score.
 
-**KR 2.3** — Exports a classroom CSV for progress reports.
+**KR 2.3** — Teacher can assign a specific prompt to a class.
+
+**KR 2.4** — Exports or summarizes a classroom pilot report for a
+principal/curriculum-coach review.
 
 ## Objective 3 (GTM): First 3 pilot schools in motion
 
-**KR 3.1** — 30 qualified educator conversations (speech/debate
-coaches and ELA teachers grades 4–8) by end of Q2. _(Baseline: 0.)_
+**KR 3.1** — 30 qualified educator conversations with K-5 classroom
+teachers, Title I elementary principals, and literacy/instructional
+coaches by end of Q2. Keep 6-12 speech/debate as a secondary lane.
+_(Baseline: 0.)_
 
 **KR 3.2** — 3 signed pilot agreements (no payment required for
 pilot; formal pilot letter signed). _(Baseline: 0.)_
 
-**KR 3.3** — 1 speech/debate association (state-level or NSDA
-district) aware of Bright Speaker via a coach intro.
+**KR 3.3** — 1 elementary principal/curriculum leader reviews a
+teacher-pilot evidence package and gives explicit expansion feedback.
 
 ## Objective 4 (GTM): A marketing site an educator trusts
 
