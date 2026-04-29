@@ -10,28 +10,32 @@ and FERPA (student educational records) standards the moment a real
 school deploys us. Today we are pre-pilot, but every architecture
 choice should be made as if a district DPO will audit us next month.
 
-## Current data flows (as of 2026-04-17)
+## Phase 0 current data flow (as of 2026-04-29)
 
-1. **Camera + microphone** → the student's browser, via
-   `getUserMedia`. Stream is attached to a `<video>` element and a
-   media recorder.
-2. **Video** — NEVER leaves the device. Not uploaded, not stored.
-   ✅ Good.
-3. **Audio** — Fed into the browser's Web Speech API
-   (`webkitSpeechRecognition`). On Chrome this **is** transmitted to
-   Google's speech servers for ASR. ⚠️ This is a real data flow we
-   need to disclose.
-4. **Transcript** — Returned from Web Speech API, stored in
-   browser `localStorage`. ✅ Local only today.
-5. **Face detection** — `face-api.js` runs entirely in the browser.
-   No face data leaves the device. ✅ Good.
-6. **Scores, XP, badges, session history** — `localStorage` today.
-   When we add server-side persistence, this becomes FERPA-scope
-   educational record data. Plan for it.
-7. **Auth (Clerk)** — Installed but not gating routes. When gated,
-   email / name / profile photo transit through Clerk's
-   infrastructure. Clerk will be a sub-processor.
-8. **Hosting (Vercel)** — Standard edge + serverless. Sub-processor.
+This table is an internal current-state artifact for pilot readiness. It is not a legal policy, a DPA, or a compliance certification. File references reflect the code reviewed during the 2026-04-29 nightly routine.
+
+| Data / signal | Capture or source | Processing location | Storage / retention today | Third parties involved today | User-facing promise today | Open gap before real student pilots |
+|---|---|---|---|---|---|---|
+| Camera / video frames | `/speak` requests camera access with `navigator.mediaDevices.getUserMedia({ video: true, audio: true })` in `apps/app/src/app/speak/page.tsx` lines 138-145. The stream is attached to the in-page `<video>` element at lines 161-167 and rendered at line 387. | Student browser only for the live webcam preview and face detection. | Not uploaded and not intentionally stored. Tracks are stopped in `stopWebcam()` at lines 169-174 and cleanup calls it on unmount / session end. | Browser/device APIs; Vercel only serves the app shell. | Public `/privacy` says student video is processed in-browser and is not uploaded, stored, or shared. | Keep this invariant when adding teacher dashboards, recordings, QA tooling, or support workflows; any video recording/storage would raise the work to R4 and require Brandon/counsel approval. |
+| Microphone / audio stream | Same `getUserMedia({ video: true, audio: true })` request in `apps/app/src/app/speak/page.tsx` lines 138-145. | Browser captures the stream; Web Speech recognition is initialized client-side in `initSpeechRecognition()` at lines 176-218. | Bright Speaker does not save an audio file today. The browser speech-recognition provider may process audio transiently to produce transcripts. | Browser vendor speech-recognition service. In Chrome, the public privacy page currently discloses Google speech-recognition processing. | Public `/privacy` says Chrome may transmit audio to Google's speech-recognition service and that an on-device alternative is a future goal. | Finalize STT strategy and district disclosure language before pilots. Do not add Deepgram, Whisper server processing, analytics, or any other audio processor without a separate approved spec. |
+| Browser speech recognition / transcript text | `initSpeechRecognition()` reads `SpeechRecognition` / `webkitSpeechRecognition` from `window`, sets `continuous`, `interimResults`, and `lang`, then appends final results to React state in `apps/app/src/app/speak/page.tsx` lines 176-218. | Browser plus browser speech-recognition provider. Transcript assembly and filler counting happen in React state. | Final transcript is saved into browser `localStorage` through `saveSession()` in `apps/app/src/lib/sessions.ts` lines 45-58. Session history is capped to the 100 most recent records at line 53. | Browser vendor speech-recognition service; no LLM or server-side transcript processor is called by current code. | Public `/privacy` says transcripts are localStorage today and will move to a database only when authenticated accounts are introduced. | Transcripts can become FERPA-scope education records once tied to a class/student account. Need retention, deletion, access-control, and DPA language before server persistence. |
+| Face detection / eye-contact signal | `face-api.js` is lazy-loaded and tiny face detector weights load from `/models` in `apps/app/src/app/speak/page.tsx` lines 100-109. `detectEyeContact()` estimates whether the face is in the center zone at lines 111-136. | Student browser only. Model files are served statically from `apps/app/public/models/`. | Raw frames and detections are not stored. Boolean eye-contact samples are kept in React state during a session; the aggregate percentage is saved in the local session record via line 289. | `face-api.js` package and static model assets served by Vercel; no external face-analysis API. | Public `/privacy` says webcam processing is in-browser and video is not uploaded. | Homepage/educator copy must not overstate this as gaze tracking, body-language AI, or MediaPipe unless implementation changes. Any biometric/face-data commitments need review. |
+| Session scores, XP, badges, and progress history | Results are computed in `endRecording()` in `apps/app/src/app/speak/page.tsx` lines 268-300 and saved through `saveSession()`. Progress/badges update in `apps/app/src/lib/sessions.ts` lines 61-110. | Browser only. | Browser `localStorage` keys `bright_speaker_sessions` and `bright_speaker_progress` in `apps/app/src/lib/sessions.ts` lines 35-37. `getSessions()` reads local history at lines 38-43. | None beyond the browser/runtime today. | Public `/privacy` says scores, XP, badges, and transcripts are stored in the browser today. | Server-side history, teacher views, CSV exports, or class rosters move this into FERPA scope and require authz, deletion, retention, DPA, and audit decisions. |
+| Auth/account providers | Clerk packages are installed in `apps/app/package.json` lines 14-15 and sign-in/sign-up routes exist, but current `/speak` and `/dashboard` access is not fully gated by a teacher/student role model. | Clerk-hosted/auth infrastructure when enabled; Next.js app runtime for routes. | No current student classroom records are persisted server-side by Bright Speaker. Clerk may process account metadata for users who sign in. | Clerk. Neon is present as a dependency for planned database work, not current session persistence. | Current docs state Clerk is installed/planned and formal account flows are not yet the production student-data model. | Define teacher/student roles, school-domain controls, parental/school consent path, account deletion, and roster data minimization before live pilots. |
+| Hosting/runtime and operational logs | Next.js app served by Vercel. Static model assets and pages are delivered from the app repo. | Vercel hosting/edge/serverless runtime. | Server/platform logs may contain request metadata such as IP, path, user agent, and timestamps depending on Vercel configuration. | Vercel. | Public `/privacy` lists Vercel as the website host and notes subprocessors will be disclosed in school agreements. | Confirm deployment visibility, crawler access, production env vars, log retention, and subprocessor/DPA terms before district procurement. |
+
+### Draft educator trust summary — non-legal copy
+
+Bright Speaker is built to practice speaking without turning a student's camera into a surveillance tool. In the current pre-pilot product, webcam video is used only inside the student's browser for the live preview and simple eye-contact indicator; Bright Speaker does not upload or store student video. The practice transcript, score, XP, badges, and history are stored locally in the browser today, not in a school roster database. The biggest current disclosure item is speech recognition: Chrome's built-in Speech Recognition API may send student audio to Google's speech-recognition service to create the transcript. Before any real student pilot, Bright Speaker still needs Brandon/counsel approval on the formal privacy policy, terms, DPA/subprocessor language, retention/deletion rules, and the final speech-to-text strategy.
+
+### Before the first real student pilot
+
+- [ ] Brandon/counsel approve formal Privacy Policy, Terms of Service, and any Data Processing Agreement language.
+- [ ] Decide whether the Phase 0 Web Speech API path is acceptable for pilots or whether on-device / contracted STT is required first.
+- [ ] Define retention and deletion rules for transcripts, scores, XP, badges, class rosters, and account metadata.
+- [ ] Define teacher/student roles, school authorization, and under-13 consent path before enabling classroom accounts.
+- [ ] Confirm subprocessor list and DPA posture for Vercel, Clerk, Neon, and the selected STT provider/browser path.
+- [ ] Review public marketing/legal copy so it describes current behavior without claiming COPPA compliance, FERPA compliance, DPA readiness, SOC 2, Student Privacy Pledge status, counsel review, or biometric/gaze-analysis capabilities that do not exist.
 
 ## Sub-processor list (living)
 

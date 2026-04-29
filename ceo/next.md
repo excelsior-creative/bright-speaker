@@ -4,18 +4,16 @@ Ready specs are queued below. Agents should work only from these specs and keep 
 
 ## Ready
 
-1. `ceo/specs/2026-04-27-phase-0-trust-data-flow.md`
-   - **Owner:** Peter
-   - **Risk:** R1 unless public/legal claims are published or student-data handling changes.
-   - **Outcome:** Current-state trust/data-flow documentation and draft educator trust summary.
-   - **Verification:** `git diff --check`; over-claim review; app tests only if public/product code changes.
-
-2. `ceo/specs/2026-04-27-browser-support-speak-fallback.md`
+1. `ceo/specs/2026-04-27-browser-support-speak-fallback.md`
    - **Owner:** Devon
    - **Reviewer:** Quinn
    - **Risk:** R2; escalates to R4 if new STT vendors, student-data storage, privacy commitments, auth, or production deploy changes are introduced.
    - **Outcome:** Unsupported browsers and speech/camera errors get friendly in-page fallback UX; no silent recording failure.
    - **Verification:** `pnpm test`, `pnpm lint`, manual smoke for supported/unsupported browser paths before merge.
+
+## Recently completed
+
+- `ceo/specs/2026-04-27-phase-0-trust-data-flow.md` — completed 2026-04-29 in a docs-only nightly PR. Produced current-state trust/data-flow documentation and a draft educator trust summary in `ceo/compliance.md`; no public legal copy or product code changed.
 
 ## Blocked / needs decision
 
