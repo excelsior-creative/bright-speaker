@@ -1,9 +1,10 @@
 ---
 title: Phase 0 Trust/Data-Flow Documentation
-status: ready
+status: completed
 risk_tier: R1
 owner: Peter
 created: 2026-04-27
+completed: 2026-04-29
 source:
   - ceo/roadmap.md#now-this-month
   - ceo/backlog.md#trust--compliance
@@ -57,12 +58,12 @@ BrightSpeaker has a plain-English, internally accurate trust/data-flow artifact 
 
 ## Acceptance criteria
 
-- [ ] `ceo/compliance.md` contains a current-state data-flow table with capture/source, processing location, storage/retention, third parties, user-facing promise, and open gap for each data type.
-- [ ] The doc explicitly states whether student video leaves the browser in the current implementation, with file references backing the claim.
-- [ ] The doc explicitly states that Web Speech API behavior may send audio/transcript processing to the browser vendor and that this is a district-trust gap until a final STT strategy is chosen.
-- [ ] The doc includes a short educator-facing trust summary labeled as draft/non-legal copy.
-- [ ] The doc lists COPPA/FERPA/DPA/retention/deletion open decisions without claiming completion.
-- [ ] No production code, public legal copy, deployment settings, or third-party services are changed.
+- [x] `ceo/compliance.md` contains a current-state data-flow table with capture/source, processing location, storage/retention, third parties, user-facing promise, and open gap for each data type.
+- [x] The doc explicitly states whether student video leaves the browser in the current implementation, with file references backing the claim.
+- [x] The doc explicitly states that Web Speech API behavior may send audio/transcript processing to the browser vendor and that this is a district-trust gap until a final STT strategy is chosen.
+- [x] The doc includes a short educator-facing trust summary labeled as draft/non-legal copy.
+- [x] The doc lists COPPA/FERPA/DPA/retention/deletion open decisions without claiming completion.
+- [x] No production code, public legal copy, deployment settings, or third-party services are changed.
 
 ## Verification plan
 
@@ -100,3 +101,7 @@ BrightSpeaker has a plain-English, internally accurate trust/data-flow artifact 
 ## Restart notes
 
 If paused, restart by reading this spec, then diffing `ceo/compliance.md`. Do not publish public trust/legal copy without explicit Brandon/counsel approval.
+
+## Completion note — 2026-04-29
+
+Completed by the nightly CEO routine in a docs-only PR. `ceo/compliance.md` now includes a current-state data-flow table, draft educator trust summary, and first-pilot decision checklist. No production code, public legal copy, deployment settings, or third-party services were changed.
