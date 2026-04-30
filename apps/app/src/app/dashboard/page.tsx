@@ -135,9 +135,9 @@ export default function Dashboard() {
             </div>
             <div className="relative z-10">
               <div className="text-4xl mb-4">🎙️</div>
-              <h2 className="text-xl font-extrabold mb-2">Quick Practice</h2>
+              <h2 className="text-xl font-extrabold mb-2">Try the Demo</h2>
               <p className="text-white/70 text-sm mb-6">
-                Jump into a random prompt and practice for 60 seconds.
+                Jump into a random prompt right in your browser — no account or scheduling needed.
               </p>
               <Link
                 href={`/speak?prompt=${randomPromptId}`}
