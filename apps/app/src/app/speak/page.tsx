@@ -97,17 +97,6 @@ function SpeakContent() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const faceApiRef = useRef<any>(null);
 
-  const initFaceDetection = async () => {
-    try {
-      const faceapi = await import("face-api.js");
-      faceApiRef.current = faceapi;
-      await faceapi.nets.tinyFaceDetector.loadFromUri("/models");
-      setFaceApiReady(true);
-    } catch (e) {
-      console.error("Face detection failed to load:", e);
-    }
-  };
-
   const detectEyeContact = useCallback(async () => {
     if (!videoRef.current || !faceApiRef.current) return;
     const faceapi = faceApiRef.current;
@@ -301,8 +290,21 @@ function SpeakContent() {
   }, [promptId, prompt.title]);
 
   useEffect(() => {
-    initFaceDetection();
+    let cancelled = false;
+    (async () => {
+      try {
+        const faceapi = await import("face-api.js");
+        if (cancelled) return;
+        faceApiRef.current = faceapi;
+        await faceapi.nets.tinyFaceDetector.loadFromUri("/models");
+        if (cancelled) return;
+        setFaceApiReady(true);
+      } catch (e) {
+        console.error("Face detection failed to load:", e);
+      }
+    })();
     return () => {
+      cancelled = true;
       stopWebcam();
       recognitionRef.current?.stop();
       if (timerRef.current) clearInterval(timerRef.current);
