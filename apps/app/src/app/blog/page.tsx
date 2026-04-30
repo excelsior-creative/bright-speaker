@@ -11,6 +11,15 @@ export const metadata: Metadata = {
 
 const posts = [
   {
+    slug: "why-pauses-beat-um",
+    title: "Why pauses beat “um”",
+    excerpt:
+      "A short, printable explainer elementary teachers can use to teach young students that pauses are a strength, not a stumble. Includes a one-page classroom handout and three mini-drills.",
+    date: "2026-04-22",
+    readMinutes: 5,
+    audience: "K–5 classroom teachers",
+  },
+  {
     slug: "five-minute-elementary-speaking-warmup",
     title: "A 5-minute speaking warm-up for elementary classrooms",
     excerpt:

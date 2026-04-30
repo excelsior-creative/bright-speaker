@@ -78,7 +78,7 @@ export default function ForSchools() {
               {
                 step: "03",
                 title: "District license",
-                desc: "Per-student annual pricing designed for building budgets. Includes a signed DPA, Google Workspace for Education SSO, roster provisioning, and named support.",
+                desc: "Per-student annual pricing designed for building budgets. DPA signed on request, Google Workspace for Education SSO, roster provisioning, and named support.",
               },
             ].map((p) => (
               <div key={p.step} className="card-warm p-6">
