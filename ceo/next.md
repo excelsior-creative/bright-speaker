@@ -13,7 +13,15 @@ Ready specs are queued below. Agents should work only from these specs and keep 
 
 ## Recently completed
 
-- `ceo/specs/2026-04-27-phase-0-trust-data-flow.md` — completed 2026-04-29 in a docs-only nightly PR. Produced current-state trust/data-flow documentation and a draft educator trust summary in `ceo/compliance.md`; no public legal copy or product code changed.
+- `ceo/specs/2026-04-27-phase-0-trust-data-flow.md` — completed 2026-04-29 in docs-only PR #18. Produced current-state trust/data-flow documentation and a draft educator trust summary in `ceo/compliance.md`; no public legal copy or product code changed.
+
+## Proposed next after current ready specs
+
+- `ceo/specs/2026-04-29-teacher-class-code-pilot-backbone.md`
+  - **Status:** proposed, not ready.
+  - **Why:** G-stack alignment locked teacher class-code pilot as the first real product workflow.
+  - **Risk:** R4 before implementation/deployment because it touches auth, roles, class membership, persisted student-session records, and children/student data.
+  - **Promotion gate:** finish/merge the current trust/data-flow and browser-support specs, then get explicit Brandon approval for the R4 implementation scope.
 
 ## Blocked / needs decision
 
