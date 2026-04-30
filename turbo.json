@@ -24,6 +24,16 @@
       "dependsOn": ["^build"],
       "outputs": ["coverage/**"]
     },
+    "test:bstack": {
+      "cache": false,
+      "env": [
+        "BROWSERSTACK_USERNAME",
+        "BROWSERSTACK_ACCESS_KEY",
+        "LOCAL",
+        "BASE_URL",
+        "GITHUB_SHA"
+      ]
+    },
     "clean": {
       "cache": false
     }
