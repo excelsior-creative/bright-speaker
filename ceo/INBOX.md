@@ -5,31 +5,62 @@ the journal night where it was resolved._
 
 ## Open
 
-### 🟡 1 — Is brightspeaker.com reachable by crawlers?
-- **Posted:** 2026-04-17 (night 1) — still open 2026-04-20.
-- **Context:** WebFetch to https://brightspeaker.com returned 403
-  on night 1 and again tonight (night 2). Could be Vercel deployment
-  protection, Cloudflare WAF, or a preview-only deployment. If this
-  is intentional (pre-launch gating), fine — but we can't rank in
-  search if search engines also get 403'd, and the blog post work
-  from nights 1 and 2 won't compound.
+### 🔴 0 — Five open draft PRs stacked up; nothing has shipped since 2026-04-20
+- **Posted:** 2026-04-23 (night 3).
+- **Context:** Nightly autonomous CEO work has produced four
+  consecutive "Night 3" branches, of which three sit unreviewed
+  (#8, #9, and tonight's). Plus PR #5 (Neon+Clerk auth — the
+  production auth track), PR #10 (bstack harness), and stale PR
+  #2 (superseded night-2 attempt). `main` hasn't advanced since
+  PR #7 on 2026-04-20.
+- **The problem:** Nightly compounding only works if code merges.
+  Every extra night without review adds rebase surface and the
+  honesty/design/filler improvements haven't touched production
+  yet.
+- **Recommendation / order of attention:**
+  1. Close PR #2 (superseded, pre-monorepo).
+  2. Review+merge PR #8 (smallest: design reconciliation +
+     honesty regression test + filler tuning).
+  3. Review+merge PR #9 (grade-banded filler profiles + blog
+     post + lint fix; overlaps with #8 so one of them will need
+     a small rebase).
+  4. Review+merge PR #10 (bstack harness, self-contained).
+  5. Review PR #5 (auth — biggest blast radius; needs real time).
+  6. My tonight's PR lands last or in any order; deliberately
+     orthogonal to the others.
+- **What I need:** An hour of review time this week, or a steer
+  on which subset you want to land first.
+
+### 🔴 1 — Is brightspeaker.com reachable by crawlers?
+- **Posted:** 2026-04-17 (night 1). **Escalated to 🔴 on 2026-04-23
+  — fourth night open.**
+- **Context:** WebFetch to https://brightspeaker.com has returned
+  403 on nights 1, 2, 3, and 4. Could be Vercel deployment
+  protection, Cloudflare WAF, or a preview-only deployment. If
+  this is intentional (pre-launch gating), fine — but we can't
+  rank in search if search engines also get 403'd, and four
+  nights of blog + pilot-page work is compounding into a dark
+  void.
 - **What I need:** Confirm the site is publicly reachable, or tell
   me the deployment URL I should be treating as the "real" site
-  for SEO and social sharing work.
+  for SEO and social sharing work. If preview-only, give me the
+  preview URL so the outreach drafts can link correctly.
 
-### 🟡 2 — Approve draft outreach emails (speech/debate coach + ELA teacher + Title I principal)
-- **Posted:** 2026-04-17 (nights 1 & 2).
+### 🟡 2 — Approve draft outreach emails (five personas now queued)
+- **Posted:** 2026-04-17 (nights 1 & 2 & 3).
 - **Files:**
   - `ceo/outreach-drafts/2026-04-17-speech-debate-coach-cold-intro.md`
   - `ceo/outreach-drafts/2026-04-17-ela-teacher-cold-intro.md`
   - `ceo/outreach-drafts/2026-04-17-pilot-program-one-pager.md`
   - `ceo/outreach-drafts/2026-04-20-title-i-elementary-principal-cold-intro.md`
-    _(new tonight; leads the K–5 ICP pivot per decision 0002)_
-- **Context:** Tonight's Title I principal draft is the first one
-  aligned to the new K–5 primary wedge. The night-1 drafts
-  (speech/debate + ELA 4–8) are still valid as a secondary lane,
-  but lower priority.
-- **What I need:** Your review + edits, then you send.
+    _(leads the K–5 ICP pivot per decision 0002)_
+  - `ceo/outreach-drafts/2026-04-23-independent-k5-enrichment-director-cold-intro.md`
+    _(new tonight; independent / private K–5 fast-signing lane)_
+- **Context:** Five drafts now cover the core K–5 ICP (classroom
+  teacher, ELA/speech coach, Title I principal, literacy coach
+  _[in PR #9]_, enrichment director). Pipeline still at zero sent.
+- **What I need:** Your review + edits + personalization, then you
+  send. Even one send per week moves the pipeline.
 
 ### 🟢 3 — FYI: no analytics yet
 - **Posted:** 2026-04-17 (night 1) — no change tonight.

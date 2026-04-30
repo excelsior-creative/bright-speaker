@@ -102,8 +102,8 @@ pilot is lightweight, but the privacy story must be precise and honest.
 
 | Stage | Count | Notes |
 |---|---|---|
-| Intro drafted | 0 | See `outreach-drafts/` |
-| Sent | 0 | |
+| Intro drafted | 5 | speech/debate + ELA + pilot one-pager + Title I principal + enrichment director |
+| Sent | 0 | Brandon to send |
 | Replied | 0 | |
 | Demo booked | 0 | |
 | Pilot in flight | 0 | |
@@ -115,7 +115,10 @@ pilot is lightweight, but the privacy story must be precise and honest.
 No deck yet. Priority: one-page pilot program sheet first (see
 `outreach-drafts/2026-04-17-pilot-program-one-pager.md`), deck
 second. Deck should be 8–10 slides max, designed to be emailed
-(not presented live).
+(not presented live). **Update 2026-04-23:** `/pilot` now exists as
+a web landing page equivalent of the one-pager, which is the right
+place to send cold-email recipients. The one-pager remains useful
+as an attached PDF for warm-intro contexts.
 
 ## Conferences and associations to track
 

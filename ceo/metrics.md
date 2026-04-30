@@ -37,12 +37,17 @@ Brandon approval (sub-processor).
 
 | Stage | Count | Source |
 |---|---|---|
-| Cold emails drafted | 2 (tonight) | `outreach-drafts/` |
+| Cold emails drafted | 5 | `outreach-drafts/` |
 | Cold emails sent | 0 | — |
 | Replies | 0 | — |
 | Demo booked | 0 | — |
 | Pilot agreements signed | 0 | — |
 | Pilot schools live | 0 | — |
+
+_Drafts as of 2026-04-23: speech/debate coach, ELA teacher, Title I
+elementary principal, independent-K-5 enrichment director, plus a
+pilot one-pager for warm-intro contexts. Literacy coach draft lives
+on PR #9._
 
 ## Revenue
 
