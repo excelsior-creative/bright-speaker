@@ -5,68 +5,34 @@ the journal night where it was resolved._
 
 ## Open
 
-### 🔴 0 — PR backlog: six open drafts since night 2, none merged
+### 🟡 PR backlog triage follow-up
+- **Posted:** 2026-04-26; updated during conflict resolution.
+- **Context:** Historical PR queue was triaged after #9, #10, #18, and #20 landed. Remaining open PRs are documented with per-PR conflict-audit comments.
+- **Current recommendation:** close/supersede stale duplicates (#2, #8), re-cut R4 persistence work (#5), salvage focused GTM/design/resource work from #11/#12/#13 as separate current-main PRs.
 
-- **Posted:** 2026-04-26 (night 4). Was implicit in prior nights;
-  promoting to top-of-INBOX tonight because it's now actively
-  costing us.
-- **Context:** Six open draft PRs on `main` (#2, #5, #8, #9, #10,
-  #11, #12), oldest is from 2026-04-18. Each new night's branch
-  forked from `main` while `main` hadn't moved, so future-night
-  branches kept independently re-doing the same work — `/pilot`
-  page (#2, #11), "why-pauses-beat-um" blog post (#8, #9, #12),
-  K–5 filler-word tuning (#2, #8, #9), design reconciliation of
-  `/for-schools` + `/for-educators` (#8, #12), the lint fix on
-  `speak/page.tsx:304` (#8, #9, #12), and an honesty regression
-  test (#8, #9). They will conflict heavily on merge.
-- **Recommended merge / close order** (pick the freshest of each
-  category, close the older variants as superseded):
-  1. **Merge PR #5** — "Persistent sessions in Neon behind Clerk
-     auth." Foundational; fully orthogonal; oldest non-superseded
-     PR. Requires `DATABASE_URL` and Clerk envs in Vercel before
-     deploying — Brandon's call. Drafts compliance.md should
-     accompany this.
-  2. **Merge PR #10** — bstack Playwright harness. Infra; does
-     not touch app surfaces. Requires `BROWSERSTACK_USERNAME` /
-     `_ACCESS_KEY` in env to actually exercise.
-  3. **Merge PR #12** — most recent design reconciliation +
-     second blog post + lint fix; supersedes the design
-     reconciliation in PR #8.
-  4. **Merge PR #9** — grade-banded fillers + honesty regression
-     test + fourth K–5 outreach draft. The honesty test from #9
-     is a tighter implementation than #8's; supersedes #8's test.
-  5. **Merge PR #11** — `/pilot` landing page + a third blog
-     post on a different topic (`how-to-teach-public-speaking-
-     elementary-school`) + enrichment-director outreach. The
-     `/pilot` here is a fresher take than PR #2's. Sitemap
-     conflicts with tonight's branch — trivial to resolve.
-  6. **Close PR #8 as superseded** by #9 + #12. The CoachUI URL
-     fix in #8 is its only non-redundant piece — cherry-pick if
-     desired, otherwise re-do as a one-line follow-up.
-  7. **Close PR #2 as superseded** by #11 (pilot page) + #9
-     (filler tuning) + tonight's `layout.tsx` honesty fix.
-- **What I need:** Brandon to triage the queue in one sitting.
-  Two hours of review now saves a week of compounding conflicts.
-- **What I'm doing in the meantime:** Tonight (night 4) I am
-  shipping ONLY work that does not touch any of the above
-  variants — no `/pilot`, no second-blog-post variant, no design
-  reconciliation, no filler tuning, no honesty test, no DB work.
-  Tonight's work is a CI workflow, a new `/resources` hub +
-  printable SL.K-SL.5 checklist, a new outreach draft persona,
-  and a one-line metadata honesty fix.
-
-### 🔴 1 — Is brightspeaker.com reachable by crawlers?
-- **Posted:** 2026-04-17 (night 1) — still open 2026-04-26 (night 4).
-- **Context:** WebFetch to https://brightspeaker.com returned 403
-  on nights 1, 2, 3, and again tonight (night 4). Could be Vercel
-  deployment protection, Cloudflare WAF, or a preview-only deployment.
-  If this is intentional (pre-launch gating), fine — but we can't
-  rank in search if search engines also get 403'd, and the blog post
-  work from every night won't compound. Six PRs of GTM and product
-  work are sitting on top of a site no crawler can reach.
-- **What I need:** Confirm the site is publicly reachable, or tell
-  me the deployment URL I should be treating as the "real" site
-  for SEO and social sharing work.
+### 🔴 1 — Is brightspeaker.com reachable by crawlers? (ESCALATED)
+- **Posted:** 2026-04-17 (night 1); reiterated night 2; escalating
+  to 🔴 urgent on night 3 (2026-04-22).
+- **Context:** WebFetch to https://brightspeaker.com has returned 403
+  three nights running. I've now published three blog posts
+  (`reduce-filler-words-k12`, `five-minute-elementary-speaking-warmup`,
+  `why-pauses-beat-um`) and updated the sitemap. None of that SEO
+  work compounds if Google sees the same 403 we do. Two outreach
+  drafts now link to the blog posts — if recipients click through
+  and hit a 403, that's a credibility hit on a first impression.
+- **What I need (one of these, not all):**
+  1. Confirm the site is publicly reachable and the 403 is just
+     anti-bot rules that aren't firing on real browsers + Googlebot.
+     (Quick check: Google Search Console → Inspect any URL →
+     "Test live URL." Should return 200.)
+  2. If it's Vercel Deployment Protection: disable for production
+     (keep on preview deployments). Settings → Deployment Protection
+     → Production → "Public."
+  3. If it's Cloudflare WAF: allow Googlebot, Bingbot, and common
+     user-agents.
+  4. If the site is intentionally gated pre-launch: tell me which
+     URL to treat as production for SEO (a staging subdomain?), and
+     I'll stop pushing blog posts until the prod URL is live.
 
 ### 🟡 2 — Approve draft outreach emails (speech/debate coach + ELA teacher + Title I principal)
 - **Posted:** 2026-04-17 (nights 1 & 2).
@@ -75,11 +41,13 @@ the journal night where it was resolved._
   - `ceo/outreach-drafts/2026-04-17-ela-teacher-cold-intro.md`
   - `ceo/outreach-drafts/2026-04-17-pilot-program-one-pager.md`
   - `ceo/outreach-drafts/2026-04-20-title-i-elementary-principal-cold-intro.md`
-    _(new tonight; leads the K–5 ICP pivot per decision 0002)_
-- **Context:** Tonight's Title I principal draft is the first one
-  aligned to the new K–5 primary wedge. The night-1 drafts
-  (speech/debate + ELA 4–8) are still valid as a secondary lane,
-  but lower priority.
+  - `ceo/outreach-drafts/2026-04-22-elementary-literacy-coach-cold-intro.md`
+    _(new night 3; completes the K–5 ICP trio — teacher, principal,
+    coach)_
+- **Context:** Four drafts are now queued. The three K–5 drafts
+  (principal + literacy coach + ELA teacher) are the priority set
+  under the current positioning. The speech/debate coach draft is
+  still valid for the secondary 6–12 lane.
 - **What I need:** Your review + edits, then you send.
 
 ### 🟢 3 — FYI: no analytics yet
@@ -120,4 +88,9 @@ the journal night where it was resolved._
 
 ## Resolved
 
-_Nothing yet._
+### ✅ 0 — Ready-spec queue is no longer empty
+- **Resolved:** 2026-04-27.
+- **Resolution:** Brandon asked to move the project forward in `#cb-brightspeaker`, so Peter promoted two ready specs into `ceo/specs/` and listed them in `ceo/next.md`:
+  1. `ceo/specs/2026-04-27-phase-0-trust-data-flow.md`
+  2. `ceo/specs/2026-04-27-browser-support-speak-fallback.md`
+- **Still open:** historical PR queue triage and public/deploy approval gates remain separate blockers.

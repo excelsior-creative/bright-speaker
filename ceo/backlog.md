@@ -16,11 +16,12 @@ _Unscheduled. Tag with area. Groom weekly; promote to roadmap when ready._
 - [P][bug] If speech recognition isn't supported (Safari, Firefox
   historically), the user sees a silent failure. Detect and show a
   "please use Chrome on your school Chromebook" message.
-- [P][bug] Filler word "so" and "well" are over-flagged; they're often
-  legitimate speech. Tune the detector.
-- [P][bug] `liveFillerCount` counts `"actually"` and `"literally"` —
-  age-inappropriate flagging for younger students. Consider a grade-
-  band-tuned filler list.
+- ~~[P][bug] Filler word "so" and "well" are over-flagged~~ (false
+  alarm — neither was ever in the list).
+- ~~[P][bug] `liveFillerCount` counts `"actually"` and `"literally"`~~
+  (false alarm — neither was ever in the list).
+- ~~[P][ux] Grade-band-tuned filler list~~ (shipped 2026-04-22; see
+  `lib/filler-words.ts` and `product-notes.md`).
 - [P][perf] `tinyFaceDetector` weights are loaded on every `/speak`
   visit. Cache via service worker or preload on dashboard.
 - [P][ux] Session length fixed at 60s; add 30s and 90s options per PRD.

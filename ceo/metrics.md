@@ -38,7 +38,7 @@ Brandon approval (sub-processor).
 
 | Stage | Count | Source |
 |---|---|---|
-| Cold emails drafted | 5 | `outreach-drafts/` (3 from night 1, 1 night 2, 1 night 4) |
+| Cold emails drafted | 5 (cumulative) | `outreach-drafts/` — K–5 roles + speech/debate + pilot/one-pager drafts |
 | Cold emails sent | 0 | — |
 | Replies | 0 | — |
 | Demo booked | 0 | — |
@@ -63,5 +63,16 @@ $0. No pricing published, no transactions.
 1. Lighthouse perf / a11y / SEO of landing + `/speak`.
 2. Site reachability from crawlers (resolve the 403 issue).
 3. Number of filler-word false positives in the current detector
-   (sample transcript set).
+   (sample transcript set). _Partial: grade-banded list shipped
+   2026-04-22, should materially reduce K–5 false positives._
 4. Time-to-first-session for a new visitor on a Chromebook.
+
+## Content inventory (night-3 snapshot)
+
+| Asset | Count | Notes |
+|---|---|---|
+| Blog posts live | 3 | All educator-intent, two K–5 + one ELA/6–12 |
+| Outreach drafts ready | 5 | 3 K–5 roles + 1 speech/debate + 1 pilot 1-pager |
+| Public marketing pages | 8 | / + for-schools + for-educators + privacy + terms + contact + blog + 3 blog posts |
+| Decision records | 2 | 0001 educator-wedge, 0002 K–5 primary |
+| Test suites | 3 | sessions, filler-words, honesty-regression. 22/22 |
