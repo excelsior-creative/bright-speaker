@@ -102,8 +102,8 @@ pilot is lightweight, but the privacy story must be precise and honest.
 
 | Stage | Count | Notes |
 |---|---|---|
-| Intro drafted | 5 | speech/debate + ELA + pilot one-pager + Title I principal + enrichment director |
-| Sent | 0 | Brandon to send |
+| Intro drafted | 5 | See `outreach-drafts/` (speech/debate, ELA, Title I principal, curriculum/enrichment director, plus pilot one-pager) |
+| Sent | 0 | Brandon to review/send; confirm production URL/crawler access first |
 | Replied | 0 | |
 | Demo booked | 0 | |
 | Pilot in flight | 0 | |

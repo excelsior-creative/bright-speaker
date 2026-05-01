@@ -2,7 +2,7 @@
 
 _What we know and what we wish we knew._
 
-_Last checked: 2026-04-22 (night 3)._
+_Last checked: 2026-04-26 (night 4)._
 
 ## Traffic / site
 
@@ -12,7 +12,8 @@ _Last checked: 2026-04-22 (night 3)._
 | Top entry pages | unknown | — | — |
 | Lighthouse perf | unknown | — | Audit in next run |
 | Lighthouse SEO | unknown | — | Audit in next run |
-| Indexable | **unclear — 403 to bot** | WebFetch 2026-04-17 | Confirm with Brandon |
+| Indexable | **unclear — 403 to bot, 4 nights running** | WebFetch 2026-04-26 | INBOX #1 escalated 🔴 |
+| Public pages on `main` | 12 | this repo | / · /for-educators · /for-schools · /privacy · /terms · /contact · /blog (+2 posts) · /resources (+1 page) · /sign-in · /sign-up |
 
 ## Product — usage
 
@@ -37,7 +38,7 @@ Brandon approval (sub-processor).
 
 | Stage | Count | Source |
 |---|---|---|
-| Cold emails drafted | 5 (cumulative) | `outreach-drafts/` — 3 K–5 + 1 speech/debate + 1 pilot/enrichment one-pager |
+| Cold emails drafted | 5 (cumulative) | `outreach-drafts/` — K–5 roles + speech/debate + pilot/one-pager drafts |
 | Cold emails sent | 0 | — |
 | Replies | 0 | — |
 | Demo booked | 0 | — |

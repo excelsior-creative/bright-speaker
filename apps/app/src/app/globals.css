@@ -557,3 +557,17 @@ h2 { letter-spacing: -0.025em; line-height: 1.02; }
   .footer-cta { padding: 40px 28px; }
   .footer-cta h2 { font-size: 34px; }
 }
+
+/* ---------- Print (printable resource pages) ---------- */
+@media print {
+  html, body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  a { color: #000 !important; text-decoration: none; }
+  .card, .card-warm, .feature-card, .step {
+    box-shadow: none !important;
+    border-color: #000 !important;
+    page-break-inside: avoid;
+  }
+}

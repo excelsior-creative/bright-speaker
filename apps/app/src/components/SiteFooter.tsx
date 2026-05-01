@@ -46,7 +46,8 @@ export default function SiteFooter() {
           <div>
             <h4 className="font-display text-[14px] mb-3.5 text-[var(--ink)]">Company</h4>
             <ul className="list-none p-0 m-0 grid gap-2">
-              <li><Link href="/blog" className="hover:text-[var(--ink)] transition">Resources</Link></li>
+              <li><Link href="/resources" className="hover:text-[var(--ink)] transition">Free resources</Link></li>
+              <li><Link href="/blog" className="hover:text-[var(--ink)] transition">Blog</Link></li>
               <li><Link href="/contact" className="hover:text-[var(--ink)] transition">Contact</Link></li>
             </ul>
           </div>
