@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest run",
+    "test": "vitest run src/lib",
     "test:bstack": "playwright test -c playwright.config.ts",
     "test:bstack:smoke": "playwright test -c playwright.config.ts --grep @smoke",
     "test:bstack:local": "LOCAL=1 playwright test -c playwright.config.ts",

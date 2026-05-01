@@ -30,7 +30,8 @@ export default function SiteNav() {
           <Show when="signed-in">
             <UserButton />
           </Show>
-          <Link href="/contact" className="btn btn-primary btn-sm">Book a demo</Link>
+          <Link href="/speak?prompt=1" className="btn btn-primary btn-sm">Try in browser</Link>
+          <Link href="/contact" className="btn btn-ghost btn-sm hidden md:inline-flex">Book demo</Link>
         </div>
       </nav>
     </div>
