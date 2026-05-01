@@ -1,3 +1,5 @@
+import { getLevelDefinition, getLevelProgress } from "./progression";
+
 export interface SessionRecord {
   id: string;
   promptId: number;
@@ -65,13 +67,8 @@ function updateProgress(session: SessionRecord): { newBadges: string[]; levelUp:
   progress.totalSessions += 1;
   progress.xp += session.xpEarned;
 
-  // Level thresholds: 100, 250, 500, 1000, 2000, 5000
-  const thresholds = [0, 100, 250, 500, 1000, 2000, 5000];
-  let level = 1;
-  for (let i = thresholds.length - 1; i >= 0; i--) {
-    if (progress.xp >= thresholds[i]) { level = i + 1; break; }
-  }
-  progress.level = Math.min(level, 7);
+  const levelProgress = getLevelProgress(progress.xp);
+  progress.level = levelProgress.currentLevel.level;
 
   // Streak
   const today = new Date().toDateString();
@@ -87,7 +84,7 @@ function updateProgress(session: SessionRecord): { newBadges: string[]; levelUp:
 
   // Badges
   const unlockBadge = (badge: string, condition: boolean) => {
-    if (!condition || progress.badges.includes(badge)) return;
+    if (!condition || progress.badges.indexOf(badge) !== -1) return;
     progress.badges.push(badge);
     newBadges.push(badge);
   };
@@ -122,6 +119,5 @@ function getDefaultProgress(): UserProgress {
 }
 
 export function getXpForNextLevel(level: number): number {
-  const thresholds = [100, 250, 500, 1000, 2000, 5000, 9999];
-  return thresholds[Math.min(level - 1, thresholds.length - 1)];
+  return getLevelDefinition(level + 1).minXp;
 }

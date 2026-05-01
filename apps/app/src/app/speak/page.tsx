@@ -9,7 +9,8 @@ import {
   getSpeechRecognitionErrorMessage,
   UNSUPPORTED_SPEECH_RECOGNITION_MESSAGE,
 } from "@/lib/browserSupport";
-import { saveSession } from "@/lib/sessions";
+import { getProgress, saveSession } from "@/lib/sessions";
+import { getLevelDefinition, getLevelProgress } from "@/lib/progression";
 import { analyzeFillers, countFillers, DEFAULT_GRADE_BAND, type GradeBand } from "@/lib/filler-words";
 
 const prompts: Record<number, { title: string; description: string; emoji: string; tips: string[]; gradeBand: GradeBand }> = {
@@ -68,6 +69,8 @@ interface SessionResults {
   xpEarned: number;
   newBadges: string[];
   levelUp: { previousLevel: number; newLevel: number } | null;
+  currentLevel: number;
+  totalXp: number;
 }
 
 function LoadingState() {
@@ -299,10 +302,21 @@ function SpeakContent() {
             : -1;
           const score = calculateScore(totalFillers, eyePercent, wpm);
           const xpEarned = Math.round(score / 2);
-          let rewardSummary = { newBadges: [] as string[], levelUp: null as { previousLevel: number; newLevel: number } | null };
+          let rewardSummary = {
+            newBadges: [] as string[],
+            levelUp: null as { previousLevel: number; newLevel: number } | null,
+            currentLevel: 1,
+            totalXp: 0,
+          };
           try {
             const savedSession = saveSession({ promptId, promptTitle: prompt.title, score, fillerCount: totalFillers, fillerWords: fillerAnalysis, duration, eyeContactPercent: eyePercent, wordsPerMinute: wpm, xpEarned, transcript: currentTranscript });
-            rewardSummary = { newBadges: savedSession.newBadges, levelUp: savedSession.levelUp };
+            const updatedProgress = getProgress();
+            rewardSummary = {
+              newBadges: savedSession.newBadges,
+              levelUp: savedSession.levelUp,
+              currentLevel: updatedProgress.level,
+              totalXp: updatedProgress.xp,
+            };
           } catch (e) { console.error("Failed to save session:", e); }
           setResults({ transcript: currentTranscript, fillerCount: totalFillers, fillerWords: fillerAnalysis, duration, eyeContactPercent: eyePercent, wordsPerMinute: wpm, score, xpEarned, ...rewardSummary });
           return currentHistory;
@@ -518,10 +532,14 @@ function SpeakContent() {
           <div className="max-w-2xl mx-auto">
             {(() => {
               const { grade, color, message } = getScoreGrade(results.score);
+              const currentLevel = getLevelDefinition(results.currentLevel);
+              const levelProgress = getLevelProgress(results.totalXp);
+              const nextLevel = levelProgress.nextLevel;
               return (
                 <>
                   <div className="card-warm p-8 text-center mb-8 animate-bounce-in">
                     <div className="text-6xl mb-4">🎉</div>
+                    <p className="text-sm uppercase tracking-wide font-extrabold text-warm-coral mb-2">Quest complete</p>
                     <div className={`text-6xl font-extrabold ${color} mb-2`}>{grade}</div>
                     <div className="text-2xl font-bold text-foreground mb-2">{results.score} points</div>
                     <p className="text-foreground/60 text-lg">{message}</p>
@@ -530,14 +548,41 @@ function SpeakContent() {
                     </div>
                   </div>
 
+                  <div className="card-warm p-6 mb-6 overflow-hidden relative">
+                    <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-warm-gold-light" aria-hidden="true" />
+                    <div className="relative z-10">
+                      <div className="flex items-start justify-between gap-4 mb-4">
+                        <div>
+                          <p className="text-xs uppercase tracking-wide font-extrabold text-foreground/35 mb-1">Adventure progress</p>
+                          <h3 className="text-2xl font-extrabold text-foreground">
+                            {currentLevel.emoji} Level {currentLevel.level}: {currentLevel.name}
+                          </h3>
+                          <p className="text-sm font-semibold text-foreground/55 mt-1">{currentLevel.world} · {currentLevel.focus}</p>
+                        </div>
+                        <div className="rounded-2xl bg-warm-coral-light px-4 py-3 text-center flex-shrink-0">
+                          <p className="text-xs font-extrabold text-warm-coral uppercase tracking-wide">Total XP</p>
+                          <p className="text-2xl font-extrabold text-warm-coral">{results.totalXp}</p>
+                        </div>
+                      </div>
+                      <div className="h-4 rounded-full bg-muted overflow-hidden border border-border-warm">
+                        <div className={`h-full rounded-full bg-gradient-to-r ${currentLevel.colorClass}`} style={{ width: `${levelProgress.percentToNextLevel}%` }} />
+                      </div>
+                      <p className="text-sm font-semibold text-foreground/55 mt-3">
+                        {nextLevel
+                          ? `${levelProgress.xpToNextLevel} XP until ${nextLevel.emoji} ${nextLevel.name}. Next reward: ${nextLevel.reward}.`
+                          : "You reached Legend League. Keep your streak alive and keep polishing your speaking skills."}
+                      </p>
+                    </div>
+                  </div>
+
                   {results.levelUp && (
                     <div className="bg-warm-gold-light rounded-2xl p-5 mb-6 text-center shadow-lg animate-bounce-in">
                       <div className="text-3xl mb-2">🏆</div>
                       <p className="text-sm font-bold uppercase tracking-wide text-warm-gold-dark/80">Level Up</p>
                       <p className="text-2xl font-extrabold text-warm-gold-dark">
-                        Level {results.levelUp.previousLevel} → Level {results.levelUp.newLevel}
+                        Level {results.levelUp.previousLevel} → Level {results.levelUp.newLevel}: {currentLevel.name}
                       </p>
-                      <p className="text-sm text-warm-gold-dark mt-1">You unlocked the next practice tier. Keep that streak alive!</p>
+                      <p className="text-sm text-warm-gold-dark mt-1">You reached {currentLevel.world}. {currentLevel.reward}.</p>
                     </div>
                   )}
 

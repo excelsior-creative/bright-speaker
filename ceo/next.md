@@ -4,15 +4,12 @@ Ready specs are queued below. Agents should work only from these specs and keep 
 
 ## Ready
 
-1. `ceo/specs/2026-04-27-browser-support-speak-fallback.md`
-   - **Owner:** Devon
-   - **Reviewer:** Quinn
-   - **Risk:** R2; escalates to R4 if new STT vendors, student-data storage, privacy commitments, auth, or production deploy changes are introduced.
-   - **Outcome:** Unsupported browsers and speech/camera errors get friendly in-page fallback UX; no silent recording failure.
-   - **Verification:** `pnpm test`, `pnpm lint`, manual smoke for supported/unsupported browser paths before merge.
+No ready specs are queued after the browser-support and progression/UI polish work. Brandon/Peter should promote the next approved spec before agents pick up additional implementation work.
 
 ## Recently completed
 
+- `ceo/specs/2026-04-30-game-progression-ui.md` — completed 2026-04-30 in branch `feat/game-progression-polish`. Added local-only game progression levels/worlds, dashboard adventure-map polish, and quest-complete result UX; no auth, persistence, analytics, or backend changes.
+- `ceo/specs/2026-04-27-browser-support-speak-fallback.md` — completed 2026-04-30 in PR #20. Added direct browser-demo CTAs, redesigned speaking interface, and visible speech/camera fallback messaging.
 - `ceo/specs/2026-04-27-phase-0-trust-data-flow.md` — completed 2026-04-29 in docs-only PR #18. Produced current-state trust/data-flow documentation and a draft educator trust summary in `ceo/compliance.md`; no public legal copy or product code changed.
 
 ## Proposed next after current ready specs
@@ -25,5 +22,5 @@ Ready specs are queued below. Agents should work only from these specs and keep 
 
 ## Blocked / needs decision
 
-- Open historical PR queue still needs triage (#2, #5, #8, #9, #10, #11, #12, #13 as of the 2026-04-27 nightly routine). Do not merge/deploy without the repo's normal review and approval gates.
+- Historical PR queue is cleared down to PR #5 (`Persistent sessions in Neon behind Clerk auth`), which remains deferred/rebuild-from-current-main because it touches Clerk/Neon/auth/session persistence and requires separate R4 approval evidence.
 - Public trust/legal copy, real student pilots, analytics/error-tracking vendors, and any student-data persistence changes require separate approval evidence.
