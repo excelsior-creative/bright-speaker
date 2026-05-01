@@ -45,6 +45,11 @@ Brandon approval (sub-processor).
 | Pilot agreements signed | 0 | — |
 | Pilot schools live | 0 | — |
 
+_Drafts as of 2026-04-23: speech/debate coach, ELA teacher, Title I
+elementary principal, independent-K-5 enrichment director, plus a
+pilot one-pager for warm-intro contexts. Literacy coach draft lives
+on PR #9._
+
 ## Revenue
 
 $0. No pricing published, no transactions.

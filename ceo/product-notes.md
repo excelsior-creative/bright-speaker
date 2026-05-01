@@ -76,14 +76,23 @@ Top-level files:
   eye-contact pill.
 - `/history` — full session list, expandable; clear-history button.
 - `/for-educators`, `/for-schools` — still on the older warm-coral/
-  warm-teal design. Copy is on the honest side.
+  warm-teal design on main. (PR #8 reconciles to sticker-brand.)
 - `/privacy` — plain-English data-flow page. Explicitly non-legal.
 - `/terms` — plain-language stub.
 - `/contact` — mailto-backed (`hello@brightspeaker.com`). Phase 0.3 of
   the launch checklist replaces this with a real form.
-- `/blog`, `/blog/reduce-filler-words-k12`,
-  `/blog/five-minute-elementary-speaking-warmup`,
-  `/blog/why-pauses-beat-um` (added 2026-04-22).
+- `/pilot` — **new 2026-04-23.** Sticker-brand conversion-optimized
+  landing for the 30-day free classroom pilot. Hero, what you get,
+  what we ask, success criteria, privacy, "what this is not,"
+  post-pilot pricing tiers (Teacher Free / School $3/student/year
+  featured / District custom). Outreach drafts now link here.
+- `/blog` — index, currently lists four posts.
+- `/blog/reduce-filler-words-k12` — first post, night 1.
+- `/blog/five-minute-elementary-speaking-warmup` — second post, night 2.
+- `/blog/why-pauses-beat-um` — K–5 pause-vs-filler explainer, added 2026-04-22.
+- `/blog/how-to-teach-public-speaking-elementary-school` — **new
+  2026-04-23**, targeting primary SEO phrase plus year-at-a-glance
+  scope/sequence mapped to SL.K–SL.5.
 - `/sign-in/[[...sign-in]]`, `/sign-up/[[...sign-up]]` — Clerk pages.
 - `/robots.ts`, `/sitemap.ts` — SEO basics.
 

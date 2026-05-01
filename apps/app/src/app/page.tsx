@@ -125,6 +125,7 @@ export default function Home() {
             <div className="flex gap-3.5 mt-8 flex-wrap">
               <Link href="/speak?prompt=1" className="btn btn-primary">Try the browser demo →</Link>
               <Link href="/dashboard" className="btn">See practice prompts</Link>
+              <Link href="/pilot" className="btn btn-ghost">Start a free pilot</Link>
               <Link href="/contact" className="btn btn-ghost">Book a school demo</Link>
             </div>
             <div className="flex gap-[22px] mt-7 flex-wrap text-sm font-semibold text-[var(--ink-2)]">
