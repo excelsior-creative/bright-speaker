@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: typecheck · lint · test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm --filter @bright-speaker/app exec tsc --noEmit
+
+      # Lint is intentionally a non-blocking warning today: `main` carries
+      # one known react-hooks/set-state-in-effect error in
+      # apps/app/src/app/speak/page.tsx that is fixed in open PRs #8, #9,
+      # and #12. Promote this step to a hard failure once one of those
+      # merges; see ceo/INBOX.md #0.
+      - name: Lint (advisory)
+        run: pnpm run lint
+        continue-on-error: true
+
+      - name: Test
+        run: pnpm run test

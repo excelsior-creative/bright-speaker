@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     template: "%s · BrightSpeaker",
   },
   description:
-    "BrightSpeaker is the AI speech coach built for K-5 classrooms. Real-time coaching on eye contact, pacing, posture, and volume — on the kid's device. No video ever leaves the classroom.",
+    "BrightSpeaker is the AI speech coach built for K-5 classrooms. In-browser coaching on eye contact, filler words, and pacing — on the kid's device. No video ever leaves the classroom.",
   applicationName: "BrightSpeaker",
   keywords: [
     "K-5 public speaking",

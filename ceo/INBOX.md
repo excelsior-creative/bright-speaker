@@ -5,6 +5,11 @@ the journal night where it was resolved._
 
 ## Open
 
+### 🟡 PR backlog triage follow-up
+- **Posted:** 2026-04-26; updated during conflict resolution.
+- **Context:** Historical PR queue was triaged after #9, #10, #18, and #20 landed. Remaining open PRs are documented with per-PR conflict-audit comments.
+- **Current recommendation:** close/supersede stale duplicates (#2, #8), re-cut R4 persistence work (#5), salvage focused GTM/design/resource work from #11/#12/#13 as separate current-main PRs.
+
 ### 🔴 1 — Is brightspeaker.com reachable by crawlers? (ESCALATED)
 - **Posted:** 2026-04-17 (night 1); reiterated night 2; escalating
   to 🔴 urgent on night 3 (2026-04-22).
