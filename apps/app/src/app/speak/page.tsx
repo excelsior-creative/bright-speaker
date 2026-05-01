@@ -2,50 +2,60 @@
 
 import { useState, useRef, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Mic, MicOff, Eye, EyeOff, Clock, AlertCircle, CheckCircle, Home, RotateCcw, Loader2, Star } from "lucide-react";
+import { Mic, MicOff, Eye, EyeOff, Clock, AlertCircle, CheckCircle, Home, RotateCcw, Loader2, Star, Sparkles } from "lucide-react";
 import Link from "next/link";
+import {
+  getSpeechRecognitionCtor,
+  getSpeechRecognitionErrorMessage,
+  UNSUPPORTED_SPEECH_RECOGNITION_MESSAGE,
+} from "@/lib/browserSupport";
 import { saveSession } from "@/lib/sessions";
+import { analyzeFillers, countFillers, DEFAULT_GRADE_BAND, type GradeBand } from "@/lib/filler-words";
 
-const prompts: Record<number, { title: string; description: string; emoji: string; tips: string[] }> = {
+const prompts: Record<number, { title: string; description: string; emoji: string; tips: string[]; gradeBand: GradeBand }> = {
   1: {
     title: "Tell a Funny Story",
     description: "Share something funny that happened to you recently. It could be at school, at home, or anywhere!",
     emoji: "😄",
-    tips: ["Start with 'One time...'", "Describe what happened step by step", "Tell us how it ended"]
+    tips: ["Start with 'One time...'", "Describe what happened step by step", "Tell us how it ended"],
+    gradeBand: "3-5",
   },
   2: {
     title: "Describe Your Favorite Place",
     description: "Tell us about a place you love. What does it look like? Why do you like it there?",
     emoji: "🌴",
-    tips: ["Use describing words (adjectives)", "Talk about what you can see, hear, and smell", "Explain why it's special to you"]
+    tips: ["Use describing words (adjectives)", "Talk about what you can see, hear, and smell", "Explain why it's special to you"],
+    gradeBand: "K-2",
   },
   3: {
     title: "Explain How to Make a Sandwich",
     description: "Teach us how to make your favorite sandwich, step by step.",
     emoji: "🥪",
-    tips: ["Start with what ingredients you need", "Go in order: first, then, next, finally", "Make it sound yummy!"]
+    tips: ["Start with what ingredients you need", "Go in order: first, then, next, finally", "Make it sound yummy!"],
+    gradeBand: "K-2",
   },
   4: {
     title: "Present Your Dream Invention",
     description: "If you could invent anything, what would it be? How would it work?",
     emoji: "💡",
-    tips: ["Give your invention a cool name", "Explain what problem it solves", "Describe how someone would use it"]
+    tips: ["Give your invention a cool name", "Explain what problem it solves", "Describe how someone would use it"],
+    gradeBand: "3-5",
   },
   5: {
     title: "Debate: Cats vs Dogs",
     description: "Which makes a better pet - cats or dogs? Pick a side and convince us!",
     emoji: "🐱🐕",
-    tips: ["Pick one side and stick with it", "Give at least 3 reasons", "Try to predict what the other side might say"]
+    tips: ["Pick one side and stick with it", "Give at least 3 reasons", "Try to predict what the other side might say"],
+    gradeBand: "3-5",
   },
   6: {
     title: "Give a Book Report",
     description: "Tell us about a book you've read. What happened? Did you like it?",
     emoji: "📚",
-    tips: ["Don't give away the ending!", "Describe the main character", "Would you recommend it?"]
+    tips: ["Don't give away the ending!", "Describe the main character", "Would you recommend it?"],
+    gradeBand: "3-5",
   },
 };
-
-const FILLER_WORDS = ["um", "uh", "er", "ah", "like", "you know", "i mean", "sort of", "kind of"];
 
 interface SessionResults {
   transcript: string;
@@ -75,6 +85,7 @@ function SpeakContent() {
   const searchParams = useSearchParams();
   const promptId = parseInt(searchParams.get("prompt") || "1");
   const prompt = prompts[promptId] || prompts[1];
+  const gradeBand: GradeBand = prompt.gradeBand ?? DEFAULT_GRADE_BAND;
 
   const [phase, setPhase] = useState<"prep" | "recording" | "results">("prep");
   const [timeLeft, setTimeLeft] = useState(60);
@@ -97,14 +108,15 @@ function SpeakContent() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const faceApiRef = useRef<any>(null);
 
-  const initFaceDetection = async () => {
+  const loadFaceDetection = async (): Promise<boolean> => {
     try {
       const faceapi = await import("face-api.js");
       faceApiRef.current = faceapi;
       await faceapi.nets.tinyFaceDetector.loadFromUri("/models");
-      setFaceApiReady(true);
+      return true;
     } catch (e) {
       console.error("Face detection failed to load:", e);
+      return false;
     }
   };
 
@@ -173,61 +185,56 @@ function SpeakContent() {
     }
   };
 
-  const initSpeechRecognition = () => {
-    if (typeof window !== "undefined" && ("SpeechRecognition" in window || "webkitSpeechRecognition" in window)) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      const recognition = new SpeechRecognition();
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.lang = "en-US";
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      recognition.onresult = (event: any) => {
-        let finalTranscript = "";
-        let interim = "";
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          const result = event.results[i];
-          if (result.isFinal) {
-            finalTranscript += result[0].transcript + " ";
-          } else {
-            interim += result[0].transcript;
-          }
-        }
-        if (finalTranscript) {
-          setTranscript(prev => {
-            const updated = prev + finalTranscript;
-            const fillerMatches = FILLER_WORDS.reduce((count, filler) => {
-              const regex = new RegExp(`\\b${filler}\\b`, "gi");
-              return count + (updated.match(regex)?.length || 0);
-            }, 0);
-            setLiveFillerCount(fillerMatches);
-            return updated;
-          });
-        }
-        setInterimText(interim);
-      };
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      recognition.onerror = (event: any) => {
-        console.error("Speech recognition error:", event.error);
-      };
-
-      recognitionRef.current = recognition;
+  const initSpeechRecognition = (): boolean => {
+    const SpeechRecognition = getSpeechRecognitionCtor(typeof window === "undefined" ? undefined : window);
+    if (!SpeechRecognition) {
+      setMediaError(UNSUPPORTED_SPEECH_RECOGNITION_MESSAGE);
+      return false;
     }
-  };
 
-  const analyzeTranscript = (text: string): { word: string; count: number }[] => {
-    const lowerText = text.toLowerCase();
-    const results: { word: string; count: number }[] = [];
-    FILLER_WORDS.forEach(filler => {
-      const regex = new RegExp(`\\b${filler}\\b`, "gi");
-      const matches = lowerText.match(regex);
-      if (matches && matches.length > 0) {
-        results.push({ word: filler, count: matches.length });
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      let finalTranscript = "";
+      let interim = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const result = event.results[i];
+        if (result.isFinal) {
+          finalTranscript += result[0].transcript + " ";
+        } else {
+          interim += result[0].transcript;
+        }
       }
-    });
-    return results.sort((a, b) => b.count - a.count);
+      if (finalTranscript) {
+        setTranscript(prev => {
+          const updated = prev + finalTranscript;
+          setLiveFillerCount(countFillers(updated, gradeBand));
+          return updated;
+        });
+      }
+      setInterimText(interim);
+      setMediaError(null);
+    };
+
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+      console.error("Speech recognition error:", event.error);
+      setMediaError(getSpeechRecognitionErrorMessage(event.error));
+
+      if (["not-allowed", "service-not-allowed", "audio-capture", "network"].includes(event.error)) {
+        setIsRecording(false);
+        recognitionRef.current?.abort();
+        if (timerRef.current) clearInterval(timerRef.current);
+        if (faceDetectionRef.current) clearInterval(faceDetectionRef.current);
+        stopWebcam();
+        setPhase("prep");
+      }
+    };
+
+    recognitionRef.current = recognition;
+    return true;
   };
 
   const calculateScore = (fillerCount: number, eyePercent: number, wpm: number) => {
@@ -243,9 +250,17 @@ function SpeakContent() {
   };
 
   const startRecording = async () => {
+    setMediaError(null);
+    const speechReady = initSpeechRecognition();
+    if (!speechReady) return;
+
     const ok = await startWebcam();
     if (!ok) return;
-    initSpeechRecognition();
+    if (!faceApiRef.current) {
+      const faceReady = await loadFaceDetection();
+      setFaceApiReady(faceReady);
+    }
+
     setPhase("recording");
     setIsRecording(true);
     setTranscript("");
@@ -254,7 +269,7 @@ function SpeakContent() {
     setEyeContactHistory([]);
     setTimeLeft(60);
     recognitionRef.current?.start();
-    if (faceApiReady) {
+    if (faceApiRef.current) {
       faceDetectionRef.current = setInterval(() => { detectEyeContact(); }, 500);
     }
     timerRef.current = setInterval(() => {
@@ -274,7 +289,7 @@ function SpeakContent() {
       const duration = 60 - prev;
       setTranscript(currentTranscript => {
         setEyeContactHistory(currentHistory => {
-          const fillerAnalysis = analyzeTranscript(currentTranscript);
+          const fillerAnalysis = analyzeFillers(currentTranscript, gradeBand).sort((a, b) => b.count - a.count);
           const totalFillers = fillerAnalysis.reduce((sum, f) => sum + f.count, 0);
           const wordCount = currentTranscript.split(/\s+/).filter(w => w.length > 0).length;
           const wpm = duration > 0 ? Math.round((wordCount / duration) * 60) : 0;
@@ -298,10 +313,9 @@ function SpeakContent() {
     });
     setPhase("results");
     stopWebcam();
-  }, [promptId, prompt.title]);
+  }, [promptId, prompt.title, gradeBand]);
 
   useEffect(() => {
-    initFaceDetection();
     return () => {
       stopWebcam();
       recognitionRef.current?.stop();
@@ -338,50 +352,79 @@ function SpeakContent() {
       <main className="max-w-5xl mx-auto px-6 py-8">
         {/* PREP PHASE */}
         {phase === "prep" && (
-          <div className="max-w-2xl mx-auto text-center">
-            <span className="text-6xl mb-6 block animate-bounce-in">{prompt.emoji}</span>
-            <h1 className="text-3xl font-extrabold text-foreground mb-4">{prompt.title}</h1>
-            <p className="text-xl text-foreground/60 mb-8">{prompt.description}</p>
+          <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-6 items-stretch">
+            <section className="card-warm p-7 md:p-9 relative overflow-hidden">
+              <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-warm-gold-light" aria-hidden="true" />
+              <div className="relative z-10">
+                <span className="inline-flex items-center gap-2 rounded-full bg-warm-teal-light text-warm-teal-dark px-4 py-2 text-sm font-extrabold mb-6">
+                  <Sparkles className="w-4 h-4" /> Browser demo · 60-second practice
+                </span>
+                <span className="text-7xl mb-5 block animate-bounce-in">{prompt.emoji}</span>
+                <h1 className="text-4xl md:text-5xl font-extrabold text-foreground mb-4 leading-tight">{prompt.title}</h1>
+                <p className="text-xl text-foreground/65 mb-8 max-w-2xl">{prompt.description}</p>
 
-            <div className="card-warm p-6 mb-8 text-left">
-              <h3 className="font-bold text-foreground mb-3">💡 Tips for this prompt:</h3>
-              <ul className="space-y-2">
-                {prompt.tips.map((tip, i) => (
-                  <li key={i} className="flex items-start gap-2 text-foreground/60">
-                    <CheckCircle className="w-5 h-5 text-warm-teal flex-shrink-0 mt-0.5" />
-                    {tip}
-                  </li>
-                ))}
-              </ul>
-            </div>
+                {mediaError && (
+                  <div role="alert" className="bg-warm-coral-light border-2 border-warm-coral rounded-2xl p-4 mb-6 flex items-start gap-3 text-left">
+                    <AlertCircle className="w-5 h-5 text-warm-coral-dark flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-warm-coral-dark font-semibold">{mediaError}</p>
+                  </div>
+                )}
 
-            <div className="bg-warm-gold-light rounded-xl p-4 mb-8 flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-warm-gold-dark flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-warm-gold-dark text-left">
-                You&apos;ll have <strong>60 seconds</strong> to speak. Try to look at the camera and avoid filler words like &quot;um&quot; and &quot;like&quot;.
-              </p>
-            </div>
+                <button
+                  onClick={startRecording}
+                  className="flex items-center justify-center gap-3 bg-warm-coral text-white px-10 py-5 rounded-2xl font-extrabold text-xl btn-playful shadow-xl shadow-warm-coral/30"
+                >
+                  <Mic className="w-6 h-6" />
+                  Start speaking now
+                </button>
 
-            {mediaError && (
-              <div role="alert" className="bg-warm-coral-light border-2 border-warm-coral rounded-xl p-4 mb-6 flex items-start gap-3 text-left">
-                <AlertCircle className="w-5 h-5 text-warm-coral-dark flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-warm-coral-dark">{mediaError}</p>
+                <p className="mt-4 text-sm text-foreground/50 font-semibold">
+                  Works best in Chrome or Edge with camera + microphone permission.
+                </p>
               </div>
-            )}
+            </section>
 
-            <button
-              onClick={startRecording}
-              className="flex items-center justify-center gap-3 bg-warm-coral text-white px-10 py-5 rounded-2xl font-extrabold text-xl btn-playful shadow-xl shadow-warm-coral/30 mx-auto"
-            >
-              <Mic className="w-6 h-6" />
-              Start Speaking
-            </button>
+            <aside className="flex flex-col gap-4">
+              <div className="card-warm p-6 text-left">
+                <h3 className="font-bold text-foreground mb-3 flex items-center gap-2">💡 Coach tips before you start</h3>
+                <ul className="space-y-3">
+                  {prompt.tips.map((tip, i) => (
+                    <li key={i} className="flex items-start gap-2 text-foreground/65 font-semibold">
+                      <CheckCircle className="w-5 h-5 text-warm-teal flex-shrink-0 mt-0.5" />
+                      {tip}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="bg-warm-gold-light border-2 border-warm-gold rounded-[1.25rem] p-5 flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-warm-gold-dark flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-warm-gold-dark text-left font-semibold">
+                  BrightSpeaker will watch for camera-facing eye contact, count words, and flag filler words like &quot;um&quot; and &quot;like&quot;. Nothing starts until you press the button.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                {["Look up", "Speak clearly", "Have fun"].map((label, index) => (
+                  <div key={label} className="card-warm p-3 text-center">
+                    <div className="text-2xl mb-1">{["👀", "🎙️", "⭐"][index]}</div>
+                    <div className="text-xs font-extrabold text-foreground/60">{label}</div>
+                  </div>
+                ))}
+              </div>
+            </aside>
           </div>
         )}
 
         {/* RECORDING PHASE */}
         {phase === "recording" && (
-          <div className="grid lg:grid-cols-2 gap-8">
+          <div className="grid lg:grid-cols-[1.25fr_0.75fr] gap-8">
+            {mediaError && (
+              <div role="alert" className="lg:col-span-2 bg-warm-gold-light border-2 border-warm-gold rounded-2xl p-4 flex items-start gap-3 text-left">
+                <AlertCircle className="w-5 h-5 text-warm-gold-dark flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-warm-gold-dark font-semibold">{mediaError}</p>
+              </div>
+            )}
             <div className="flex flex-col gap-4">
               <div className="relative rounded-2xl overflow-hidden bg-gray-900 aspect-video shadow-xl">
                 <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
@@ -431,19 +474,31 @@ function SpeakContent() {
             </div>
 
             <div className="space-y-4">
-              <div className="card-warm p-5">
+              <div className="card-warm p-5 bg-warm-gold-light">
                 <span className="text-3xl mb-2 block">{prompt.emoji}</span>
-                <h2 className="text-lg font-extrabold text-foreground mb-1">{prompt.title}</h2>
-                <p className="text-foreground/60 text-sm">{prompt.description}</p>
+                <p className="text-xs uppercase tracking-wide font-extrabold text-warm-gold-dark/70 mb-1">Today&apos;s prompt</p>
+                <h2 className="text-xl font-extrabold text-foreground mb-1">{prompt.title}</h2>
+                <p className="text-foreground/65 text-sm font-semibold">{prompt.description}</p>
               </div>
 
-              <div className="bg-muted rounded-2xl p-4 flex-1 min-h-[140px] max-h-[200px] overflow-y-auto">
+              <div className="card-warm p-4">
                 <p className="text-xs text-foreground/30 uppercase tracking-wide mb-2 font-bold">Live transcript</p>
-                <p className="text-foreground/70 text-sm leading-relaxed">
-                  {transcript}
-                  {interimText && <span className="text-foreground/30 italic">{interimText}</span>}
-                  {!transcript && !interimText && <span className="text-foreground/30 italic">Start speaking...</span>}
-                </p>
+                <div className="bg-muted rounded-2xl p-4 min-h-[160px] max-h-[220px] overflow-y-auto">
+                  <p className="text-foreground/75 text-sm leading-relaxed">
+                    {transcript}
+                    {interimText && <span className="text-foreground/40 italic">{interimText}</span>}
+                    {!transcript && !interimText && <span className="text-foreground/30 italic">Start speaking...</span>}
+                  </p>
+                </div>
+              </div>
+
+              <div className="card-warm p-4 bg-warm-teal-light">
+                <p className="text-xs uppercase tracking-wide font-extrabold text-warm-teal-dark/70 mb-2">Coach is listening for</p>
+                <div className="grid gap-2 text-sm font-bold text-warm-teal-dark">
+                  <span>👀 Camera-facing eye contact</span>
+                  <span>⏱ A steady speaking pace</span>
+                  <span>🌱 Fewer filler words over time</span>
+                </div>
               </div>
 
               <button

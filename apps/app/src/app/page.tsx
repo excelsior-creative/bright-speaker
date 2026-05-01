@@ -123,8 +123,10 @@ export default function Home() {
               device. No video ever leaves the classroom.
             </p>
             <div className="flex gap-3.5 mt-8 flex-wrap">
-              <Link href="/contact" className="btn btn-primary">Book a demo →</Link>
-              <Link href="/pilot" className="btn">Start a free pilot</Link>
+              <Link href="/speak?prompt=1" className="btn btn-primary">Try the browser demo →</Link>
+              <Link href="/dashboard" className="btn">See practice prompts</Link>
+              <Link href="/pilot" className="btn btn-ghost">Start a free pilot</Link>
+              <Link href="/contact" className="btn btn-ghost">Book a school demo</Link>
             </div>
             <div className="flex gap-[22px] mt-7 flex-wrap text-sm font-semibold text-[var(--ink-2)]">
               <span className="inline-flex items-center gap-1.5 whitespace-nowrap">🔒 100% on-device video</span>
@@ -414,7 +416,7 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <Link href="/dashboard" className="btn mt-auto">Start a free pilot</Link>
+              <Link href="/speak?prompt=1" className="btn mt-auto">Try the browser demo</Link>
             </div>
 
             <div className="tier tier-featured">
@@ -498,9 +500,12 @@ export default function Home() {
               </p>
             </div>
             <div className="flex flex-col gap-3.5">
-              <Link href="/contact" className="btn btn-primary">Book a 20-min demo →</Link>
+              <Link href="/speak?prompt=1" className="btn btn-primary">Try the browser demo →</Link>
               <Link href="/dashboard" className="btn" style={{ background: "#fff" }}>
-                Start a free 30-day pilot
+                Browse all prompts
+              </Link>
+              <Link href="/contact" className="btn btn-ghost" style={{ color: "#fff" }}>
+                Book a school demo
               </Link>
               <span className="text-[13px] text-center" style={{ color: "#B9C0D4" }}>
                 Questions?{" "}

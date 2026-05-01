@@ -39,9 +39,12 @@ The second argument is the target URL. Defaults to `http://localhost:3000/speak?
 
 ## Browser matrix
 
-Authoritative list lives in [browser-matrix.md](browser-matrix.md). It mirrors
-`LAUNCH_CHECKLIST.md` §2.3 — keep them in sync. When generating capabilities,
-read that file rather than hard-coding device names.
+Authoritative, typed capabilities live in
+[`apps/app/tests/bstack/caps.ts`](../../../apps/app/tests/bstack/caps.ts). That
+file is the single source of truth for both this skill and the Playwright
+harness. [`browser-matrix.md`](browser-matrix.md) is human-readable narrative
+that references it. Both mirror `LAUNCH_CHECKLIST.md` §2.3 — when §2.3
+changes, update `caps.ts` and `browser-matrix.md` in the same commit.
 
 ## Camera + mic on BrowserStack
 
@@ -74,28 +77,39 @@ the fake-device flags; for "does it visually work on iPad Safari?" use Live.
 
 ### `local`
 
-1. Check whether `BrowserStackLocal` is on PATH (`which BrowserStackLocal`) or
-   a `browserstack-local` npm dep exists. If neither, instruct the user to run
-   `npm i -D browserstack-local` and re-run.
-2. Start the tunnel in the background:
+The Playwright harness starts the tunnel automatically when invoked with
+`LOCAL=1` (see `apps/app/tests/bstack/global-setup.ts`). For ad-hoc Live
+sessions against `localhost`, you can start it manually:
+
+1. Confirm `browserstack-local` is installed
+   (`pnpm --filter @bright-speaker/app list browserstack-local`).
+2. Either run the harness scripts below, or launch the binary directly:
    ```
    BrowserStackLocal --key "$BROWSERSTACK_ACCESS_KEY" --local-identifier bright-speaker-dev
    ```
-3. Confirm the tunnel is up by tailing its log; report the local-identifier
-   the user must put into capabilities (`bstack:options.localIdentifier`).
-4. Remind the user to stop the tunnel when done (`pkill BrowserStackLocal`).
+3. Reuse that identifier in `bstack:options.localIdentifier` on the Live URL.
+4. Stop when done (`pkill BrowserStackLocal`). The automated harness handles
+   teardown for you.
 
 ### `matrix`
 
-Read `browser-matrix.md` and emit a JSON array of W3C-compliant capabilities,
-one entry per row. Use the `bstack:options` namespace and include
-`projectName: "bright-speaker"`, `buildName` from the current git sha, and
-`sessionName` from the row's friendly label. Offer the user a paste-ready
-Playwright `projects` block on request.
+Read [`apps/app/tests/bstack/caps.ts`](../../../apps/app/tests/bstack/caps.ts)
+and print the five projects. Offer the user either (a) a paste-ready W3C cap
+JSON per row, or (b) the command that runs the full matrix:
+`pnpm --filter @bright-speaker/app test:bstack:matrix`.
 
 ### `smoke`
 
-Walk the user through the manual smoke list against each matrix row:
+For scripted runs, invoke the Playwright harness:
+- Against production: `pnpm --filter @bright-speaker/app test:bstack:smoke`
+  (set `BASE_URL` to override the default).
+- Against a local dev server: in one shell
+  `pnpm --filter @bright-speaker/app dev`; in another
+  `pnpm --filter @bright-speaker/app test:bstack:local`.
+- Report lives at `apps/app/playwright-report/index.html`; the BrowserStack
+  dashboard shows one named session per row with pass/fail status.
+
+For manual sessions, walk the user through this list against each matrix row:
 
 - [ ] `/` loads, hero renders, no console errors
 - [ ] Click "Start a 60-second prompt" → land on `/speak?prompt=1`
@@ -117,3 +131,7 @@ checklist.
 - Don't use `bstack:options.networkLogs: true` by default; it captures the
   Web Speech API audio stream sent to Google. Only enable when the user is
   explicitly debugging a network issue.
+- Don't raise Playwright `workers` above 1 on the free BrowserStack tier;
+  extra workers produce opaque session-queue timeouts, not parallelism.
+- Don't enable Playwright `trace` for the bstack projects; the CDP endpoint
+  URL contains a base64-encoded access key and tracing persists it to disk.

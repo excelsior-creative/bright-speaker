@@ -46,8 +46,20 @@ Top-level files:
 - **Hosting**: Vercel. Domain `brightspeaker.com` returned 403 to
   WebFetch on 2026-04-20 (still). Either deployment protection or a
   WAF rule. Open ask in INBOX #1.
-- **Testing**: Vitest. `apps/app/src/lib/sessions.test.ts` covers
-  reward/level logic. 2/2 green.
+- **Testing**: Vitest. Three test files:
+  - `apps/app/src/lib/sessions.test.ts` — reward/level logic.
+  - `apps/app/src/lib/filler-words.test.ts` — grade-banded filler
+    detection. Added 2026-04-22.
+  - `apps/app/src/lib/honesty.test.ts` — regression guard that greps
+    the source tree for forbidden claim strings (MediaPipe, SOC 2
+    Type II / certified / compliant, COPPA/FERPA certified or
+    compliant, "Built for COPPA/FERPA," Student Privacy Pledge,
+    Clever/ClassLink SSO, unqualified "signed DPA"). A file can
+    opt out by including the marker `honesty-allowlist` in a
+    comment (the test file itself does). Added 2026-04-22. Caught
+    a real "signed DPA" regression in `for-schools` on its first
+    run.
+  22/22 green.
 
 ## Routes (under `apps/app/src/app/`)
 
@@ -74,10 +86,10 @@ Top-level files:
   what we ask, success criteria, privacy, "what this is not,"
   post-pilot pricing tiers (Teacher Free / School $3/student/year
   featured / District custom). Outreach drafts now link here.
-- `/blog` — index, currently lists three posts.
+- `/blog` — index, currently lists four posts.
 - `/blog/reduce-filler-words-k12` — first post, night 1.
-- `/blog/five-minute-elementary-speaking-warmup` — second post,
-  night 2. Was missing from sitemap until 2026-04-23.
+- `/blog/five-minute-elementary-speaking-warmup` — second post, night 2.
+- `/blog/why-pauses-beat-um` — K–5 pause-vs-filler explainer, added 2026-04-22.
 - `/blog/how-to-teach-public-speaking-elementary-school` — **new
   2026-04-23**, targeting primary SEO phrase plus year-at-a-glance
   scope/sequence mapped to SL.K–SL.5.
@@ -92,6 +104,26 @@ night-1 strategy, which targeted ELA grades 4–8 and speech/debate
 6–12. Reconciled in `strategy.md` and `decisions/0002-k5-primary-
 wedge.md` on 2026-04-20.
 
+## G-stack alignment (2026-04-29)
+
+Brandon accepted Timmy's recommended G-stack path: BrightSpeaker is a
+**teacher pilot tool first** and a **school/district edtech platform
+second**. The first real workflow is teacher creates a class/code →
+students practice → teacher sees results → pilot evidence can be
+summarized for a principal. See `decisions/0003-teacher-pilot-to-school-
+platform.md`.
+
+Product implications:
+
+- prioritize teacher class creation, class-code entry, persisted student
+  sessions, teacher progress view, and pilot summary;
+- keep the kid surface warm/simple: practice activities, feedback, XP,
+  badges;
+- keep feedback rule-based until LLM coaching is teacher-reviewed;
+- treat privacy/data-flow documentation as part of the product surface;
+- do not optimize for parent/B2C, adult coaching, live monitoring,
+  speech therapy, or peer/multiplayer.
+
 ## Data model (current, client-side)
 
 Unchanged from night 1. `localStorage` keys `bright_speaker_sessions`
@@ -100,6 +132,28 @@ and `bright_speaker_progress`, capped at 100 sessions.
 **Implication**: Data is per-browser, not per-user. A pilot needs
 Phase 1 of `LAUNCH_CHECKLIST.md` (Clerk roles + Neon schema + server
 actions).
+
+## Filler word detection (updated 2026-04-22)
+
+Filler words are now grade-banded via `apps/app/src/lib/filler-words.ts`.
+Each prompt carries a `gradeBand` property (`"K-2"`, `"3-5"`, or
+`"6-12"`). Live filler counting and final analysis both use the prompt's
+band. Default when no band is set is `"3-5"`.
+
+- **K-2**: `["um", "uh"]` only. Developmental fillers like "like" and
+  "sort of" are **not** flagged — the feedback loop won't shame normal
+  kid speech.
+- **3-5**: adds `"er"`, `"ah"`, `"like"`.
+- **6-12**: adds `"you know"`, `"i mean"`, `"sort of"`, `"kind of"`.
+
+Current prompts' bands:
+- `2` (Favorite Place) and `3` (Sandwich) — `K-2`.
+- `1` (Funny Story), `4` (Invention), `5` (Cats vs Dogs), `6` (Book
+  Report) — `3-5`.
+
+This closes the long-standing backlog item about over-flagging
+elementary students. It also aligns the product's behavior with the
+K–5 site positioning.
 
 ## Scoring formula
 

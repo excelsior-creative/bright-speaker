@@ -7,13 +7,15 @@ this folder cold.
 
 ## Product in one paragraph
 
-Bright Speaker (brightspeaker.com) is a K-12 public-speaking practice
-platform. Students speak to their computer camera, the app gives AI-
-flavored feedback on filler words, speaking pace, and eye contact, and
-rewards progress with XP, levels, and badges. GTM is licensing to
-schools and districts, with Google Workspace for Education SSO as the
-intended sign-in path. The current codebase uses Clerk auth (installed,
-not yet gating anything) and a Next.js 15/16 app deployed on Vercel.
+Bright Speaker (brightspeaker.com) is a K-5 classroom speaking-practice
+product. The first business is a teacher pilot tool: a teacher creates a
+class/code, students practice speaking to their computer camera, the app
+gives warm rule-based feedback on filler words, speaking pace, and eye
+contact, and the teacher gets enough progress evidence to discuss a
+school license with a principal. The second business is a school/district
+edtech platform once trust, data-flow, auth, and pilot proof are ready.
+The current codebase uses Clerk auth (installed, not yet gating anything)
+and a Next.js 15/16 app deployed on Vercel.
 
 ## Folder map
 
@@ -80,9 +82,10 @@ cringe-cutesy, never hype-bro. Educators can smell inauthenticity.
 ## Current stage (as of 2026-04-17)
 
 Pre-scale. MVP of the practice flow exists. No paying schools yet,
-no formal pilots. Key gaps: educator-facing positioning (current
-landing is parent-flavored), no pricing, no compliance artifacts,
-session data is localStorage-only, AI feedback is rule-based and not
-yet age-aware in the Claude sense. Domain returns 403 to crawlers,
-which means the deployment is either behind a gate or not fully live
-yet — confirm with Brandon.
+no formal pilots. G-stack alignment on 2026-04-29 locked the first real
+workflow as teacher class-code pilot: teacher creates class/code →
+students practice → teacher sees progress → principal-ready evidence
+summary. Key gaps: trust/data-flow documentation, unsupported-browser
+fallback, auth/roles/class-code persistence, server-side session data,
+pilot evidence export, and formal privacy/legal review. Domain was
+previously reported as 403 to crawlers; re-check before SEO work.

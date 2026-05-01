@@ -69,22 +69,34 @@ procurement cycles are multi-quarter.
 **Open question**: one-time vs. annual. Schools strongly prefer
 annual line items in a budget. Committing to annual.
 
-**Open question**: pilot pricing. Proposal: 30-day pilots are
-free; formal pilot letter required from the school; explicit
-success criteria at the start (we pick 3 KRs with the teacher).
+**Pilot pricing direction:** 30-day teacher pilots are free; formal
+pilot letter required from the school; explicit success criteria at the
+start (we pick 3 KRs with the teacher). Paid conversion target is a
+school license after the pilot evidence review.
 
-## Pilot program design (draft)
+## Pilot program design (locked direction 2026-04-29)
 
-- 30 days, one classroom, one teacher.
+BrightSpeaker's first GTM motion is **teacher pilot → principal evidence
+→ school license → district expansion**.
+
+- 30 days, one classroom, one K-5 teacher.
+- Teacher creates a class and shares a class code; students practice
+  through that class-code flow rather than a parent/B2C account model.
 - We provide a 20-minute onboarding call with the teacher.
 - Teacher commits to assigning 2 practice sessions / week.
-- At day 30, we sit down with the teacher for 20 minutes and review:
-  - Session completion rate.
-  - Filler-word reduction between first and last session (per
-    student).
-  - Teacher-reported confidence delta (5-question survey pre/post).
+- The product should make pilot evidence easy to review:
+  - session completion rate;
+  - per-student/aggregate progress trend;
+  - filler-word and pacing improvement signals where reliable;
+  - teacher-reported confidence delta (5-question survey pre/post);
+  - anonymized class-level summary for the principal.
+- At day 30, we sit down with the teacher for 20 minutes and turn the
+  evidence into a principal/curriculum-coach expansion conversation.
 - We ask for permission to write a case study. We will anonymize
   student data unless we get written consent otherwise.
+
+Do not sell district readiness ahead of the trust/data artifacts. The
+pilot is lightweight, but the privacy story must be precise and honest.
 
 ## Pipeline (starts empty)
 
