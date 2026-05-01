@@ -1,7 +1,12 @@
 # Bright Speaker — BrowserStack support matrix
 
-Mirrors `LAUNCH_CHECKLIST.md` §2.3 ("Browser support matrix"). When that
-section changes, update this file in the same commit.
+> **Source of truth:** the typed Playwright config at
+> [`apps/app/tests/bstack/caps.ts`](../../../apps/app/tests/bstack/caps.ts).
+> The JSON fragments in this file are human-readable examples, not parsed —
+> if you change a capability, change it in `caps.ts` first.
+
+Mirrors `LAUNCH_CHECKLIST.md` §2.3 ("Browser support matrix"). When §2.3 or
+`caps.ts` changes, update this file in the same commit.
 
 | Row | OS | OS version | Browser / Device | Notes |
 |-----|----|------------|------------------|-------|
