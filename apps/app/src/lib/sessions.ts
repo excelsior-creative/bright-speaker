@@ -1,4 +1,4 @@
-import { getLevelDefinition, getLevelProgress } from "./progression";
+import { LEVELS, getLevelDefinition, getLevelProgress } from "./progression";
 
 export interface SessionRecord {
   id: string;
@@ -119,5 +119,7 @@ function getDefaultProgress(): UserProgress {
 }
 
 export function getXpForNextLevel(level: number): number {
+  if (level >= LEVELS[LEVELS.length - 1].level) return LEVELS[LEVELS.length - 1].minXp;
+
   return getLevelDefinition(level + 1).minXp;
 }

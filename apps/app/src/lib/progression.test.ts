@@ -50,6 +50,11 @@ describe("game progression", () => {
       promptId: 5,
       title: "Debate Arena",
     });
+
+    expect(getRecommendedQuest({ level: 6, xp: 2000, totalSessions: 20, streak: 7, lastSessionDate: null, badges: [] })).toMatchObject({
+      promptId: 6,
+      title: "Showcase Report",
+    });
   });
 
   it("falls back to level one for invalid level lookups", () => {

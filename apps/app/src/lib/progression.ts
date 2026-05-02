@@ -250,6 +250,7 @@ export function getNextMilestone(progress: UserProgress): Milestone {
 
 export function getRecommendedQuest(progress: UserProgress): QuestRecommendation {
   if (progress.totalSessions === 0) return QUESTS[0];
+  if (progress.level >= 6) return QUESTS[5];
   if (progress.level >= 5) return QUESTS[4];
   if (progress.level >= 4) return QUESTS[3];
   if (progress.level >= 3) return QUESTS[2];
