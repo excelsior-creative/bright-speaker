@@ -5,6 +5,12 @@ the journal night where it was resolved._
 
 ## Open
 
+### 🟡 Functional MVP R4 implementation approval
+- **Posted:** 2026-05-06.
+- **Context:** Brandon asked for a real plan to complete a functional MVP. The plan is now captured in `ceo/specs/2026-05-06-functional-mvp-completion-plan.md`.
+- **Recommended approval text:** "Approved for BrightSpeaker R4 MVP implementation: teacher class creation, class-code join, privacy-minimized student session persistence, teacher progress dashboard, and principal-ready pilot summary. No new STT/AI/analytics vendor, no stored audio/video, no real-student production pilot until separate deployment approval."
+- **What I need:** Explicit approval of that R4 implementation scope before Devon starts product code.
+
 ### 🟡 PR backlog triage follow-up
 - **Posted:** 2026-04-26; updated during conflict resolution.
 - **Context:** Historical PR queue was triaged after #9, #10, #18, and #20 landed. Remaining open PRs are documented with per-PR conflict-audit comments.
