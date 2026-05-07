@@ -52,6 +52,14 @@ export default function Dashboard() {
 
         <div className="flex items-center gap-4">
           <Link
+            href="/dashboard/classes"
+            className="flex items-center gap-2 text-foreground/50 hover:text-warm-teal transition text-sm font-semibold"
+          >
+            <User className="w-4 h-4" />
+            Classes
+          </Link>
+
+          <Link
             href="/history"
             className="flex items-center gap-2 text-foreground/50 hover:text-warm-teal transition text-sm font-semibold"
           >

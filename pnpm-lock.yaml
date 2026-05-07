@@ -23,6 +23,9 @@ importers:
       '@neondatabase/auth':
         specifier: ^0.1.0-beta.21
         version: 0.1.0-beta.21(e8392d32f60f90213c8a4ae8d8b38765)
+      '@neondatabase/serverless':
+        specifier: ^1.1.0
+        version: 1.1.0
       face-api.js:
         specifier: ^0.22.2
         version: 0.22.2
@@ -589,6 +592,10 @@ packages:
         optional: true
       react-dom:
         optional: true
+
+  '@neondatabase/serverless@1.1.0':
+    resolution: {integrity: sha512-r3ZZhRjEcfEdKIZnoB1RusNgvHuaBRqfCzV4Gi+5A9yUX0S4HTws/ASWqt13wL4y4I+0rqsWGdA2w7EQXHi3+Q==}
+    engines: {node: '>=19.0.0'}
 
   '@next/env@16.1.6':
     resolution: {integrity: sha512-N1ySLuZjnAtN3kFnwhAwPvZah8RJxKasD7x1f8shFqhncnWZn4JMfg37diLNuoHsLAlrDfM3g4mawVdtAG8XLQ==}
@@ -4236,6 +4243,8 @@ snapshots:
       - solid-js
       - svelte
       - vue
+
+  '@neondatabase/serverless@1.1.0': {}
 
   '@next/env@16.1.6': {}
 

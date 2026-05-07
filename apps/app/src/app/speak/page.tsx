@@ -84,6 +84,9 @@ function LoadingState() {
 function SpeakContent() {
   const searchParams = useSearchParams();
   const promptId = parseInt(searchParams.get("prompt") || "1");
+  const classCode = searchParams.get("class") || "";
+  const studentToken = searchParams.get("student") || "";
+  const isClassSession = Boolean(classCode && studentToken);
   const prompt = prompts[promptId] || prompts[1];
   const gradeBand: GradeBand = prompt.gradeBand ?? DEFAULT_GRADE_BAND;
 
@@ -98,6 +101,7 @@ function SpeakContent() {
   const [results, setResults] = useState<SessionResults | null>(null);
   const [faceApiReady, setFaceApiReady] = useState(false);
   const [mediaError, setMediaError] = useState<string | null>(null);
+  const [classSaveStatus, setClassSaveStatus] = useState<"idle" | "saving" | "saved" | "failed">("idle");
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
@@ -304,6 +308,34 @@ function SpeakContent() {
             const savedSession = saveSession({ promptId, promptTitle: prompt.title, score, fillerCount: totalFillers, fillerWords: fillerAnalysis, duration, eyeContactPercent: eyePercent, wordsPerMinute: wpm, xpEarned, transcript: currentTranscript });
             rewardSummary = { newBadges: savedSession.newBadges, levelUp: savedSession.levelUp };
           } catch (e) { console.error("Failed to save session:", e); }
+          if (isClassSession) {
+            setClassSaveStatus("saving");
+            fetch("/api/classroom/sessions", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                classCode,
+                joinToken: studentToken,
+                promptId,
+                promptTitle: prompt.title,
+                score,
+                fillerCount: totalFillers,
+                durationSeconds: duration,
+                eyeContactPercent: eyePercent,
+                wordsPerMinute: wpm,
+                xpEarned,
+                transcriptExcerpt: currentTranscript.slice(0, 240),
+              }),
+            })
+              .then((response) => {
+                if (!response.ok) throw new Error("Classroom save failed");
+                setClassSaveStatus("saved");
+              })
+              .catch((error) => {
+                console.error("Failed to save classroom session:", error);
+                setClassSaveStatus("failed");
+              });
+          }
           setResults({ transcript: currentTranscript, fillerCount: totalFillers, fillerWords: fillerAnalysis, duration, eyeContactPercent: eyePercent, wordsPerMinute: wpm, score, xpEarned, ...rewardSummary });
           return currentHistory;
         });
@@ -313,7 +345,7 @@ function SpeakContent() {
     });
     setPhase("results");
     stopWebcam();
-  }, [promptId, prompt.title, gradeBand]);
+  }, [promptId, prompt.title, gradeBand, isClassSession, classCode, studentToken]);
 
   useEffect(() => {
     return () => {
@@ -357,7 +389,7 @@ function SpeakContent() {
               <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-warm-gold-light" aria-hidden="true" />
               <div className="relative z-10">
                 <span className="inline-flex items-center gap-2 rounded-full bg-warm-teal-light text-warm-teal-dark px-4 py-2 text-sm font-extrabold mb-6">
-                  <Sparkles className="w-4 h-4" /> Browser demo · 60-second practice
+                  <Sparkles className="w-4 h-4" /> {isClassSession ? `Class ${classCode} · 60-second practice` : "Browser demo · 60-second practice"}
                 </span>
                 <span className="text-7xl mb-5 block animate-bounce-in">{prompt.emoji}</span>
                 <h1 className="text-4xl md:text-5xl font-extrabold text-foreground mb-4 leading-tight">{prompt.title}</h1>
@@ -552,6 +584,15 @@ function SpeakContent() {
                           </span>
                         ))}
                       </div>
+                    </div>
+                  )}
+
+                  {isClassSession && (
+                    <div className={`rounded-2xl p-4 mb-6 text-center font-extrabold ${classSaveStatus === "saved" ? "bg-warm-teal-light text-warm-teal-dark" : classSaveStatus === "failed" ? "bg-warm-coral-light text-warm-coral-dark" : "bg-warm-gold-light text-warm-gold-dark"}`}>
+                      {classSaveStatus === "saved" && "Saved to your teacher's class dashboard."}
+                      {classSaveStatus === "saving" && "Saving this practice to your class dashboard…"}
+                      {classSaveStatus === "failed" && "Your practice finished, but it could not be saved to the class dashboard. Tell your teacher."}
+                      {classSaveStatus === "idle" && "Preparing to save this practice to your class dashboard."}
                     </div>
                   )}
 
