@@ -18,10 +18,10 @@ Ready specs are queued below. Agents should work only from these specs and keep 
 ## Proposed next after current ready specs
 
 - `ceo/specs/2026-05-06-functional-mvp-completion-plan.md`
-  - **Status:** proposed, not ready for implementation until Brandon gives explicit R4 approval.
+  - **Status:** implementation PR in review after Brandon approval in Slack thread `1778127101.599559` on 2026-05-07 ("Go build it").
   - **Why:** Brandon asked for a real plan to finish a functional MVP; this converts the teacher class-code pilot into an implementable MVP sequence.
   - **Risk:** R4 before implementation/deployment because it touches auth, roles, class membership, persisted student-session records, and children/student data.
-  - **Promotion gate:** Brandon approves the R4 implementation scope, then Devon can execute in small PRs with Quinn review before merge/deploy.
+  - **Promotion gate:** Quinn review plus Brandon approval before merge/deploy; do not run a real student pilot until trust/privacy review and database migration have been verified.
 - `ceo/specs/2026-04-29-teacher-class-code-pilot-backbone.md`
   - **Status:** superseded as the product-direction spec by the more granular MVP completion plan above; retain as source context.
   - **Why:** G-stack alignment locked teacher class-code pilot as the first real product workflow.
